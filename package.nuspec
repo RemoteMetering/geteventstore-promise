@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>GetEventStore-Promise</id>
+    <version>1.0</version>
+    <authors>RMS</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>
+       GetEventStore-Promise
+    </description>
+  </metadata>
+  <files>
+	  <file src="**/*.*" exclude="*.nupkg;node_modules/**/*.*;package.sh" />
+  </files>
+</package>
