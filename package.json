@@ -1,0 +1,30 @@
+{
+  "name": "geteventstore-promise",
+  "version": "1.0.0",
+  "description": "GetEventStore client using promises",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RemoteMetering/geteventstore-promise.git"
+  },
+  "keywords": [
+    "geteventstore",
+    "eventstore",
+    "promise"
+  ],
+  "author": "RemoteMetering Team",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/RemoteMetering/geteventstore-promise/issues"
+  },
+  "homepage": "https://github.com/RemoteMetering/geteventstore-promise",
+  "dependencies": {
+    "debug": "^2.2.0",
+    "node-uuid": "^1.4.7",
+    "request-promise": "^1.0.2",
+    "underscore": "^1.8.3"
+  }
+}
