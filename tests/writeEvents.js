@@ -3,8 +3,8 @@ var eventstore = require('../index.js');
 var uuid = require('node-uuid');
 
 describe('Http Client', function() {
-    describe('Writing and Read an event', function() {
-        it('Write to a new stream and read the event', function() {
+    describe('Writing and Reading Events', function() {
+        it('Write to a new stream and read the events', function() {
             var client = eventstore.http({
                 http: {
                     hostname: 'localhost',
@@ -17,14 +17,16 @@ describe('Http Client', function() {
                 }
             });
 
+            var events = [eventstore.eventFactory.newEvent('TestEventType', { something: '456'})];
+
             var testStream = 'TestStream-' + uuid.v4();
-            return client.writeEvent(testStream, 'TestEventType', { something: '123' })
+            return client.writeEvents(testStream, events)
             .then(function() {
                 return client.getEvents(testStream)
                 .then(function(events){
-                    assert.equal(events[0].data.something, '123');
+                    assert.equal(events[0].data.something, '456');
                 });
-            });
+            })
         });
     });
 });
