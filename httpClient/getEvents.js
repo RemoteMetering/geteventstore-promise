@@ -9,7 +9,7 @@ module.exports = function(config) {
         length = length || 1000;
         direction = direction || 'forward';
 
-        var streamPath = config.http.copy();
+        var streamPath = JSON.parse(JSON.stringify(config.http));
         streamPath.pathname = '/streams/' + stream + '/' + startPosition + '/' + direction + '/' + length + '?embed=body';
 
         return url.format(streamPath);

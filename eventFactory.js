@@ -1,3 +1,6 @@
+var assert = require('assert');
+var uuid = require('node-uuid');
+
 module.exports = {
     newEvent: function(eventType, data, metadata) {
         assert.ok(eventType);
@@ -11,5 +14,5 @@ module.exports = {
 
         if (metadata !== undefined) event.metadata = metadata;
         return event;
-    };
+    }
 };

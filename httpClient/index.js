@@ -1,6 +1,7 @@
 module.exports = function(config) {
     return {
-        write: require('./write')(config),
+        writeEvent: require('./writeEvent')(config),
+        writeEvents: require('./writeEvents')(config),
         getEvents: require('./getEvents')(config),
         getProjectionState: require('./getProjectionState')(config)
     }
