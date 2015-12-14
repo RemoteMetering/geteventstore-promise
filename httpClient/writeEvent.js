@@ -15,7 +15,7 @@ module.exports = function(config) {
         options = options || {};
         options.expectedVersion = options.expectedVersion || -2;
 
-        var events = [eventFactory.newEvent(eventType, data, metaData)];
+        var events = [eventFactory.NewEvent(eventType, data, metaData)];
 
         var reqOptions = {
             uri: buildAppendStreamUrl(stream),

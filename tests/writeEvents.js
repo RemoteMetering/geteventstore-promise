@@ -17,7 +17,7 @@ describe('Http Client', function() {
                 }
             });
 
-            var events = [eventstore.eventFactory.newEvent('TestEventType', { something: '456'})];
+            var events = [eventstore.eventFactory.NewEvent('TestEventType', { something: '456'})];
 
             var testStream = 'TestStream-' + uuid.v4();
             return client.writeEvents(testStream, events)
