@@ -1,9 +1,9 @@
 # geteventstore-promise
 A GetEventStore client using promises
 
-## Supported Methods
+# Supported Methods
 
-### getEvents(streamName, startPosition, length, direction)
+## getEvents(streamName, startPosition, length, direction)
 
 Returns events from a given stream.
 
@@ -42,9 +42,9 @@ client.getEvents('TestStream', 0, 1000, 'forward') // defaults for getEvents if 
 });
 ```
 
+---
 
-
-### writeEvent(streamName, eventType, data, metaData, options)
+## writeEvent(streamName, eventType, data, metaData, options)
 
 Writes a single event of a specific type to a stream.
 
@@ -91,9 +91,9 @@ return client.writeEvent(testStream, 'TestEventType', { something: '123' })
 	});
 ```
 
+---
 
-
-### writeEvents(streamName, events, options)
+## writeEvents(streamName, events, options)
 
 Writes an array of EventStore ready events to a stream.
 
@@ -137,8 +137,9 @@ return client.writeEvents(testStream, events)
 	});
 ```
 
+---
 
-### getProjectionState(streamName)
+## getProjectionState(streamName)
 
 Reads the state of a given Projection stream as a JSON object.
 
