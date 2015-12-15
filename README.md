@@ -102,7 +102,7 @@ The name of the stream (as in EventStore) to read from.
 
 ##### events
 The array of EventStore ready events to save.
-You can call ```eventstore.eventFactory.NewEvent('TestType', {something: 123});''' to get an EventStore ready event.
+You can call ```eventstore.eventFactory.NewEvent('TestType', {something: 123});``` to get an EventStore ready event.
 
 ##### options (optional)
 Any options to be specified (as documented in GetEventStore documentation). Default is simply *ExpectedVersion = -2*.
@@ -134,6 +134,39 @@ return client.writeEvents(testStream, events)
 			.then(function(events){
 				assert.equal(events[0].data.something, '456');
 			});
+	});
+```
+
+
+### getProjectionState(streamName)
+
+Reads the state of a given Projection stream as a JSON object.
+
+##### streamName
+The name of the stream (as in EventStore) to read from.
+
+#### Example
+
+```javascript
+var eventstore = require('geteventstore-promise');
+
+var client = eventstore.http({
+                http: {
+                    hostname: 'localhost',
+                    protocol: 'http',
+                    port: 2113,
+                    credentials: {
+                        username: 'admin',
+                        password: 'changeit'
+                    }
+                }
+            });
+
+var projectionStreamName = 'ExistingProjectionStreamName';
+
+return client.getProjectionState(projectionStreamName)
+	.then(function(state) {
+		console.log('State ', JSON.stringify(state));
 	});
 ```
 

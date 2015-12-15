@@ -4,16 +4,16 @@ var debug = require('debug')('geteventstore:projectionState'),
 
 module.exports = function(config) {
 
-    var buildProjectionsUrl = function(stream) {
+    var buildProjectionsUrl = function(streamName) {
         var streamPath = JSON.parse(JSON.stringify(config.http));
-        streamPath.pathname = '/projection/' + stream + '/state';
+        streamPath.pathname = '/projection/' + streamName + '/state';
 
         return url.format(streamPath);
     };
 
-    return function(streamId) {
+    return function(streamName) {
         var options = {
-            uri: buildProjectionsUrl(streamId),
+            uri: buildProjectionsUrl(streamName),
             headers: {
                 "Content-Type": "application/vnd.eventstore.events+json"
             },
