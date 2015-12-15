@@ -30,7 +30,7 @@ module.exports = function(config) {
                 entry.data = JSON.parse(entry.data);
             });
 
-            if (direction == 'Forward')
+            if (direction == 'forward')
                 return response.entries;
 
             return response.entries.reverse();

@@ -5,20 +5,20 @@ var debug = require('debug')('geteventstore:appendToStream'),
 
 module.exports = function(config) {
 
-	var buildAppendStreamUrl = function(stream) {
+	var buildAppendStreamUrl = function(streamName) {
 	    var streamPath = JSON.parse(JSON.stringify(config.http));
-	    streamPath.pathname = '/streams/' + stream;
+	    streamPath.pathname = '/streams/' + streamName;
 	    return url.format(streamPath);
 	};
 
-    return function(stream, eventType, data, metaData, options) {
+    return function(streamName, eventType, data, metaData, options) {
         options = options || {};
         options.expectedVersion = options.expectedVersion || -2;
 
         var events = [eventFactory.NewEvent(eventType, data, metaData)];
 
         var reqOptions = {
-            uri: buildAppendStreamUrl(stream),
+            uri: buildAppendStreamUrl(streamName),
             headers: {
                 "Content-Type": "application/vnd.eventstore.events+json",
                 "ES-ExpectedVersion": options.expectedVersion
