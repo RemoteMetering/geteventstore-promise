@@ -23,6 +23,7 @@
   "homepage": "https://github.com/RemoteMetering/geteventstore-promise",
   "dependencies": {
     "debug": "^2.2.0",
+    "event-store-client": "0.0.5",
     "node-uuid": "^1.4.7",
     "request-promise": "^1.0.2",
     "underscore": "^1.8.3"
