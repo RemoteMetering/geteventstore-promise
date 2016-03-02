@@ -1,6 +1,13 @@
 # geteventstore-promise
 A GetEventStore client using promises
 
+# Installation
+At the command-line:
+> npm install geteventstore-promise
+
+In your Node.js application:
+> var eventstore = require('geteventstore-promise');
+
 # HTTP Client
 
 # Supported Methods
@@ -39,8 +46,8 @@ var client = eventstore.http({
             });
 
 client.getEvents('TestStream', 0, 1000, 'forward') // defaults for getEvents if not specified
-.then(function(evs){
-    console.log('EVS : ', JSON.stringify(evs));
+.then(function(events){
+    console.log('Events ', JSON.stringify(events));
 });
 ```
 
@@ -168,6 +175,8 @@ client.getProjectionState(projectionStreamName).then(function(state) {
 });
 ```
 
+---
+
 ## getAllProjectionsInfo()
 
 Reads the metadata of all current Projections as a JSON object.
@@ -193,6 +202,8 @@ client.getAllProjectionsInfo().then(function(projectionsInfo) {
     console.log('Projections Info ', JSON.stringify(projectionsInfo));
 });
 ```
+
+---
 
 ## checkStreamExists(streamName)
 
@@ -225,6 +236,8 @@ client.checkStreamExists(projectionStreamName).then(function(exists) {
 });
 ```
 
+---
+
 ## sendScavengeCommand()
 
 Sends scavenge command to EventStore.
@@ -252,3 +265,149 @@ client.sendScavengeCommand().then(function() {
     console.log('Scavenge command sent ');
 });
 ```
+
+---
+
+# TCP Client
+
+# Acknowledgements
+
+Uses the `event-store-client` as authored by Carey Bishop
+
+Github: [https://github.com/x-cubed/event-store-client](https://github.com/x-cubed/event-store-client)
+
+# Common methods(same as HTTP, just use TCP configuration)
+
+* getEvents(streamName, startPosition, length, direction)
+* writeEvent(streamName, eventType, data, metaData, options)
+* writeEvents(streamName, events, options)
+
+# Supported Methods 
+
+## getEventsByType(streamName, eventTypes, startPosition, length, direction)
+
+Returns all events from a given stream.
+
+##### streamName
+The name of the stream (as in EventStore) to read from.
+
+##### eventTypes
+An array of event types to filter by.
+
+##### startPosition (optional)
+If specified, the stream will be read starting at event number startPosition, otherwise *0*;
+
+##### length (optional)
+The number of events to be read, defaults to *1000*;
+
+##### direction (optional)
+The direction to the read the stream. Can be either 'forward' or 'backward'. Defaults to *'forward'*.
+
+#### Example
+
+```javascript
+var eventstore = require('geteventstore-promise');
+
+var client = eventstore.tcp({
+                tcp: {
+                    hostname: 'localhost',
+                    protocol: 'tcp',
+                    port: 1113,
+                    credentials: {
+                        username: 'admin',
+                        password: 'changeit'
+                    }
+                }
+            });
+
+client.getEventsByType('TestStream', ['TestType']).then(function(events){
+    console.log('Events ', JSON.stringify(events));
+});
+```
+
+---
+
+## getAllStreamEvents(streamName)
+
+Returns all events from a given stream.
+
+##### streamName
+The name of the stream (as in EventStore) to read from.
+
+#### Example
+
+```javascript
+var eventstore = require('geteventstore-promise');
+
+var client = eventstore.tcp({
+                tcp: {
+                    hostname: 'localhost',
+                    protocol: 'tcp',
+                    port: 1113,
+                    credentials: {
+                        username: 'admin',
+                        password: 'changeit'
+                    }
+                }
+            });
+
+client.getAllStreamEvents('TestStream').then(function(events){
+    console.log('Events ', JSON.stringify(events));
+});
+```
+
+---
+
+## eventEnumerator(streamName, direction)
+
+Returns all events from a given stream.
+
+##### streamName
+The name of the stream (as in EventStore) to read from.
+
+##### direction (optional)
+The direction to the read the stream. Can be either 'forward' or 'backward'. Defaults to *'forward'*.
+
+## Supported Functions
+
+* next(batchSize)
+* previous(batchSize)
+* first(batchSize)
+* last(batchSize)
+
+##### batchSize
+The number of events to read per enumeration.
+
+#### Example
+
+```javascript
+var eventstore = require('geteventstore-promise');
+
+var client = eventstore.tcp({
+                tcp: {
+                    hostname: 'localhost',
+                    protocol: 'tcp',
+                    port: 1113,
+                    credentials: {
+                        username: 'admin',
+                        password: 'changeit'
+                    }
+                }
+            });
+
+var streamName = 'TestStream';
+var enumerator = client.eventEnumerator(streamName);
+
+enumerator.next(20).then(function(result) {
+    //Result
+    // {
+    //     isEndOfStream: true/false,
+    //     events: [ ..., ..., ... ]
+    // }
+
+    console.log('Result ' , result);
+});
+
+```
+
+---
