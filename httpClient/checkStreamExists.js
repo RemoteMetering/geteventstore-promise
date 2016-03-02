@@ -17,7 +17,9 @@ module.exports = function(config) {
         };
 
         return req(options).then(function(response) {
-            return response.statusCode == 200;
+            return true;
+        }).catch(function(err) {
+            return false;
         });
     };
 };

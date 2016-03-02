@@ -2,7 +2,8 @@ var debug = require('debug')('geteventstore:getAllStreamEvents'),
     Eventstore = require('event-store-client'),
     eventFactory = require('../eventFactory'),
     assert = require('assert'),
-    q = require('q');
+    q = require('q'),
+    _ = require('underscore');
 
 var baseErr = 'Get All Stream Events - ';
 

@@ -1,4 +1,4 @@
-var debug = require('debug')('geteventstore:getAllProjectionInfo'),
+var debug = require('debug')('geteventstore:getAllProjectionsInfo'),
     url = require('url'),
     req = require('request-promise');
 
@@ -17,7 +17,7 @@ module.exports = function(config) {
 
         return req(options).then(function(response) {
             debug('Response', response);
-            return response;
+            return JSON.parse(response);
         });
     };
 };

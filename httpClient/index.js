@@ -5,7 +5,7 @@ module.exports = function(config) {
 		writeEvents: require('./writeEvents')(config),
 		getEvents: require('./getEvents')(config),
 		getProjectionState: require('./getProjectionState')(config),
-		getAllProjectionInfo: require('./getAllProjectionInfo')(config)
-		sendScavengeCommand: require('./sendScavengeCommand')(config),
+		getAllProjectionsInfo: require('./getAllProjectionsInfo')(config),
+		sendScavengeCommand: require('./sendScavengeCommand')(config)
 	}
 }
