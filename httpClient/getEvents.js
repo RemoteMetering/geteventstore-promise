@@ -3,7 +3,6 @@ var debug = require('debug')('geteventstore:getevents'),
     req = require('request-promise');
 
 module.exports = function(config) {
-
     var buildGetEventsUrl = function(stream, startPosition, length, direction) {
         if (startPosition === undefined) startPosition = 0;
         length = length || 1000;

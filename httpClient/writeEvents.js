@@ -3,12 +3,11 @@ var debug = require('debug')('geteventstore:appendToStream'),
     req = require('request-promise');
 
 module.exports = function(config) {
-
-	var buildAppendStreamUrl = function(stream) {
-	    var streamPath = JSON.parse(JSON.stringify(config.http));
-	    streamPath.pathname = '/streams/' + stream;
-	    return url.format(streamPath);
-	};
+    var buildAppendStreamUrl = function(stream) {
+        var streamPath = JSON.parse(JSON.stringify(config.http));
+        streamPath.pathname = '/streams/' + stream;
+        return url.format(streamPath);
+    };
 
     return function(stream, events, options) {
         options = options || {};

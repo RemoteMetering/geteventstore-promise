@@ -3,7 +3,6 @@ var debug = require('debug')('geteventstore:projectionState'),
     req = require('request-promise');
 
 module.exports = function(config) {
-
     var buildProjectionsUrl = function(streamName) {
         var streamPath = JSON.parse(JSON.stringify(config.http));
         streamPath.pathname = '/projection/' + streamName + '/state';
