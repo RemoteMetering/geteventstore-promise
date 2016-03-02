@@ -1,10 +1,10 @@
 {
   "name": "geteventstore-promise",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "GetEventStore client using promises",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha -R spec tests/unit"
   },
   "repository": {
     "type": "git",
@@ -15,7 +15,7 @@
     "eventstore",
     "promise"
   ],
-  "author": "RemoteMetering Team",
+  "author": "Remote Metering Solutions Team",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/RemoteMetering/geteventstore-promise/issues"
