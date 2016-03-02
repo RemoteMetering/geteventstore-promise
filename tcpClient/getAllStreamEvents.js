@@ -8,7 +8,7 @@ var debug = require('debug')('geteventstore:getAllStreamEvents'),
 var baseErr = 'Get All Stream Events - ';
 
 module.exports = function(config) {
-    return function(streamName, chunkSize, options) {
+    return function(streamName, chunkSize) {
         return q.Promise(function(resolve, reject) {
             assert(streamName, baseErr + 'Stream Name not provided');
 
