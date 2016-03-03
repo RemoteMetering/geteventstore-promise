@@ -28,7 +28,7 @@ describe('Http Client - Get Projection State', function() {
                         assert.equal(projectionState.data.something, '123');
                         done();
                     });
-                }, 250);
+                }, 1000);
             });
         });
     });

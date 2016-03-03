@@ -1,5 +1,5 @@
 # geteventstore-promise
-A GetEventStore client using promises
+A Node.js Event Store client implementation using promises
 
 # Installation
 At the command-line:
@@ -17,7 +17,7 @@ In your Node.js application:
 Returns events from a given stream.
 
 ##### streamName
-The name of the stream (as in EventStore) to read from.
+The name of the stream (as in Event Store) to read from.
 
 ##### startPosition (optional)
 If specified, the stream will be read starting at event number startPosition, otherwise *0*;
@@ -58,7 +58,7 @@ client.getEvents('TestStream', 0, 1000, 'forward') // defaults for getEvents if 
 Writes a single event of a specific type to a stream.
 
 ##### streamName
-The name of the stream (as in EventStore) to read from.
+The name of the stream (as in Event Store) to read from.
 
 ##### eventType
 The type of event to save. Any string value is accepted.
@@ -70,7 +70,7 @@ The data to be contained in the event as a JSON object.
 Any MetaData to be saved in the event as a JSON object.
 
 ##### options (optional)
-Any options to be specified (as documented in GetEventStore documentation). Default is simply *ExpectedVersion = -2*.
+Any options to be specified (as documented in GetEvent Store documentation). Default is simply *ExpectedVersion = -2*.
 
 #### Example
 
@@ -102,17 +102,17 @@ client.writeEvent(testStream, 'TestEventType', { something: '123' }).then(functi
 
 ## writeEvents(streamName, events, options)
 
-Writes an array of EventStore ready events to a stream.
+Writes an array of Event Store ready events to a stream.
 
 ##### streamName
-The name of the stream (as in EventStore) to read from.
+The name of the stream (as in Event Store) to read from.
 
 ##### events
-The array of EventStore ready events to save.
-You can call ```eventstore.eventFactory.NewEvent('TestType', {something: 123});``` to get an EventStore ready event.
+The array of Event Store ready events to save.
+You can call ```eventstore.eventFactory.NewEvent('TestType', {something: 123});``` to get an Event Store ready event.
 
 ##### options (optional)
-Any options to be specified (as documented in GetEventStore documentation). Default is simply *ExpectedVersion = -2*.
+Any options to be specified (as documented in GetEvent Store documentation). Default is simply *ExpectedVersion = -2*.
 
 #### Example
 
@@ -149,7 +149,7 @@ client.writeEvents(testStream, events).then(function() {
 Reads the state of a given Projection stream as a JSON object.
 
 ##### streamName
-The name of the stream (as in EventStore) to read from.
+The name of the stream (as in Event Store) to read from.
 
 #### Example
 
@@ -210,7 +210,7 @@ client.getAllProjectionsInfo().then(function(projectionsInfo) {
 Reads the state of a given Projection stream as a JSON object.
 
 ##### streamName
-The name of the stream (as in EventStore) to check.
+The name of the stream (as in Event Store) to check.
 
 #### Example
 
@@ -240,7 +240,7 @@ client.checkStreamExists(projectionStreamName).then(function(exists) {
 
 ## sendScavengeCommand()
 
-Sends scavenge command to EventStore.
+Sends scavenge command to Event Store.
 
 If the promise is fulfilled then the scavenge command has been sent, it does not guarantee that the scavenge will be successful. 
 
@@ -289,7 +289,7 @@ Github: [https://github.com/x-cubed/event-store-client](https://github.com/x-cub
 Returns all events from a given stream.
 
 ##### streamName
-The name of the stream (as in EventStore) to read from.
+The name of the stream (as in Event Store) to read from.
 
 ##### eventTypes
 An array of event types to filter by.
@@ -332,7 +332,7 @@ client.getEventsByType('TestStream', ['TestType']).then(function(events){
 Returns all events from a given stream.
 
 ##### streamName
-The name of the stream (as in EventStore) to read from.
+The name of the stream (as in Event Store) to read from.
 
 #### Example
 
@@ -363,7 +363,7 @@ client.getAllStreamEvents('TestStream').then(function(events){
 Returns all events from a given stream.
 
 ##### streamName
-The name of the stream (as in EventStore) to read from.
+The name of the stream (as in Event Store) to read from.
 
 ##### direction (optional)
 The direction to the read the stream. Can be either 'forward' or 'backward'. Defaults to *'forward'*.
