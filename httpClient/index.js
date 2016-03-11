@@ -6,7 +6,7 @@ module.exports = function(config) {
 		getEvents: require('./getEvents')(config),
 		admin: {
 			scavenge: require('./admin/sendScavengeCommand')(config),
-			shutdown: require('./admin/sendShutdownCommand')(config),
+			shutdown: require('./admin/sendShutdownCommand')(config)
 		},
 		projections: {
 			start: require('./projections/start')(config),
