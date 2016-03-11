@@ -1,10 +1,9 @@
 var assert = require('assert');
 var eventstore = require('../index.js');
 var uuid = require('node-uuid');
-var createProjection = require('./helpers/createProjection');
 
 describe('Http Client - Send Scavenge Command', function() {
-    it('Should send scavenge command', function(done) {
+    it('Should send scavenge command', function() {
         var client = eventstore.http({
             http: {
                 hostname: 'localhost',
@@ -17,8 +16,6 @@ describe('Http Client - Send Scavenge Command', function() {
             }
         });
 
-        client.sendScavengeCommand().then(function() {
-            done();
-        }).catch(done);
+        return client.admin.scavenge();
     });
 });

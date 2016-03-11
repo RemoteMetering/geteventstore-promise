@@ -1,6 +1,6 @@
 {
   "name": "geteventstore-promise",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "GetEventStore client using promises",
   "main": "index.js",
   "scripts": {
@@ -11,6 +11,9 @@
     "url": "https://github.com/RemoteMetering/geteventstore-promise.git"
   },
   "keywords": [
+    "node",
+    "client",
+    "event store",
     "geteventstore",
     "eventstore",
     "promise"
