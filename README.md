@@ -144,67 +144,6 @@ client.writeEvents(testStream, events).then(function() {
 
 ---
 
-## getProjectionState(streamName)
-
-Reads the state of a given Projection stream as a JSON object.
-
-##### streamName
-The name of the stream (as in Event Store) to read from.
-
-#### Example
-
-```javascript
-var eventstore = require('geteventstore-promise');
-
-var client = eventstore.http({
-                http: {
-                    hostname: 'localhost',
-                    protocol: 'http',
-                    port: 2113,
-                    credentials: {
-                        username: 'admin',
-                        password: 'changeit'
-                    }
-                }
-            });
-
-var projectionStreamName = 'ExistingProjectionStreamName';
-
-client.getProjectionState(projectionStreamName).then(function(state) {
-    console.log('State ', JSON.stringify(state));
-});
-```
-
----
-
-## getAllProjectionsInfo()
-
-Reads the metadata of all current Projections as a JSON object.
-
-#### Example
-
-```javascript
-var eventstore = require('geteventstore-promise');
-
-var client = eventstore.http({
-                http: {
-                    hostname: 'localhost',
-                    protocol: 'http',
-                    port: 2113,
-                    credentials: {
-                        username: 'admin',
-                        password: 'changeit'
-                    }
-                }
-            });
-
-client.getAllProjectionsInfo().then(function(projectionsInfo) {
-    console.log('Projections Info ', JSON.stringify(projectionsInfo));
-});
-```
-
----
-
 ## checkStreamExists(streamName)
 
 Reads the state of a given Projection stream as a JSON object.
@@ -238,7 +177,72 @@ client.checkStreamExists(projectionStreamName).then(function(exists) {
 
 ---
 
-## sendScavengeCommand()
+# Projections
+
+# Supported Methods
+
+* start(projectionName)
+* stop(projectionName)
+* reset(projectionName)
+* remove(projectionName)
+* getState(projectionName)
+* getInfo(projectionName)
+* enableAll()
+* disableAll()
+* getAllProjectionsInfo()
+* assert(projectionName, projectionContent, mode, enabled, checkpointsEnabled, emitEnabled)
+    #### projectionName
+    The name of the projection
+
+    #### projectionContent
+    The content of the projection
+
+    #### mode(optional)
+    The mode of the projection to create, defaults to 'continous'
+
+    #### enabled(optional)
+    Projection enabled by default, defaults to true
+
+    #### checkpointsEnabled(optional)
+    Should enable checkpoints, defaults to true for continous projections and false for onetime projections
+
+    #### emitEnabled(optional)
+    Should enable emitting, defaults to false
+
+
+## Example for using any projection method
+
+## projections.getState()
+
+Returns the state of the Projection as a JSON object.
+
+#### Example
+
+```javascript
+var eventstore = require('geteventstore-promise');
+
+var client = eventstore.http({
+                http: {
+                    hostname: 'localhost',
+                    protocol: 'http',
+                    port: 2113,
+                    credentials: {
+                        username: 'admin',
+                        password: 'changeit'
+                    }
+                }
+            });
+
+client.projections.getState('TestProjection').then(function(projectionState) {
+    console.log('Projection State ', JSON.stringify(projectionState));
+});
+```
+
+---
+
+# Admin
+
+## admin.scavenge()
 
 Sends scavenge command to Event Store.
 
@@ -261,8 +265,38 @@ var client = eventstore.http({
                 }
             });
 
-client.sendScavengeCommand().then(function() {
+client.admin.scavenge().then(function() {
     console.log('Scavenge command sent ');
+});
+```
+
+---
+
+## admin.shutdown()
+
+Sends shutdown command to Event Store.
+
+If the promise is fulfilled then the shutdown command has been sent, it does not guarantee that the shutdown will be successful. 
+
+#### Example
+
+```javascript
+var eventstore = require('geteventstore-promise');
+
+var client = eventstore.http({
+                http: {
+                    hostname: 'localhost',
+                    protocol: 'http',
+                    port: 2113,
+                    credentials: {
+                        username: 'admin',
+                        password: 'changeit'
+                    }
+                }
+            });
+
+client.admin.shutdown().then(function() {
+    console.log('Shutdown command sent ');
 });
 ```
 
