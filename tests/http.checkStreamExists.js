@@ -20,7 +20,7 @@ describe('Http Client - Check Stream Exist', function() {
         return client.writeEvent(testStream, 'TestEventType', {
             something: '123'
         }).then(function() {
-            client.checkStreamExists(testStream).then(function(exists) {
+            return client.checkStreamExists(testStream).then(function(exists) {
                 assert.equal(exists, true);
             });
         });
@@ -39,7 +39,7 @@ describe('Http Client - Check Stream Exist', function() {
             }
         });
 
-        client.checkStreamExists('Non-existentStream').then(function(exists) {
+        return client.checkStreamExists('Non-existentStream').then(function(exists) {
             assert.equal(exists, false);
         });
     });
