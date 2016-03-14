@@ -5,7 +5,6 @@
 #### Configuration
 
 - Remove `http` and `tcp` configuration properties
-- Change `http` configuration to use `auth` instead of `credentials`
 
 ##### Previous `http` Usage
 ```javascript
@@ -33,7 +32,10 @@ var client = eventstore.http({
                 hostname: 'localhost',
                 protocol: 'http',
                 port: 2113,
-                auth: 'admin:changeit'
+                credentials: {
+					username: 'admin',
+					password: 'changeit'
+				}
             });
 
 ```

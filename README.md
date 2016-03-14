@@ -37,7 +37,10 @@ var client = eventstore.http({
                 hostname: 'localhost',
                 protocol: 'http',
                 port: 2113,
-                auth: 'admin:changeit'
+                credentials: {
+				    username: 'admin',
+				    password: 'changeit'
+			    }
             });
 
 client.getEvents('TestStream', 0, 1000, 'forward') // defaults for getEvents if not specified
@@ -76,7 +79,10 @@ var client = eventstore.http({
                 hostname: 'localhost',
                 protocol: 'http',
                 port: 2113,
-                auth: 'admin:changeit'
+                credentials: {
+				    username: 'admin',
+				    password: 'changeit'
+			    }
             });
 
 var testStream = 'TestStream-' + uuid.v4();
@@ -113,7 +119,10 @@ var client = eventstore.http({
                 hostname: 'localhost',
                 protocol: 'http',
                 port: 2113,
-                auth: 'admin:changeit'
+                credentials: {
+				    username: 'admin',
+				    password: 'changeit'
+			    }
             });
 
 var events = [eventstore.eventFactory.NewEvent('TestEventType', { something: '456'})];
@@ -145,7 +154,10 @@ var client = eventstore.http({
                 hostname: 'localhost',
                 protocol: 'http',
                 port: 2113,
-                auth: 'admin:changeit'
+                credentials: {
+				    username: 'admin',
+				    password: 'changeit'
+			    }
             });
 
 var projectionStreamName = 'ExistingProjectionStreamName';
@@ -205,7 +217,10 @@ var client = eventstore.http({
                 hostname: 'localhost',
                 protocol: 'http',
                 port: 2113,
-                auth: 'admin:changeit'
+                credentials: {
+				    username: 'admin',
+				    password: 'changeit'
+			    }
             });
 
 client.projections.getState('TestProjection').then(function(projectionState) {
@@ -232,7 +247,10 @@ var client = eventstore.http({
                 hostname: 'localhost',
                 protocol: 'http',
                 port: 2113,
-                auth: 'admin:changeit'
+                credentials: {
+				    username: 'admin',
+				    password: 'changeit'
+			    }
             });
 
 client.admin.scavenge().then(function() {
@@ -257,7 +275,10 @@ var client = eventstore.http({
                 hostname: 'localhost',
                 protocol: 'http',
                 port: 2113,
-                auth: 'admin:changeit'
+                credentials: {
+				    username: 'admin',
+				    password: 'changeit'
+			    }
             });
 
 client.admin.shutdown().then(function() {

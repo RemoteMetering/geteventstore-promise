@@ -1,16 +1,11 @@
+var httpConfig = require('./support/httpConfig');
 var assert = require('assert');
 var eventstore = require('../index.js');
 var uuid = require('node-uuid');
 
 describe('Http Client - Send Scavenge Command', function() {
     it('Should send scavenge command', function() {
-        var client = eventstore.http({
-            hostname: 'localhost',
-            protocol: 'http',
-            port: 2113,
-            auth: 'admin:changeit'
-        });
-
+        var client = eventstore.http(httpConfig);
         return client.admin.scavenge();
     });
 });

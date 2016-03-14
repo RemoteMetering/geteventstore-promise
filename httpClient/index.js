@@ -1,4 +1,5 @@
 module.exports = function(config) {
+	if (config) config.auth = config.credentials.username + ':' + config.credentials.password;
 	return {
 		checkStreamExists: require('./checkStreamExists')(config),
 		writeEvent: require('./writeEvent')(config),
