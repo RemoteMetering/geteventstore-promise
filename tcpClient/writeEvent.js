@@ -19,8 +19,8 @@ module.exports = function(config) {
             
             var events = [eventFactory.NewEvent(eventType, data, metaData)];
 
-            var connection = new Eventstore.Connection(config.tcp);
-            connection.writeEvents(streamName, options.expectedVersion, false, events, config.tcp.credentials, function(result) {
+            var connection = new Eventstore.Connection(config);
+            connection.writeEvents(streamName, options.expectedVersion, false, events, config.credentials, function(result) {
                 debug('Result', result);
                 connection.close();
                 if (!_.isEmpty(result.error))

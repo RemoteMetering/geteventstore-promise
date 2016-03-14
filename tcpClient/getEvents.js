@@ -15,7 +15,7 @@ module.exports = function(config) {
             startPosition = startPosition == undefined && direction == 'backward' ? -1 : startPosition || 0;
             length = length || 250;
 
-            var connection = new Eventstore.Connection(config.tcp);
+            var connection = new Eventstore.Connection(config);
 
             function handleResult(result) {
                 connection.close();
@@ -27,9 +27,9 @@ module.exports = function(config) {
             }
 
             if (direction == 'forward')
-                connection.readStreamEventsForward(streamName, startPosition, length, true, false, null, config.tcp.credentials, handleResult);
+                connection.readStreamEventsForward(streamName, startPosition, length, true, false, null, config.credentials, handleResult);
             else
-                connection.readStreamEventsBackward(streamName, startPosition, length, true, false, null, config.tcp.credentials, handleResult);
+                connection.readStreamEventsBackward(streamName, startPosition, length, true, false, null, config.credentials, handleResult);
         });
     };
 };

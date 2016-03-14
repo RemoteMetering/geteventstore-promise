@@ -5,12 +5,10 @@ var uuid = require('node-uuid');
 describe('Http Client - Check Stream Exist', function() {
     it('Should return true when a stream exist', function() {
         var client = eventstore.http({
-            http: {
-                hostname: 'localhost',
-                protocol: 'http',
-                port: 2113,
-                auth: 'admin:changeit'
-            }
+            hostname: 'localhost',
+            protocol: 'http',
+            port: 2113,
+            auth: 'admin:changeit'
         });
 
         var testStream = 'TestStream-' + uuid.v4();
@@ -25,12 +23,10 @@ describe('Http Client - Check Stream Exist', function() {
 
     it('Should return false when a stream does not exist', function() {
         var client = eventstore.http({
-            http: {
-                hostname: 'localhost',
-                protocol: 'http',
-                port: 2113,
-                auth: 'admin:changeit'
-            }
+            hostname: 'localhost',
+            protocol: 'http',
+            port: 2113,
+            auth: 'admin:changeit'
         });
 
         return client.checkStreamExists('Non-existentStream').then(function(exists) {

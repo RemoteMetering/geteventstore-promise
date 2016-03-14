@@ -4,7 +4,7 @@ var debug = require('debug')('geteventstore:startProjection'),
 
 module.exports = function(config) {
     var buildUrl = function(name) {
-        var urlObj = JSON.parse(JSON.stringify(config.http));
+        var urlObj = JSON.parse(JSON.stringify(config));
         urlObj.pathname = '/projection/' + name + '/command/enable';
         return url.format(urlObj);
     };

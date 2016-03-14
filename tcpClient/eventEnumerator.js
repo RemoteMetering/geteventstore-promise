@@ -11,7 +11,7 @@ var getNextBatch = function(config, streamName, state, length, direction) {
     return q.Promise(function(resolve, reject) {
         assert(streamName, baseErr + 'Stream Name not provided');
 
-        var connection = new Eventstore.Connection(config.tcp);
+        var connection = new Eventstore.Connection(config);
 
         function handleResult(result) {
             debug('Result', result);
@@ -28,9 +28,9 @@ var getNextBatch = function(config, streamName, state, length, direction) {
         }
 
         if (direction == 'forward')
-            connection.readStreamEventsForward(streamName, state.nextEventNumber, length, true, false, null, config.tcp.credentials, handleResult);
+            connection.readStreamEventsForward(streamName, state.nextEventNumber, length, true, false, null, config.credentials, handleResult);
         else
-            connection.readStreamEventsBackward(streamName, state.nextEventNumber, length, true, false, null, config.tcp.credentials, handleResult);
+            connection.readStreamEventsBackward(streamName, state.nextEventNumber, length, true, false, null, config.credentials, handleResult);
     });
 };
 

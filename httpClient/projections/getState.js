@@ -4,7 +4,7 @@ var debug = require('debug')('geteventstore:projectionState'),
 
 module.exports = function(config) {
     var buildUrl = function(streamName) {
-        var urlObj = JSON.parse(JSON.stringify(config.http));
+        var urlObj = JSON.parse(JSON.stringify(config));
         urlObj.pathname = '/projection/' + streamName + '/state';
         return url.format(urlObj);
     };

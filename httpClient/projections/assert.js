@@ -22,7 +22,7 @@ var doesProjectionExist = function(config, name) {
 };
 
 var buildCreateOptions = function(config, name, projectionContent, mode, enabled, emitEnabled, checkpointsEnabled) {
-    var urlObj = JSON.parse(JSON.stringify(config.http));
+    var urlObj = JSON.parse(JSON.stringify(config));
     urlObj.pathname = '/projections/' + mode;
     var uri = url.format(urlObj);
 
@@ -45,7 +45,7 @@ var buildCreateOptions = function(config, name, projectionContent, mode, enabled
 };
 
 var buildUpdateOptions = function(config, name, projectionContent, emitEnabled) {
-    var urlObj = JSON.parse(JSON.stringify(config.http));
+    var urlObj = JSON.parse(JSON.stringify(config));
     urlObj.pathname = '/projection/' + name + '/query';
     var uri = url.format(urlObj);
 

@@ -4,7 +4,7 @@ var debug = require('debug')('geteventstore:appendToStream'),
 
 module.exports = function(config) {
     var buildUrl = function(stream) {
-        var urlObj = JSON.parse(JSON.stringify(config.http));
+        var urlObj = JSON.parse(JSON.stringify(config));
         urlObj.pathname = '/streams/' + stream;
         return url.format(urlObj);
     };

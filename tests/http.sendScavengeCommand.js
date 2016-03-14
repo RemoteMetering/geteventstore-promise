@@ -5,12 +5,10 @@ var uuid = require('node-uuid');
 describe('Http Client - Send Scavenge Command', function() {
     it('Should send scavenge command', function() {
         var client = eventstore.http({
-            http: {
-                hostname: 'localhost',
-                protocol: 'http',
-                port: 2113,
-                auth: 'admin:changeit'
-            }
+            hostname: 'localhost',
+            protocol: 'http',
+            port: 2113,
+            auth: 'admin:changeit'
         });
 
         return client.admin.scavenge();

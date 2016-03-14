@@ -8,7 +8,7 @@ module.exports = function(config) {
         length = length || 1000;
         direction = direction || 'forward';
 
-        var urlObj = JSON.parse(JSON.stringify(config.http));
+        var urlObj = JSON.parse(JSON.stringify(config));
         urlObj.pathname = '/streams/' + stream + '/' + startPosition + '/' + direction + '/' + length + '?embed=body';
         return url.format(urlObj);
     };

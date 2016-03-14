@@ -4,7 +4,7 @@ var debug = require('debug')('geteventstore:resetProjection'),
 
 module.exports = function(config) {
     var buildUrl = function(name) {
-        var urlObj = JSON.parse(JSON.stringify(config.http));
+        var urlObj = JSON.parse(JSON.stringify(config));
         urlObj.pathname = '/projection/' + name + '/command/reset';
         return url.format(urlObj);
     };

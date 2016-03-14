@@ -12,11 +12,11 @@ module.exports = function(config) {
         return q.Promise(function(resolve, reject) {
             assert(streamName, baseErr + 'Stream Name not provided');
 
-            var connection = new Eventstore.Connection(config.tcp);
+            var connection = new Eventstore.Connection(config);
             var events = [];
 
             function getNextChunk(startEvent) {
-                connection.readStreamEventsForward(streamName, startEvent, chunkSize || 250, true, false, null, config.tcp.credentials, function(result) {
+                connection.readStreamEventsForward(streamName, startEvent, chunkSize || 250, true, false, null, config.credentials, function(result) {
                     debug('Result', result);
                     if (!_.isEmpty(result.error))
                         return reject(baseErr + result.error);

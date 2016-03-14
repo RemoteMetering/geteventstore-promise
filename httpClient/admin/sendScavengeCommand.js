@@ -5,7 +5,7 @@ var debug = require('debug')('geteventstore:sendScavengeCommand'),
 
 module.exports = function(config) {
     var buildUrl = function() {
-        var urlObj = JSON.parse(JSON.stringify(config.http));
+        var urlObj = JSON.parse(JSON.stringify(config));
         urlObj.pathname = '/admin/scavenge';
         return url.format(urlObj);
     };
