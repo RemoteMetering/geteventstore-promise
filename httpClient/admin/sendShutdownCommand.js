@@ -4,14 +4,15 @@ var debug = require('debug')('geteventstore:sendShutdownCommand'),
     req = require('request-promise');
 
 module.exports = function(config) {
-    var buildScavengeUrl = function() {
-        var url = 'http://' + config.http.credentials.username + ':' + config.http.credentials.password + '@' + config.http.hostname + ':' + config.http.port + '/admin/shutdown';
-        return url;
+    var buildUrl = function() {
+        var urlObj = JSON.parse(JSON.stringify(config.http));
+        urlObj.pathname = '/admin/shutdown';
+        return url.format(urlObj);
     };
 
     return function() {
         var options = {
-            uri: buildScavengeUrl(),
+            uri: buildUrl(),
             method: 'POST'
         };
 

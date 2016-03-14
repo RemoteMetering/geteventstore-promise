@@ -10,10 +10,7 @@ describe('Http Client - Get Projection State', function() {
                 hostname: 'localhost',
                 protocol: 'http',
                 port: 2113,
-                credentials: {
-                    username: 'admin',
-                    password: 'changeit'
-                }
+                auth: 'admin:changeit'
             }
         };
         var client = eventstore.http(eventStoreConfig);
@@ -51,10 +48,7 @@ describe('Http Client - Get Projection State', function() {
                 hostname: 'localhost',
                 protocol: 'http',
                 port: 2113,
-                credentials: {
-                    username: 'admin',
-                    password: 'changeit'
-                }
+                auth: 'admin:changeit'
             }
         });
 

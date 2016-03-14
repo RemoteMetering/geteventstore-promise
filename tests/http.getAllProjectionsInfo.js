@@ -9,10 +9,7 @@ describe('Http Client - Get All Projections Info', function() {
                 hostname: 'localhost',
                 protocol: 'http',
                 port: 2113,
-                credentials: {
-                    username: 'admin',
-                    password: 'changeit'
-                }
+                auth: 'admin:changeit'
             }
         });
 

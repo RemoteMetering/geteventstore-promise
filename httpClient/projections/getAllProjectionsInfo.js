@@ -4,9 +4,9 @@ var debug = require('debug')('geteventstore:getAllProjectionsInfo'),
 
 module.exports = function(config) {
     var buildUrl = function() {
-        var streamPath = JSON.parse(JSON.stringify(config.http));
-        streamPath.pathname = '/projections/all-non-transient';
-        return url.format(streamPath);
+        var urlObj = JSON.parse(JSON.stringify(config.http));
+        urlObj.pathname = '/projections/all-non-transient';
+        return url.format(urlObj);
     };
 
     return function() {

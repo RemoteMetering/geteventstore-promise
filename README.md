@@ -38,10 +38,7 @@ var client = eventstore.http({
                     hostname: 'localhost',
                     protocol: 'http',
                     port: 2113,
-                    credentials: {
-                        username: 'admin',
-                        password: 'changeit'
-                    }
+                    auth: 'admin:changeit'
                 }
             });
 
@@ -82,10 +79,7 @@ var client = eventstore.http({
                     hostname: 'localhost',
                     protocol: 'http',
                     port: 2113,
-                    credentials: {
-                        username: 'admin',
-                        password: 'changeit'
-                    }
+                    auth: 'admin:changeit'
                 }
             });
 
@@ -124,10 +118,7 @@ var client = eventstore.http({
                     hostname: 'localhost',
                     protocol: 'http',
                     port: 2113,
-                    credentials: {
-                        username: 'admin',
-                        password: 'changeit'
-                    }
+                    auth: 'admin:changeit'
                 }
             });
 
@@ -161,10 +152,7 @@ var client = eventstore.http({
                     hostname: 'localhost',
                     protocol: 'http',
                     port: 2113,
-                    credentials: {
-                        username: 'admin',
-                        password: 'changeit'
-                    }
+                    auth: 'admin:changeit'
                 }
             });
 
@@ -226,10 +214,7 @@ var client = eventstore.http({
                     hostname: 'localhost',
                     protocol: 'http',
                     port: 2113,
-                    credentials: {
-                        username: 'admin',
-                        password: 'changeit'
-                    }
+                    auth: 'admin:changeit'
                 }
             });
 
@@ -258,10 +243,7 @@ var client = eventstore.http({
                     hostname: 'localhost',
                     protocol: 'http',
                     port: 2113,
-                    credentials: {
-                        username: 'admin',
-                        password: 'changeit'
-                    }
+                    auth: 'admin:changeit'
                 }
             });
 
@@ -288,10 +270,7 @@ var client = eventstore.http({
                     hostname: 'localhost',
                     protocol: 'http',
                     port: 2113,
-                    credentials: {
-                        username: 'admin',
-                        password: 'changeit'
-                    }
+                    auth: 'admin:changeit'
                 }
             });
 

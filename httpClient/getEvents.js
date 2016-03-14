@@ -3,20 +3,19 @@ var debug = require('debug')('geteventstore:getevents'),
     req = require('request-promise');
 
 module.exports = function(config) {
-    var buildGetEventsUrl = function(stream, startPosition, length, direction) {
+    var buildUrl = function(stream, startPosition, length, direction) {
         if (startPosition === undefined) startPosition = 0;
         length = length || 1000;
         direction = direction || 'forward';
 
-        var streamPath = JSON.parse(JSON.stringify(config.http));
-        streamPath.pathname = '/streams/' + stream + '/' + startPosition + '/' + direction + '/' + length + '?embed=body';
-
-        return url.format(streamPath);
+        var urlObj = JSON.parse(JSON.stringify(config.http));
+        urlObj.pathname = '/streams/' + stream + '/' + startPosition + '/' + direction + '/' + length + '?embed=body';
+        return url.format(urlObj);
     };
 
     return function(streamName, startPosition, length, direction) {
         var options = {
-            uri: buildGetEventsUrl(streamName, startPosition, length, direction),
+            uri: buildUrl(streamName, startPosition, length, direction),
             headers: {
                 "Content-Type": "application/vnd.eventstore.events+json"
             },

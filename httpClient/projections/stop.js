@@ -1,10 +1,12 @@
 var debug = require('debug')('geteventstore:stopProjection'),
+    url = require('url'),
     req = require('request-promise');
 
 module.exports = function(config) {
     var buildUrl = function(name) {
-        var url = 'http://' + config.http.credentials.username + ':' + config.http.credentials.password + '@' + config.http.hostname + ':' + config.http.port + '/projection/' + name + '/command/disable';
-        return url;
+        var urlObj = JSON.parse(JSON.stringify(config.http));
+        urlObj.pathname = '/projection/' + name + '/command/disable';
+        return url.format(urlObj);
     };
 
     return function(name) {

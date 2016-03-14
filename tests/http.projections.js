@@ -17,10 +17,7 @@ describe('Projections', function() {
                     hostname: 'localhost',
                     protocol: 'http',
                     port: 2113,
-                    credentials: {
-                        username: 'admin',
-                        password: 'changeit'
-                    }
+                    auth: 'admin:changeit'
                 }
             });
 
@@ -35,10 +32,7 @@ describe('Projections', function() {
                     hostname: 'localhost',
                     protocol: 'http',
                     port: 2113,
-                    credentials: {
-                        username: 'admin',
-                        password: 'changeit'
-                    }
+                    auth: 'admin:changeit'
                 }
             });
 
@@ -53,10 +47,7 @@ describe('Projections', function() {
                     hostname: 'localhost',
                     protocol: 'http',
                     port: 2113,
-                    credentials: {
-                        username: 'admin',
-                        password: 'changeit'
-                    }
+                    auth: 'admin:changeit'
                 }
             });
 
@@ -74,10 +65,7 @@ describe('Projections', function() {
                     hostname: 'localhost',
                     protocol: 'http',
                     port: 2113,
-                    credentials: {
-                        username: 'admin',
-                        password: 'changeit'
-                    }
+                    auth: 'admin:changeit'
                 }
             });
 
@@ -95,10 +83,7 @@ describe('Projections', function() {
                     hostname: 'localhost',
                     protocol: 'http',
                     port: 2113,
-                    credentials: {
-                        username: 'admin',
-                        password: 'changeit'
-                    }
+                    auth: 'admin:changeit'
                 }
             });
 
@@ -116,10 +101,7 @@ describe('Projections', function() {
                     hostname: 'localhost',
                     protocol: 'http',
                     port: 2113,
-                    credentials: {
-                        username: 'admin',
-                        password: 'changeit'
-                    }
+                    auth: 'admin:changeit'
                 }
             });
             client.projections.stop(assertionProjection).then(function(stopResponse) {
@@ -146,10 +128,7 @@ describe('Projections', function() {
                     hostname: 'localhost',
                     protocol: 'http',
                     port: 2113,
-                    credentials: {
-                        username: 'admin',
-                        password: 'changeit'
-                    }
+                    auth: 'admin:changeit'
                 }
             });
             return client.projections.assert(assertionProjection, assertionProjectionContent, 'onetime', true, true, true).then(function(response) {
@@ -163,10 +142,7 @@ describe('Projections', function() {
                     hostname: 'localhost',
                     protocol: 'http',
                     port: 2113,
-                    credentials: {
-                        username: 'admin',
-                        password: 'changeit'
-                    }
+                    auth: 'admin:changeit'
                 }
             });
 
@@ -191,10 +167,7 @@ describe('Projections', function() {
                     hostname: 'localhost',
                     protocol: 'http',
                     port: 2113,
-                    credentials: {
-                        username: 'admin',
-                        password: 'changeit'
-                    }
+                    auth: 'admin:changeit'
                 }
             });
             client.projections.enableAll().then(function(response) {
@@ -217,10 +190,7 @@ describe('Projections', function() {
                     hostname: 'localhost',
                     protocol: 'http',
                     port: 2113,
-                    credentials: {
-                        username: 'admin',
-                        password: 'changeit'
-                    }
+                    auth: 'admin:changeit'
                 }
             });
 

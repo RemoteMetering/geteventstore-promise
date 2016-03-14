@@ -9,10 +9,7 @@ describe('Http Client - Check Stream Exist', function() {
                 hostname: 'localhost',
                 protocol: 'http',
                 port: 2113,
-                credentials: {
-                    username: 'admin',
-                    password: 'changeit'
-                }
+                auth: 'admin:changeit'
             }
         });
 
@@ -32,10 +29,7 @@ describe('Http Client - Check Stream Exist', function() {
                 hostname: 'localhost',
                 protocol: 'http',
                 port: 2113,
-                credentials: {
-                    username: 'admin',
-                    password: 'changeit'
-                }
+                auth: 'admin:changeit'
             }
         });
 
