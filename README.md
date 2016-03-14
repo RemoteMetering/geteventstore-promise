@@ -34,12 +34,10 @@ The direction to the read the stream. Can be either 'forward' or 'backward'. Def
 var eventstore = require('geteventstore-promise');
 
 var client = eventstore.http({
-                http: {
-                    hostname: 'localhost',
-                    protocol: 'http',
-                    port: 2113,
-                    auth: 'admin:changeit'
-                }
+                hostname: 'localhost',
+                protocol: 'http',
+                port: 2113,
+                auth: 'admin:changeit'
             });
 
 client.getEvents('TestStream', 0, 1000, 'forward') // defaults for getEvents if not specified
@@ -75,12 +73,10 @@ Any options to be specified (as documented in GetEvent Store documentation). Def
 var eventstore = require('geteventstore-promise');
 
 var client = eventstore.http({
-                http: {
-                    hostname: 'localhost',
-                    protocol: 'http',
-                    port: 2113,
-                    auth: 'admin:changeit'
-                }
+                hostname: 'localhost',
+                protocol: 'http',
+                port: 2113,
+                auth: 'admin:changeit'
             });
 
 var testStream = 'TestStream-' + uuid.v4();
@@ -114,12 +110,10 @@ Any options to be specified (as documented in GetEvent Store documentation). Def
 var eventstore = require('geteventstore-promise');
 
 var client = eventstore.http({
-                http: {
-                    hostname: 'localhost',
-                    protocol: 'http',
-                    port: 2113,
-                    auth: 'admin:changeit'
-                }
+                hostname: 'localhost',
+                protocol: 'http',
+                port: 2113,
+                auth: 'admin:changeit'
             });
 
 var events = [eventstore.eventFactory.NewEvent('TestEventType', { something: '456'})];
@@ -148,12 +142,10 @@ The name of the stream (as in Event Store) to check.
 var eventstore = require('geteventstore-promise');
 
 var client = eventstore.http({
-                http: {
-                    hostname: 'localhost',
-                    protocol: 'http',
-                    port: 2113,
-                    auth: 'admin:changeit'
-                }
+                hostname: 'localhost',
+                protocol: 'http',
+                port: 2113,
+                auth: 'admin:changeit'
             });
 
 var projectionStreamName = 'ExistingProjectionStreamName';
@@ -210,12 +202,10 @@ Returns the state of the Projection as a JSON object.
 var eventstore = require('geteventstore-promise');
 
 var client = eventstore.http({
-                http: {
-                    hostname: 'localhost',
-                    protocol: 'http',
-                    port: 2113,
-                    auth: 'admin:changeit'
-                }
+                hostname: 'localhost',
+                protocol: 'http',
+                port: 2113,
+                auth: 'admin:changeit'
             });
 
 client.projections.getState('TestProjection').then(function(projectionState) {
@@ -239,12 +229,10 @@ If the promise is fulfilled then the scavenge command has been sent, it does not
 var eventstore = require('geteventstore-promise');
 
 var client = eventstore.http({
-                http: {
-                    hostname: 'localhost',
-                    protocol: 'http',
-                    port: 2113,
-                    auth: 'admin:changeit'
-                }
+                hostname: 'localhost',
+                protocol: 'http',
+                port: 2113,
+                auth: 'admin:changeit'
             });
 
 client.admin.scavenge().then(function() {
@@ -266,12 +254,10 @@ If the promise is fulfilled then the shutdown command has been sent, it does not
 var eventstore = require('geteventstore-promise');
 
 var client = eventstore.http({
-                http: {
-                    hostname: 'localhost',
-                    protocol: 'http',
-                    port: 2113,
-                    auth: 'admin:changeit'
-                }
+                hostname: 'localhost',
+                protocol: 'http',
+                port: 2113,
+                auth: 'admin:changeit'
             });
 
 client.admin.shutdown().then(function() {
@@ -322,14 +308,12 @@ The direction to the read the stream. Can be either 'forward' or 'backward'. Def
 var eventstore = require('geteventstore-promise');
 
 var client = eventstore.tcp({
-                tcp: {
-                    hostname: 'localhost',
-                    protocol: 'tcp',
-                    port: 1113,
-                    credentials: {
-                        username: 'admin',
-                        password: 'changeit'
-                    }
+                hostname: 'localhost',
+                protocol: 'tcp',
+                port: 1113,
+                credentials: {
+                    username: 'admin',
+                    password: 'changeit'
                 }
             });
 
@@ -353,14 +337,12 @@ The name of the stream (as in Event Store) to read from.
 var eventstore = require('geteventstore-promise');
 
 var client = eventstore.tcp({
-                tcp: {
-                    hostname: 'localhost',
-                    protocol: 'tcp',
-                    port: 1113,
-                    credentials: {
-                        username: 'admin',
-                        password: 'changeit'
-                    }
+                hostname: 'localhost',
+                protocol: 'tcp',
+                port: 1113,
+                credentials: {
+                    username: 'admin',
+                    password: 'changeit'
                 }
             });
 
@@ -397,14 +379,12 @@ The number of events to read per enumeration.
 var eventstore = require('geteventstore-promise');
 
 var client = eventstore.tcp({
-                tcp: {
-                    hostname: 'localhost',
-                    protocol: 'tcp',
-                    port: 1113,
-                    credentials: {
-                        username: 'admin',
-                        password: 'changeit'
-                    }
+                hostname: 'localhost',
+                protocol: 'tcp',
+                port: 1113,
+                credentials: {
+                    username: 'admin',
+                    password: 'changeit'
                 }
             });
 
