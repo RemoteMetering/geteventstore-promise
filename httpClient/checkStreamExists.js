@@ -5,7 +5,7 @@ var debug = require('debug')('geteventstore:checkStreamExists'),
 module.exports = function(config) {
     var buildStreamUrl = function(streamName) {
         var streamPath = JSON.parse(JSON.stringify(config.http));
-        streamPath.pathname = '/streams/' + streamName;
+        streamPath.pathname = '/streams/' + streamName + '/0/forward/1?embed=body';
 
         return url.format(streamPath);
     };
