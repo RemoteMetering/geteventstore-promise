@@ -6,15 +6,10 @@ var fs = require('fs');
 describe('Http Client - Get Projection State', function() {
     it('Should return content for test projection state', function(done) {
         var eventStoreConfig = {
-            http: {
-                hostname: 'localhost',
-                protocol: 'http',
-                port: 2113,
-                credentials: {
-                    username: 'admin',
-                    password: 'changeit'
-                }
-            }
+            hostname: 'localhost',
+            protocol: 'http',
+            port: 2113,
+            auth: 'admin:changeit'
         };
         var client = eventstore.http(eventStoreConfig);
 
@@ -47,15 +42,10 @@ describe('Http Client - Get Projection State', function() {
 
     it('Should return rejected promise for non-existant projection', function() {
         var client = eventstore.http({
-            http: {
-                hostname: 'localhost',
-                protocol: 'http',
-                port: 2113,
-                credentials: {
-                    username: 'admin',
-                    password: 'changeit'
-                }
-            }
+            hostname: 'localhost',
+            protocol: 'http',
+            port: 2113,
+            auth: 'admin:changeit'
         });
 
         return client.projections.getState('SomeProjectionNameThatDoesNotExist').catch(function(err) {

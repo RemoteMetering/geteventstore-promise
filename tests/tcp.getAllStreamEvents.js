@@ -5,14 +5,12 @@ var uuid = require('node-uuid');
 describe('TCP Client - Get All Stream Events', function() {
     it('Should write events and read back all stream events', function() {
         var client = eventstore.tcp({
-            tcp: {
-                hostname: 'localhost',
-                protocol: 'tcp',
-                port: 1113,
-                credentials: {
-                    username: 'admin',
-                    password: 'changeit'
-                }
+            hostname: 'localhost',
+            protocol: 'tcp',
+            port: 1113,
+            credentials: {
+                username: 'admin',
+                password: 'changeit'
             }
         });
 

@@ -5,15 +5,10 @@ var uuid = require('node-uuid');
 describe('Http Client - Write Event', function() {
     it('Write to a new stream and read the event', function() {
         var client = eventstore.http({
-            http: {
-                hostname: 'localhost',
-                protocol: 'http',
-                port: 2113,
-                credentials: {
-                    username: 'admin',
-                    password: 'changeit'
-                }
-            }
+            hostname: 'localhost',
+            protocol: 'http',
+            port: 2113,
+            auth: 'admin:changeit'
         });
 
         var testStream = 'TestStream-' + uuid.v4();

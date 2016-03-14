@@ -1,10 +1,12 @@
 var debug = require('debug')('geteventstore:removeProjection'),
+    url = require('url'),
     req = require('request-promise');
 
 module.exports = function(config) {
     var buildUrl = function(name) {
-        var url = 'http://' + config.http.credentials.username + ':' + config.http.credentials.password + '@' + config.http.hostname + ':' + config.http.port + '/projection/' + name;
-        return url;
+        var urlObj = JSON.parse(JSON.stringify(config));
+        urlObj.pathname = '/projection/' + name;
+        return url.format(urlObj);
     };
 
     return function(name, deleteCheckpointStream, deleteStateStream) {

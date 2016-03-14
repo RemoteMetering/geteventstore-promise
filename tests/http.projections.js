@@ -13,15 +13,10 @@ describe('Projections', function() {
 
         it('Should create continous projection', function() {
             var client = eventstore.http({
-                http: {
-                    hostname: 'localhost',
-                    protocol: 'http',
-                    port: 2113,
-                    credentials: {
-                        username: 'admin',
-                        password: 'changeit'
-                    }
-                }
+                hostname: 'localhost',
+                protocol: 'http',
+                port: 2113,
+                auth: 'admin:changeit'
             });
 
             return client.projections.assert(assertionProjection, assertionProjectionContent).then(function(response) {
@@ -31,15 +26,10 @@ describe('Projections', function() {
 
         it('Should update existing projection', function() {
             var client = eventstore.http({
-                http: {
-                    hostname: 'localhost',
-                    protocol: 'http',
-                    port: 2113,
-                    credentials: {
-                        username: 'admin',
-                        password: 'changeit'
-                    }
-                }
+                hostname: 'localhost',
+                protocol: 'http',
+                port: 2113,
+                auth: 'admin:changeit'
             });
 
             return client.projections.assert(assertionProjection, assertionProjectionContent).then(function(response) {
@@ -49,15 +39,10 @@ describe('Projections', function() {
 
         it('Should stop projection', function() {
             var client = eventstore.http({
-                http: {
-                    hostname: 'localhost',
-                    protocol: 'http',
-                    port: 2113,
-                    credentials: {
-                        username: 'admin',
-                        password: 'changeit'
-                    }
-                }
+                hostname: 'localhost',
+                protocol: 'http',
+                port: 2113,
+                auth: 'admin:changeit'
             });
 
             return client.projections.stop(assertionProjection).then(function(response) {
@@ -70,15 +55,10 @@ describe('Projections', function() {
 
         it('Should start projection', function() {
             var client = eventstore.http({
-                http: {
-                    hostname: 'localhost',
-                    protocol: 'http',
-                    port: 2113,
-                    credentials: {
-                        username: 'admin',
-                        password: 'changeit'
-                    }
-                }
+                hostname: 'localhost',
+                protocol: 'http',
+                port: 2113,
+                auth: 'admin:changeit'
             });
 
             return client.projections.start(assertionProjection).then(function(response) {
@@ -91,15 +71,10 @@ describe('Projections', function() {
 
         it('Should reset projection', function() {
             var client = eventstore.http({
-                http: {
-                    hostname: 'localhost',
-                    protocol: 'http',
-                    port: 2113,
-                    credentials: {
-                        username: 'admin',
-                        password: 'changeit'
-                    }
-                }
+                hostname: 'localhost',
+                protocol: 'http',
+                port: 2113,
+                auth: 'admin:changeit'
             });
 
             return client.projections.reset(assertionProjection).then(function(response) {
@@ -112,15 +87,10 @@ describe('Projections', function() {
 
         it('Should remove continous projection', function(done) {
             var client = eventstore.http({
-                http: {
-                    hostname: 'localhost',
-                    protocol: 'http',
-                    port: 2113,
-                    credentials: {
-                        username: 'admin',
-                        password: 'changeit'
-                    }
-                }
+                hostname: 'localhost',
+                protocol: 'http',
+                port: 2113,
+                auth: 'admin:changeit'
             });
             client.projections.stop(assertionProjection).then(function(stopResponse) {
                 setTimeout(function() {
@@ -142,15 +112,10 @@ describe('Projections', function() {
 
         it('Should create one-time projection with all settings enabled', function() {
             var client = eventstore.http({
-                http: {
-                    hostname: 'localhost',
-                    protocol: 'http',
-                    port: 2113,
-                    credentials: {
-                        username: 'admin',
-                        password: 'changeit'
-                    }
-                }
+                hostname: 'localhost',
+                protocol: 'http',
+                port: 2113,
+                auth: 'admin:changeit'
             });
             return client.projections.assert(assertionProjection, assertionProjectionContent, 'onetime', true, true, true).then(function(response) {
                 assert.equal(response.name, assertionProjection);
@@ -159,15 +124,10 @@ describe('Projections', function() {
 
         it('Should remove one-time projection', function(done) {
             var client = eventstore.http({
-                http: {
-                    hostname: 'localhost',
-                    protocol: 'http',
-                    port: 2113,
-                    credentials: {
-                        username: 'admin',
-                        password: 'changeit'
-                    }
-                }
+                hostname: 'localhost',
+                protocol: 'http',
+                port: 2113,
+                auth: 'admin:changeit'
             });
 
             client.projections.stop(assertionProjection).then(function(stopResponse) {
@@ -187,15 +147,10 @@ describe('Projections', function() {
             this.timeout(10 * 1000);
 
             var client = eventstore.http({
-                http: {
-                    hostname: 'localhost',
-                    protocol: 'http',
-                    port: 2113,
-                    credentials: {
-                        username: 'admin',
-                        password: 'changeit'
-                    }
-                }
+                hostname: 'localhost',
+                protocol: 'http',
+                port: 2113,
+                auth: 'admin:changeit'
             });
             client.projections.enableAll().then(function(response) {
                 setTimeout(function() {
@@ -213,15 +168,10 @@ describe('Projections', function() {
             this.timeout(10 * 1000);
 
             var client = eventstore.http({
-                http: {
-                    hostname: 'localhost',
-                    protocol: 'http',
-                    port: 2113,
-                    credentials: {
-                        username: 'admin',
-                        password: 'changeit'
-                    }
-                }
+                hostname: 'localhost',
+                protocol: 'http',
+                port: 2113,
+                auth: 'admin:changeit'
             });
 
             client.projections.disableAll().then(function(response) {

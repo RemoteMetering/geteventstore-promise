@@ -1,4 +1,5 @@
 var debug = require('debug')('geteventstore:assertProjection'),
+    url = require('url'),
     req = require('request-promise'),
     _ = require('underscore'),
     q = require('q');
@@ -21,7 +22,9 @@ var doesProjectionExist = function(config, name) {
 };
 
 var buildCreateOptions = function(config, name, projectionContent, mode, enabled, emitEnabled, checkpointsEnabled) {
-    var uri = 'http://' + config.http.credentials.username + ':' + config.http.credentials.password + '@' + config.http.hostname + ':' + config.http.port + '/projections/' + mode;
+    var urlObj = JSON.parse(JSON.stringify(config));
+    urlObj.pathname = '/projections/' + mode;
+    var uri = url.format(urlObj);
 
     var options = {
         uri: uri,
@@ -42,7 +45,9 @@ var buildCreateOptions = function(config, name, projectionContent, mode, enabled
 };
 
 var buildUpdateOptions = function(config, name, projectionContent, emitEnabled) {
-    var uri = 'http://' + config.http.credentials.username + ':' + config.http.credentials.password + '@' + config.http.hostname + ':' + config.http.port + '/projection/' + name + '/query';
+    var urlObj = JSON.parse(JSON.stringify(config));
+    urlObj.pathname = '/projection/' + name + '/query';
+    var uri = url.format(urlObj);
 
     var options = {
         uri: uri,

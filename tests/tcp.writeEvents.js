@@ -5,14 +5,12 @@ var uuid = require('node-uuid');
 describe('TCP Client - Write Events', function() {
     it('Write to a new stream and read the events', function() {
         var client = eventstore.tcp({
-            tcp: {
-                hostname: 'localhost',
-                protocol: 'tcp',
-                port: 1113,
-                credentials: {
-                    username: 'admin',
-                    password: 'changeit'
-                }
+            hostname: 'localhost',
+            protocol: 'tcp',
+            port: 1113,
+            credentials: {
+                username: 'admin',
+                password: 'changeit'
             }
         });
 
@@ -30,14 +28,12 @@ describe('TCP Client - Write Events', function() {
 
     it('Write to a new stream and read the events by type', function() {
         var client = eventstore.tcp({
-            tcp: {
-                hostname: 'localhost',
-                protocol: 'tcp',
-                port: 1113,
-                credentials: {
-                    username: 'admin',
-                    password: 'changeit'
-                }
+            hostname: 'localhost',
+            protocol: 'tcp',
+            port: 1113,
+            credentials: {
+                username: 'admin',
+                password: 'changeit'
             }
         });
 
