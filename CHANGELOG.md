@@ -1,12 +1,13 @@
-# 2.0.0 (2016-03-14)
+# 1.1.0 (2016-03-14)
 
 ## Breaking Changes
 
 #### Configuration
 
-- Remove `http` and `tcp` configuration properties
+- Removed wrapping `http` and `tcp` configuration properties
+- Removed protocol property, assigned internally
 
-##### Previous `http` Usage
+##### Previous Usage
 ```javascript
 var eventstore = require('geteventstore-promise');
 
@@ -24,13 +25,12 @@ var client = eventstore.http({
 
 ```
 
-##### New `http` Usage
+##### New Usage
 ```javascript
 var eventstore = require('geteventstore-promise');
 
 var client = eventstore.http({
                 hostname: 'localhost',
-                protocol: 'http',
                 port: 2113,
                 credentials: {
 					username: 'admin',

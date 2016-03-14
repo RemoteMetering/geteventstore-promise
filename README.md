@@ -35,7 +35,6 @@ var eventstore = require('geteventstore-promise');
 
 var client = eventstore.http({
                 hostname: 'localhost',
-                protocol: 'http',
                 port: 2113,
                 credentials: {
 				    username: 'admin',
@@ -77,7 +76,6 @@ var eventstore = require('geteventstore-promise');
 
 var client = eventstore.http({
                 hostname: 'localhost',
-                protocol: 'http',
                 port: 2113,
                 credentials: {
 				    username: 'admin',
@@ -117,7 +115,6 @@ var eventstore = require('geteventstore-promise');
 
 var client = eventstore.http({
                 hostname: 'localhost',
-                protocol: 'http',
                 port: 2113,
                 credentials: {
 				    username: 'admin',
@@ -152,7 +149,6 @@ var eventstore = require('geteventstore-promise');
 
 var client = eventstore.http({
                 hostname: 'localhost',
-                protocol: 'http',
                 port: 2113,
                 credentials: {
 				    username: 'admin',
@@ -215,7 +211,6 @@ var eventstore = require('geteventstore-promise');
 
 var client = eventstore.http({
                 hostname: 'localhost',
-                protocol: 'http',
                 port: 2113,
                 credentials: {
 				    username: 'admin',
@@ -245,7 +240,6 @@ var eventstore = require('geteventstore-promise');
 
 var client = eventstore.http({
                 hostname: 'localhost',
-                protocol: 'http',
                 port: 2113,
                 credentials: {
 				    username: 'admin',
@@ -273,7 +267,6 @@ var eventstore = require('geteventstore-promise');
 
 var client = eventstore.http({
                 hostname: 'localhost',
-                protocol: 'http',
                 port: 2113,
                 credentials: {
 				    username: 'admin',
@@ -330,7 +323,6 @@ var eventstore = require('geteventstore-promise');
 
 var client = eventstore.tcp({
                 hostname: 'localhost',
-                protocol: 'tcp',
                 port: 1113,
                 credentials: {
                     username: 'admin',
@@ -359,7 +351,6 @@ var eventstore = require('geteventstore-promise');
 
 var client = eventstore.tcp({
                 hostname: 'localhost',
-                protocol: 'tcp',
                 port: 1113,
                 credentials: {
                     username: 'admin',
@@ -401,7 +392,6 @@ var eventstore = require('geteventstore-promise');
 
 var client = eventstore.tcp({
                 hostname: 'localhost',
-                protocol: 'tcp',
                 port: 1113,
                 credentials: {
                     username: 'admin',
