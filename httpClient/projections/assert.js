@@ -78,7 +78,7 @@ module.exports = function(config) {
             emitEnabled = emitEnabled || false;
 
             return doesProjectionExist(config, name).then(function(projectionExists) {
-                debug('Projection Exists', projectionExists);
+                debug('', 'Projection Exists: ' + JSON.stringify(projectionExists));
                 var options = {};
 
                 if (!projectionExists)
@@ -86,9 +86,9 @@ module.exports = function(config) {
                 else
                     options = buildUpdateOptions(config, name, projectionContent, emitEnabled);
 
-                debug('Options', options);
+                debug('', 'Options: ' + JSON.stringify(options));
                 return req(options).then(function(response) {
-                    debug('Response', response);
+                    debug('', 'Response: ' + JSON.stringify(response));
                     return JSON.parse(response);
                 });
             });

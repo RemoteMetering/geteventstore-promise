@@ -22,9 +22,9 @@ module.exports = function(config) {
                 method: 'POST'
             };
 
-            debug('Options', options);
+            debug('', 'Options: ' + JSON.stringify(options));
             return req(options).then(function(response) {
-                debug('Response', response);
+                debug('', 'Response: ' + JSON.stringify(response));
                 return JSON.parse(response);
             });
         });

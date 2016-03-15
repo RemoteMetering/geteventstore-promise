@@ -1,4 +1,4 @@
-var debug = require('debug')('geteventstore:appendToStream'),
+var debug = require('debug')('geteventstore:writeEvent'),
     eventFactory = require('../eventFactory'),
     req = require('request-promise'),
     assert = require('assert'),
@@ -35,7 +35,7 @@ module.exports = function(config) {
                 body: events,
                 json: true
             };
-            debug('', 'Append To Stream: ' + JSON.stringify(reqOptions));
+            debug('', 'Write Event: ' + JSON.stringify(reqOptions));
             return req(reqOptions);
         });
     };
