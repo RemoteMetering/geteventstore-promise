@@ -1,18 +1,11 @@
+var tcpConfig = require('./support/tcpConfig');
 var assert = require('assert');
 var eventstore = require('../index.js');
 var uuid = require('node-uuid');
 
 describe('TCP Client - Write Events', function() {
     it('Write to a new stream and read the events', function() {
-        var client = eventstore.tcp({
-            hostname: 'localhost',
-            protocol: 'tcp',
-            port: 1113,
-            credentials: {
-                username: 'admin',
-                password: 'changeit'
-            }
-        });
+        var client = eventstore.tcp(tcpConfig);
 
         var events = [eventstore.eventFactory.NewEvent('TestEventType', {
             something: '456'
@@ -27,15 +20,7 @@ describe('TCP Client - Write Events', function() {
     });
 
     it('Write to a new stream and read the events by type', function() {
-        var client = eventstore.tcp({
-            hostname: 'localhost',
-            protocol: 'tcp',
-            port: 1113,
-            credentials: {
-                username: 'admin',
-                password: 'changeit'
-            }
-        });
+        var client = eventstore.tcp(tcpConfig);
 
         var events = [eventstore.eventFactory.NewEvent('TestEventType', {
             something: '456'

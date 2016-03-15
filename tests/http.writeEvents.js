@@ -1,15 +1,11 @@
+var httpConfig = require('./support/httpConfig');
 var assert = require('assert');
 var eventstore = require('../index.js');
 var uuid = require('node-uuid');
 
 describe('Http Client - Write Events', function() {
     it('Write to a new stream and read the events', function() {
-        var client = eventstore.http({
-            hostname: 'localhost',
-            protocol: 'http',
-            port: 2113,
-            auth: 'admin:changeit'
-        });
+        var client = eventstore.http(httpConfig);
 
         var events = [eventstore.eventFactory.NewEvent('TestEventType', {
             something: '456'

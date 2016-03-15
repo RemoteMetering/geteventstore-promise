@@ -1,3 +1,4 @@
+var httpConfig = require('./support/httpConfig');
 var assert = require('assert');
 var eventstore = require('../index.js');
 var uuid = require('node-uuid');
@@ -5,13 +6,7 @@ var fs = require('fs');
 
 describe('Http Client - Get Projection State', function() {
     it('Should return content for test projection state', function(done) {
-        var eventStoreConfig = {
-            hostname: 'localhost',
-            protocol: 'http',
-            port: 2113,
-            auth: 'admin:changeit'
-        };
-        var client = eventstore.http(eventStoreConfig);
+        var client = eventstore.http(httpConfig);
 
         var projectionName = 'TestProjection';
         var projectionContent = fs.readFileSync(__dirname + '/support/testProjection.js', {
@@ -41,12 +36,7 @@ describe('Http Client - Get Projection State', function() {
     });
 
     it('Should return rejected promise for non-existant projection', function() {
-        var client = eventstore.http({
-            hostname: 'localhost',
-            protocol: 'http',
-            port: 2113,
-            auth: 'admin:changeit'
-        });
+        var client = eventstore.http(httpConfig);
 
         return client.projections.getState('SomeProjectionNameThatDoesNotExist').catch(function(err) {
             assert(err.statusCode, 404);

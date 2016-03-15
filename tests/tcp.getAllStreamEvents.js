@@ -1,18 +1,11 @@
+var tcpConfig = require('./support/tcpConfig');
 var assert = require('assert');
 var eventstore = require('../index.js');
 var uuid = require('node-uuid');
 
 describe('TCP Client - Get All Stream Events', function() {
     it('Should write events and read back all stream events', function() {
-        var client = eventstore.tcp({
-            hostname: 'localhost',
-            protocol: 'tcp',
-            port: 1113,
-            credentials: {
-                username: 'admin',
-                password: 'changeit'
-            }
-        });
+        var client = eventstore.tcp(tcpConfig);
 
         var events = [];
         for (var k = 0; k < 1000; k++) {

@@ -1,3 +1,4 @@
+var tcpConfig = require('./support/tcpConfig');
 var assert = require('assert');
 var eventstore = require('../index.js');
 var uuid = require('node-uuid');
@@ -5,15 +6,7 @@ var uuid = require('node-uuid');
 describe('TCP Client - Event Enumerator', function() {
     describe('Forward: Reading events', function() {
         it('Read next events', function() {
-            var client = eventstore.tcp({
-                hostname: 'localhost',
-                protocol: 'tcp',
-                port: 1113,
-                credentials: {
-                    username: 'admin',
-                    password: 'changeit'
-                }
-            });
+            var client = eventstore.tcp(tcpConfig);
 
             var events = [];
             for (var k = 0; k < 100; k++) {
@@ -40,15 +33,7 @@ describe('TCP Client - Event Enumerator', function() {
         });
 
         it('Read first 10 events, next 20 events, previous 30 events', function() {
-            var client = eventstore.tcp({
-                hostname: 'localhost',
-                protocol: 'tcp',
-                port: 1113,
-                credentials: {
-                    username: 'admin',
-                    password: 'changeit'
-                }
-            });
+            var client = eventstore.tcp(tcpConfig);
 
             var events = [];
             for (var k = 0; k < 100; k++) {
@@ -81,15 +66,7 @@ describe('TCP Client - Event Enumerator', function() {
         });
 
         it('Read last 10 events, previous 30 events, next 30 events', function() {
-            var client = eventstore.tcp({
-                hostname: 'localhost',
-                protocol: 'tcp',
-                port: 1113,
-                credentials: {
-                    username: 'admin',
-                    password: 'changeit'
-                }
-            });
+            var client = eventstore.tcp(tcpConfig);
 
             var events = [];
             for (var k = 0; k < 100; k++) {
@@ -122,15 +99,7 @@ describe('TCP Client - Event Enumerator', function() {
         });
 
         it('Read first and last batch', function() {
-            var client = eventstore.tcp({
-                hostname: 'localhost',
-                protocol: 'tcp',
-                port: 1113,
-                credentials: {
-                    username: 'admin',
-                    password: 'changeit'
-                }
-            });
+            var client = eventstore.tcp(tcpConfig);
 
             var events = [];
             for (var k = 0; k < 100; k++) {
@@ -157,15 +126,7 @@ describe('TCP Client - Event Enumerator', function() {
         });
 
         it('Handle out of bounds Enumeration Request ', function() {
-            var client = eventstore.tcp({
-                hostname: 'localhost',
-                protocol: 'tcp',
-                port: 1113,
-                credentials: {
-                    username: 'admin',
-                    password: 'changeit'
-                }
-            });
+            var client = eventstore.tcp(tcpConfig);
 
             var events = [];
             for (var k = 0; k < 100; k++) {
@@ -206,15 +167,7 @@ describe('TCP Client - Event Enumerator', function() {
 
     describe('Backward: Reading events', function() {
         it('Read next events', function() {
-            var client = eventstore.tcp({
-                hostname: 'localhost',
-                protocol: 'tcp',
-                port: 1113,
-                credentials: {
-                    username: 'admin',
-                    password: 'changeit'
-                }
-            });
+            var client = eventstore.tcp(tcpConfig);
 
             var events = [];
             for (var k = 0; k < 100; k++) {
@@ -241,15 +194,7 @@ describe('TCP Client - Event Enumerator', function() {
         });
 
         it('Read first 10 events, next 20 events, previous 30 events', function() {
-            var client = eventstore.tcp({
-                hostname: 'localhost',
-                protocol: 'tcp',
-                port: 1113,
-                credentials: {
-                    username: 'admin',
-                    password: 'changeit'
-                }
-            });
+            var client = eventstore.tcp(tcpConfig);
 
             var events = [];
             for (var k = 0; k < 100; k++) {
@@ -282,15 +227,7 @@ describe('TCP Client - Event Enumerator', function() {
         });
 
         it('Read last 10 events, previous 20 events, next 30 events', function() {
-            var client = eventstore.tcp({
-                hostname: 'localhost',
-                protocol: 'tcp',
-                port: 1113,
-                credentials: {
-                    username: 'admin',
-                    password: 'changeit'
-                }
-            });
+            var client = eventstore.tcp(tcpConfig);
 
             var events = [];
             for (var k = 0; k < 100; k++) {
@@ -323,15 +260,7 @@ describe('TCP Client - Event Enumerator', function() {
         });
 
         it('Read first and last batch', function() {
-            var client = eventstore.tcp({
-                hostname: 'localhost',
-                protocol: 'tcp',
-                port: 1113,
-                credentials: {
-                    username: 'admin',
-                    password: 'changeit'
-                }
-            });
+            var client = eventstore.tcp(tcpConfig);
 
             var events = [];
             for (var k = 0; k < 100; k++) {
@@ -358,15 +287,7 @@ describe('TCP Client - Event Enumerator', function() {
         });
 
         it('Handle out of bounds Enumeration Request ', function() {
-            var client = eventstore.tcp({
-                hostname: 'localhost',
-                protocol: 'tcp',
-                port: 1113,
-                credentials: {
-                    username: 'admin',
-                    password: 'changeit'
-                }
-            });
+            var client = eventstore.tcp(tcpConfig);
 
             var events = [];
             for (var k = 0; k < 100; k++) {

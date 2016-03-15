@@ -35,9 +35,11 @@ var eventstore = require('geteventstore-promise');
 
 var client = eventstore.http({
                 hostname: 'localhost',
-                protocol: 'http',
                 port: 2113,
-                auth: 'admin:changeit'
+                credentials: {
+				    username: 'admin',
+				    password: 'changeit'
+			    }
             });
 
 client.getEvents('TestStream', 0, 1000, 'forward') // defaults for getEvents if not specified
@@ -74,9 +76,11 @@ var eventstore = require('geteventstore-promise');
 
 var client = eventstore.http({
                 hostname: 'localhost',
-                protocol: 'http',
                 port: 2113,
-                auth: 'admin:changeit'
+                credentials: {
+				    username: 'admin',
+				    password: 'changeit'
+			    }
             });
 
 var testStream = 'TestStream-' + uuid.v4();
@@ -111,9 +115,11 @@ var eventstore = require('geteventstore-promise');
 
 var client = eventstore.http({
                 hostname: 'localhost',
-                protocol: 'http',
                 port: 2113,
-                auth: 'admin:changeit'
+                credentials: {
+				    username: 'admin',
+				    password: 'changeit'
+			    }
             });
 
 var events = [eventstore.eventFactory.NewEvent('TestEventType', { something: '456'})];
@@ -143,9 +149,11 @@ var eventstore = require('geteventstore-promise');
 
 var client = eventstore.http({
                 hostname: 'localhost',
-                protocol: 'http',
                 port: 2113,
-                auth: 'admin:changeit'
+                credentials: {
+				    username: 'admin',
+				    password: 'changeit'
+			    }
             });
 
 var projectionStreamName = 'ExistingProjectionStreamName';
@@ -203,9 +211,11 @@ var eventstore = require('geteventstore-promise');
 
 var client = eventstore.http({
                 hostname: 'localhost',
-                protocol: 'http',
                 port: 2113,
-                auth: 'admin:changeit'
+                credentials: {
+				    username: 'admin',
+				    password: 'changeit'
+			    }
             });
 
 client.projections.getState('TestProjection').then(function(projectionState) {
@@ -230,9 +240,11 @@ var eventstore = require('geteventstore-promise');
 
 var client = eventstore.http({
                 hostname: 'localhost',
-                protocol: 'http',
                 port: 2113,
-                auth: 'admin:changeit'
+                credentials: {
+				    username: 'admin',
+				    password: 'changeit'
+			    }
             });
 
 client.admin.scavenge().then(function() {
@@ -255,9 +267,11 @@ var eventstore = require('geteventstore-promise');
 
 var client = eventstore.http({
                 hostname: 'localhost',
-                protocol: 'http',
                 port: 2113,
-                auth: 'admin:changeit'
+                credentials: {
+				    username: 'admin',
+				    password: 'changeit'
+			    }
             });
 
 client.admin.shutdown().then(function() {
@@ -309,7 +323,6 @@ var eventstore = require('geteventstore-promise');
 
 var client = eventstore.tcp({
                 hostname: 'localhost',
-                protocol: 'tcp',
                 port: 1113,
                 credentials: {
                     username: 'admin',
@@ -338,7 +351,6 @@ var eventstore = require('geteventstore-promise');
 
 var client = eventstore.tcp({
                 hostname: 'localhost',
-                protocol: 'tcp',
                 port: 1113,
                 credentials: {
                     username: 'admin',
@@ -380,7 +392,6 @@ var eventstore = require('geteventstore-promise');
 
 var client = eventstore.tcp({
                 hostname: 'localhost',
-                protocol: 'tcp',
                 port: 1113,
                 credentials: {
                     username: 'admin',
