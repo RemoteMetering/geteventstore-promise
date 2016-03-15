@@ -112,7 +112,7 @@ describe('Projections', function() {
                 setTimeout(function() {
                     client.projections.getAllProjectionsInfo().then(function(projectionsInfo) {
                         _.each(projectionsInfo.projections, function(projection) {
-                            assert.equal(projection.status, 'Running');
+                            assert.equal(projection.status.toLowerCase().indexOf('running') > -1, true);
                         });
                         done();
                     }).catch(done);
@@ -129,12 +129,61 @@ describe('Projections', function() {
                 setTimeout(function() {
                     client.projections.getAllProjectionsInfo().then(function(projectionsInfo) {
                         _.each(projectionsInfo.projections, function(projection) {
-                            assert.equal(projection.status, 'Stopped');
+                            assert.equal(projection.status.toLowerCase().indexOf('stopped') > -1, true);
                         });
                         done();
                     }).catch(done);
                 }, 1000);
             }).catch(done);
+        });
+    });
+
+    describe('General', function() {
+        it('Should return content with all eventstore projections information', function() {
+            var client = eventstore.http(httpConfig);
+
+            return client.projections.getAllProjectionsInfo().then(function(projectionsInfo) {
+                assert.notEqual(projectionsInfo, undefined);
+                assert(projectionsInfo.projections.length > 0);
+            });
+        });
+
+        it('Should return content for test projection state', function(done) {
+            var client = eventstore.http(httpConfig);
+
+            var projectionName = 'TestProjection';
+            var projectionContent = fs.readFileSync(__dirname + '/support/testProjection.js', {
+                encoding: 'utf8'
+            });
+
+            return client.projections.assert(projectionName, projectionContent).then(function() {
+                var testStream = 'TestProjectionStream-' + uuid.v4();
+                return client.writeEvent(testStream, 'TestProjectionEventType', {
+                    something: '123'
+                }).then(function() {
+                    setTimeout(function() {
+                        client.projections.getState(projectionName).then(function(projectionState) {
+                            assert.equal(projectionState.data.something, '123');
+
+                            return client.projections.stop(projectionName).then(function(response) {
+                                assert.equal(response.name, projectionName);
+                                return client.projections.remove(projectionName).then(function(response) {
+                                    assert.equal(response.name, projectionName);
+                                    done();
+                                });
+                            });
+                        });
+                    }, 1000);
+                });
+            });
+        });
+
+        it('Should return rejected promise for non-existant projection state', function() {
+            var client = eventstore.http(httpConfig);
+
+            return client.projections.getState('SomeProjectionNameThatDoesNotExist').catch(function(err) {
+                assert(err.statusCode, 404);
+            });
         });
     });
 });

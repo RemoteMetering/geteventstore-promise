@@ -1,7 +1,11 @@
-var debug = require('debug')('geteventstore:appendToStream'),
-    url = require('url'),
+var debug = require('debug')('geteventstore:writeEvent'),
+    eventFactory = require('../eventFactory'),
     req = require('request-promise'),
-    eventFactory = require('../eventFactory');
+    assert = require('assert'),
+    url = require('url'),
+    q = require('q');
+
+var baseErr = 'Write Event - ';
 
 module.exports = function(config) {
     var buildUrl = function(streamName) {
@@ -11,22 +15,28 @@ module.exports = function(config) {
     };
 
     return function(streamName, eventType, data, metaData, options) {
-        options = options || {};
-        options.expectedVersion = options.expectedVersion || -2;
+        return q().then(function() {
+            assert(streamName, baseErr + 'Stream Name not provided');
+            assert(eventType, baseErr + 'Event Type not provided');
+            assert(data, baseErr + 'Event Data not provided');
 
-        var events = [eventFactory.NewEvent(eventType, data, metaData)];
+            options = options || {};
+            options.expectedVersion = options.expectedVersion || -2;
 
-        var reqOptions = {
-            uri: buildUrl(streamName),
-            headers: {
-                "Content-Type": "application/vnd.eventstore.events+json",
-                "ES-ExpectedVersion": options.expectedVersion
-            },
-            method: 'POST',
-            body: events,
-            json: true
-        };
-        debug('', 'Append To Stream: ' + JSON.stringify(reqOptions));
-        return req(reqOptions);
+            var events = [eventFactory.NewEvent(eventType, data, metaData)];
+
+            var reqOptions = {
+                uri: buildUrl(streamName),
+                headers: {
+                    "Content-Type": "application/vnd.eventstore.events+json",
+                    "ES-ExpectedVersion": options.expectedVersion
+                },
+                method: 'POST',
+                body: events,
+                json: true
+            };
+            debug('', 'Write Event: ' + JSON.stringify(reqOptions));
+            return req(reqOptions);
+        });
     };
 };

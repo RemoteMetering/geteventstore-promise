@@ -1,29 +1,38 @@
-var debug = require('debug')('geteventstore:appendToStream'),
+var debug = require('debug')('geteventstore:writeEvents'),
+    req = require('request-promise'),
+    assert = require('assert'),
     url = require('url'),
-    req = require('request-promise');
+    q = require('q');
+
+var baseErr = 'Write Events - ';
 
 module.exports = function(config) {
-    var buildUrl = function(stream) {
+    var buildUrl = function(streamName) {
         var urlObj = JSON.parse(JSON.stringify(config));
-        urlObj.pathname = '/streams/' + stream;
+        urlObj.pathname = '/streams/' + streamName;
         return url.format(urlObj);
     };
 
-    return function(stream, events, options) {
-        options = options || {};
-        options.expectedVersion = options.expectedVersion || -2;
+    return function(streamName, events, options) {
+        return q().then(function() {
+            assert(streamName, baseErr + 'Stream Name not provided');
+            assert(events, baseErr + 'Events not provided');
 
-        var reqOptions = {
-            uri: buildUrl(stream),
-            headers: {
-                "Content-Type": "application/vnd.eventstore.events+json",
-                "ES-ExpectedVersion": options.expectedVersion
-            },
-            method: 'POST',
-            body: events,
-            json: true
-        };
-        debug('', 'Append To Stream: ' + JSON.stringify(reqOptions));
-        return req(reqOptions);
+            options = options || {};
+            options.expectedVersion = options.expectedVersion || -2;
+
+            var reqOptions = {
+                uri: buildUrl(streamName),
+                headers: {
+                    "Content-Type": "application/vnd.eventstore.events+json",
+                    "ES-ExpectedVersion": options.expectedVersion
+                },
+                method: 'POST',
+                body: events,
+                json: true
+            };
+            debug('', 'Write events: ' + JSON.stringify(reqOptions));
+            return req(reqOptions);
+        });
     };
 };

@@ -14,7 +14,7 @@ var getNextBatch = function(config, streamName, state, length, direction) {
         var connection = new Eventstore.Connection(config);
 
         function handleResult(result) {
-            debug('Result', result);
+            debug('', 'Result: ' + JSON.stringify(result));
             connection.close();
 
             if (!_.isEmpty(result.error))

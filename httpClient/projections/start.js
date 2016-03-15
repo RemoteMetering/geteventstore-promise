@@ -1,6 +1,10 @@
 var debug = require('debug')('geteventstore:startProjection'),
+    assert = require('assert'),
+    req = require('request-promise'),
     url = require('url'),
-    req = require('request-promise');
+    q = require('q');
+
+var baseErr = 'Start Projection - ';
 
 module.exports = function(config) {
     var buildUrl = function(name) {
@@ -10,15 +14,19 @@ module.exports = function(config) {
     };
 
     return function(name) {
-        var options = {
-            uri: buildUrl(name),
-            method: 'POST'
-        };
+        return q().then(function() {
+            assert(name, baseErr + 'Name not provided');
 
-        debug('Options', options);
-        return req(options).then(function(response) {
-            debug('Response', response);
-            return JSON.parse(response);
+            var options = {
+                uri: buildUrl(name),
+                method: 'POST'
+            };
+
+            debug('', 'Options: ' + JSON.stringify(options));
+            return req(options).then(function(response) {
+                debug('', 'Response: ' + JSON.stringify(response));
+                return JSON.parse(response);
+            });
         });
     };
 };

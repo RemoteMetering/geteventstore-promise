@@ -1,6 +1,10 @@
 var debug = require('debug')('geteventstore:checkStreamExists'),
+    req = require('request-promise'),
+    assert = require('assert'),
     url = require('url'),
-    req = require('request-promise');
+    q = require('q');
+
+var baseErr = 'Check Stream Exists - ';
 
 module.exports = function(config) {
     var buildUrl = function(streamName) {
@@ -10,15 +14,19 @@ module.exports = function(config) {
     };
 
     return function(streamName) {
-        var options = {
-            uri: buildUrl(streamName),
-            method: 'GET'
-        };
+        return q().then(function() {
+            assert(streamName, baseErr + 'Stream Name not provided');
 
-        return req(options).then(function(response) {
-            return true;
-        }).catch(function(err) {
-            return false;
+            var options = {
+                uri: buildUrl(streamName),
+                method: 'GET'
+            };
+
+            return req(options).then(function(response) {
+                return true;
+            }).catch(function(err) {
+                return false;
+            });
         });
     };
 };

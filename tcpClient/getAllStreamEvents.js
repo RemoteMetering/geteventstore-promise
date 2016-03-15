@@ -17,7 +17,7 @@ module.exports = function(config) {
 
             function getNextChunk(startEvent) {
                 connection.readStreamEventsForward(streamName, startEvent, chunkSize || 250, true, false, null, config.credentials, function(result) {
-                    debug('Result', result);
+                    debug('', 'Result: ' + JSON.stringify(result));
                     if (!_.isEmpty(result.error))
                         return reject(baseErr + result.error);
 

@@ -1,6 +1,10 @@
 var debug = require('debug')('geteventstore:removeProjection'),
+    assert = require('assert'),
+    req = require('request-promise'),
     url = require('url'),
-    req = require('request-promise');
+    q = require('q');
+
+var baseErr = 'Remove Projection - ';
 
 module.exports = function(config) {
     var buildUrl = function(name) {
@@ -10,22 +14,26 @@ module.exports = function(config) {
     };
 
     return function(name, deleteCheckpointStream, deleteStateStream) {
-        deleteCheckpointStream = deleteCheckpointStream || false;
-        deleteStateStream = deleteStateStream || false;
+        return q().then(function() {
+            assert(name, baseErr + 'Name not provided');
 
-        var options = {
-            uri: buildUrl(name),
-            method: 'DELETE',
-            qs: {
-                deleteCheckpointStream: deleteCheckpointStream ? 'yes' : 'no',
-                deleteStateStream: deleteStateStream ? 'yes' : 'no'
-            }
-        };
+            deleteCheckpointStream = deleteCheckpointStream || false;
+            deleteStateStream = deleteStateStream || false;
 
-        debug('Options', options);
-        return req(options).then(function(response) {
-            debug('Response', response);
-            return JSON.parse(response);
+            var options = {
+                uri: buildUrl(name),
+                method: 'DELETE',
+                qs: {
+                    deleteCheckpointStream: deleteCheckpointStream ? 'yes' : 'no',
+                    deleteStateStream: deleteStateStream ? 'yes' : 'no'
+                }
+            };
+
+            debug('', 'Options: ' + JSON.stringify(options));
+            return req(options).then(function(response) {
+                debug('', 'Response: ' + JSON.stringify(response));
+                return JSON.parse(response);
+            });
         });
     };
 };
