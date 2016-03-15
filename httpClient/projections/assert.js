@@ -1,9 +1,11 @@
 var debug = require('debug')('geteventstore:assertProjection'),
-    url = require('url'),
     req = require('request-promise'),
+    assert = require('assert'),
     _ = require('underscore'),
+    url = require('url'),
     q = require('q');
 
+var baseErr = 'Assert Projection - ';
 
 var doesProjectionExist = function(config, name) {
     return q().then(function() {
@@ -66,24 +68,29 @@ var buildUpdateOptions = function(config, name, projectionContent, emitEnabled) 
 
 module.exports = function(config) {
     return function(name, projectionContent, mode, enabled, checkpointsEnabled, emitEnabled) {
-        mode = mode || 'continuous';
-        enabled = enabled || true;
-        checkpointsEnabled = mode == 'continuous' ? true : checkpointsEnabled || false;
-        emitEnabled = emitEnabled || false;
+        return q().then(function() {
+            assert(name, baseErr + 'Name not provided');
+            assert(projectionContent, baseErr + 'Projecion Contnet not provided');
 
-        return doesProjectionExist(config, name).then(function(projectionExists) {
-            debug('Projection Exists', projectionExists);
-            var options = {};
+            mode = mode || 'continuous';
+            enabled = enabled || true;
+            checkpointsEnabled = mode == 'continuous' ? true : checkpointsEnabled || false;
+            emitEnabled = emitEnabled || false;
 
-            if (!projectionExists)
-                options = buildCreateOptions(config, name, projectionContent, mode, enabled, emitEnabled, checkpointsEnabled);
-            else
-                options = buildUpdateOptions(config, name, projectionContent, emitEnabled);
+            return doesProjectionExist(config, name).then(function(projectionExists) {
+                debug('Projection Exists', projectionExists);
+                var options = {};
 
-            debug('Options', options);
-            return req(options).then(function(response) {
-                debug('Response', response);
-                return JSON.parse(response);
+                if (!projectionExists)
+                    options = buildCreateOptions(config, name, projectionContent, mode, enabled, emitEnabled, checkpointsEnabled);
+                else
+                    options = buildUpdateOptions(config, name, projectionContent, emitEnabled);
+
+                debug('Options', options);
+                return req(options).then(function(response) {
+                    debug('Response', response);
+                    return JSON.parse(response);
+                });
             });
         });
     };
