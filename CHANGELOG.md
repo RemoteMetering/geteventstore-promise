@@ -1,3 +1,12 @@
+# 1.1.1 (2016-03-15)
+
+## Breaking Changes
+
+#### HTTP client
+
+- 'getProjectionState' moved to 'projections.getState' 
+- 'getAllProjectionsInfo' moved to 'projections.getAllProjectionsInfo' 
+
 # 1.1.0 (2016-03-14)
 
 ## Breaking Changes
