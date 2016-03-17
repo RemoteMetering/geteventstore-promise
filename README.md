@@ -1,6 +1,8 @@
 # geteventstore-promise
 A Node.js Event Store client implementation using promises
 
+[![NPM](https://nodei.co/npm/geteventstore-promise.png?stars&downloads&downloadRank)](https://nodei.co/npm/geteventstore-promise/) [![NPM](https://nodei.co/npm-dl/geteventstore-promise.png?months=3&height=3)](https://nodei.co/npm/geteventstore-promise/)
+
 # Installation
 At the command-line:
 > npm install geteventstore-promise
