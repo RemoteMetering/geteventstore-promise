@@ -139,7 +139,7 @@ client.writeEvents(testStream, events).then(function() {
 
 ## checkStreamExists(streamName)
 
-Reads the state of a given Projection stream as a JSON object.
+Check if a stream exists, returns true or false.
 
 ##### streamName
 The name of the stream (as in Event Store) to check.
@@ -301,7 +301,7 @@ Github: [https://github.com/x-cubed/event-store-client](https://github.com/x-cub
 
 ## getEventsByType(streamName, eventTypes, startPosition, length, direction)
 
-Returns all events from a given stream.
+Returns all events from a given stream by Event Types.
 
 ##### streamName
 The name of the stream (as in Event Store) to read from.
@@ -369,7 +369,7 @@ client.getAllStreamEvents('TestStream').then(function(events){
 
 ## eventEnumerator(streamName, direction)
 
-Returns all events from a given stream.
+Returns an events enumerator on which events can be iterated.
 
 ##### streamName
 The name of the stream (as in Event Store) to read from.
