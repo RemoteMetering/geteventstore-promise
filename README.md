@@ -75,6 +75,7 @@ Any options to be specified (as documented in GetEvent Store documentation). Def
 
 ```javascript
 var eventstore = require('geteventstore-promise');
+var uuid = require('node-uuid');
 
 var client = eventstore.http({
                 hostname: 'localhost',
@@ -114,6 +115,7 @@ Any options to be specified (as documented in GetEvent Store documentation). Def
 
 ```javascript
 var eventstore = require('geteventstore-promise');
+var uuid = require('node-uuid');
 
 var client = eventstore.http({
                 hostname: 'localhost',
