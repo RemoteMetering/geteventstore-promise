@@ -13,6 +13,7 @@ module.exports = function(config) {
 	//Add additional internal configuration properties
 	config = JSON.parse(JSON.stringify(config));
 	config.protocol = 'tcp';
+	config.host = config.hostname;
 	config.auth = config.credentials.username + ':' + config.credentials.password;
 
 	return {
