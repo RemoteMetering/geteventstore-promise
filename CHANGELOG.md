@@ -1,3 +1,9 @@
+# 1.1.2 (2016-04-04)
+
+#### TCP Client
+
+- Fix tcp client adding invalid 'host' property to config
+
 # 1.1.1 (2016-03-15)
 
 ## Breaking Changes
