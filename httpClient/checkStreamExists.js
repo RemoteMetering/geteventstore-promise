@@ -7,9 +7,9 @@ var debug = require('debug')('geteventstore:checkStreamExists'),
 var baseErr = 'Check Stream Exists - ';
 
 module.exports = function(config) {
-    var buildUrl = function(streamName) {
+    var buildUrl = function(streamName, extraArgs) {
         var urlObj = JSON.parse(JSON.stringify(config));
-        urlObj.pathname = '/streams/' + streamName + '/0/forward/1?embed=body';
+        urlObj.pathname = '/streams/' + streamName + extraArgs;
         return url.format(urlObj);
     };
 
@@ -18,14 +18,22 @@ module.exports = function(config) {
             assert(streamName, baseErr + 'Stream Name not provided');
 
             var options = {
-                uri: buildUrl(streamName),
+                uri: buildUrl(streamName, '/0/forward/1?embed=body'),
                 method: 'GET'
             };
 
             return req(options).then(function(response) {
                 return true;
             }).catch(function(err) {
-                return false;
+                var options = {
+                    uri: buildUrl(streamName, ''),
+                    method: 'GET'
+                };
+                return req(options).then(function(responseAgain) {
+                    return true;
+                }).catch(function(errAgain) {
+                    return false;
+                });
             });
         });
     };
