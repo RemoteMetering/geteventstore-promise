@@ -1,3 +1,10 @@
+# 1.1.3 (2016-04-06)
+
+#### HTTP Client
+
+- Make checkStreamExists more accurate
+- Fix request-promise usage to include 'embed=body' as query string object(mono fix)
+
 # 1.1.2 (2016-04-04)
 
 #### TCP Client
