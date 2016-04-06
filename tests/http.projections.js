@@ -81,25 +81,25 @@ describe('Projections', function() {
             encoding: 'utf8'
         });
 
-        it('Should create one-time projection with all settings enabled', function() {
+        it('Should create one-time projection with all settings enabled', function(done) {
+            this.timeout(1000 * 5);
             var client = eventstore.http(httpConfig);
-            return client.projections.assert(assertionProjection, assertionProjectionContent, 'onetime', true, true, true).then(function(response) {
-                assert.equal(response.name, assertionProjection);
-            });
+            client.projections.assert(assertionProjection, assertionProjectionContent, 'onetime', true, true, true).then(function(response) {
+                setTimeout(function() {
+                    assert.equal(response.name, assertionProjection);
+                    done();
+                }, 2000);
+            }).catch(done);
         });
 
-        it('Should remove one-time projection', function(done) {
+        it('Should remove one-time projection', function() {
             var client = eventstore.http(httpConfig);
-
-            client.projections.stop(assertionProjection).then(function(stopResponse) {
-                setTimeout(function() {
-                    assert.equal(stopResponse.name, assertionProjection);
-                    client.projections.remove(assertionProjection).then(function(removeResponse) {
-                        assert.equal(removeResponse.name, assertionProjection);
-                        done();
-                    }).catch(done);
-                }, 1000);
-            }).catch(done);
+            return client.projections.stop(assertionProjection).then(function(stopResponse) {
+                assert.equal(stopResponse.name, assertionProjection);
+                return client.projections.remove(assertionProjection).then(function(removeResponse) {
+                    assert.equal(removeResponse.name, assertionProjection);
+                });
+            });
         });
     });
 
@@ -121,10 +121,8 @@ describe('Projections', function() {
         });
 
         it('Should disable all projections', function(done) {
-            this.timeout(10 * 1000);
-
+            this.timeout(1000 * 10);
             var client = eventstore.http(httpConfig);
-
             client.projections.disableAll().then(function(response) {
                 setTimeout(function() {
                     client.projections.getAllProjectionsInfo().then(function(projectionsInfo) {
@@ -149,6 +147,7 @@ describe('Projections', function() {
         });
 
         it('Should return content for test projection state', function(done) {
+            this.timeout(1000 * 5);
             var client = eventstore.http(httpConfig);
 
             var projectionName = 'TestProjection';
@@ -156,25 +155,27 @@ describe('Projections', function() {
                 encoding: 'utf8'
             });
 
-            return client.projections.assert(projectionName, projectionContent).then(function() {
-                var testStream = 'TestProjectionStream-' + uuid.v4();
-                return client.writeEvent(testStream, 'TestProjectionEventType', {
-                    something: '123'
-                }).then(function() {
-                    setTimeout(function() {
-                        client.projections.getState(projectionName).then(function(projectionState) {
-                            assert.equal(projectionState.data.something, '123');
+            client.projections.assert(projectionName, projectionContent).then(function() {
+                setTimeout(function() {
+                    var testStream = 'TestProjectionStream-' + uuid.v4();
+                    client.writeEvent(testStream, 'TestProjectionEventType', {
+                        something: '123'
+                    }).then(function() {
+                        setTimeout(function() {
+                            client.projections.getState(projectionName).then(function(projectionState) {
+                                assert.equal(projectionState.data.something, '123');
 
-                            return client.projections.stop(projectionName).then(function(response) {
-                                assert.equal(response.name, projectionName);
-                                return client.projections.remove(projectionName).then(function(response) {
+                                client.projections.stop(projectionName).then(function(response) {
                                     assert.equal(response.name, projectionName);
-                                    done();
-                                });
-                            });
-                        });
-                    }, 1000);
-                });
+                                    client.projections.remove(projectionName).then(function(response) {
+                                        assert.equal(response.name, projectionName);
+                                        done();
+                                    }).catch(done);
+                                }).catch(done);
+                            }).catch(done);
+                        }, 1000);
+                    }).catch(done);
+                }, 500);
             });
         });
 
