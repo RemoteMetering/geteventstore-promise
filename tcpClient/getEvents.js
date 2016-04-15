@@ -1,5 +1,5 @@
 var debug = require('debug')('geteventstore:getevents'),
-    Eventstore = require('event-store-client'),
+    createConnection = require('./createConnection'),
     assert = require('assert'),
     q = require('q'),
     _ = require('underscore');
@@ -15,7 +15,7 @@ module.exports = function(config) {
             startPosition = startPosition == undefined && direction == 'backward' ? -1 : startPosition || 0;
             length = length || 250;
 
-            var connection = new Eventstore.Connection(config);
+            var connection = createConnection(config, reject);
 
             function handleResult(result) {
                 connection.close();

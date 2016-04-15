@@ -1,5 +1,5 @@
 var debug = require('debug')('geteventstore:writeEvents'),
-    Eventstore = require('event-store-client'),
+    createConnection = require('./createConnection'),
     eventFactory = require('../eventFactory'),
     assert = require('assert'),
     q = require('q'),
@@ -16,7 +16,8 @@ module.exports = function(config) {
             options = options || {};
             options.expectedVersion = options.expectedVersion || -2;
 
-            var connection = new Eventstore.Connection(config);
+            var connection = createConnection(config, reject);
+
             connection.writeEvents(streamName, options.expectedVersion, false, events, config.credentials, function(result) {
                 debug('', 'Result: ' + JSON.stringify(result));
                 connection.close();

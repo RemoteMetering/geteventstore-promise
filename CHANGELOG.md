@@ -1,3 +1,9 @@
+# 1.1.4 (2016-04-15)
+
+#### TCP Client
+
+- Return rejected promise on failure to connect to Event Store instead of just logging it
+
 # 1.1.3 (2016-04-06)
 
 #### HTTP Client

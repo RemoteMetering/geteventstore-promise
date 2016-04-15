@@ -1,5 +1,5 @@
 var debug = require('debug')('geteventstore:getAllStreamEvents'),
-    Eventstore = require('event-store-client'),
+    createConnection = require('./createConnection'),
     eventFactory = require('../eventFactory'),
     assert = require('assert'),
     q = require('q'),
@@ -12,7 +12,7 @@ module.exports = function(config) {
         return q.Promise(function(resolve, reject) {
             assert(streamName, baseErr + 'Stream Name not provided');
 
-            var connection = new Eventstore.Connection(config);
+            var connection = createConnection(config, reject);
             var events = [];
 
             function getNextChunk(startEvent) {
