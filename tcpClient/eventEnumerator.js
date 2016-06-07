@@ -1,5 +1,5 @@
 var debug = require('debug')('geteventstore:eventEnumerator'),
-    Eventstore = require('event-store-client'),
+    createConnection = require('./createConnection'),
     assert = require('assert'),
     q = require('q'),
     _ = require('underscore');
@@ -11,7 +11,7 @@ var getNextBatch = function(config, streamName, state, length, direction) {
     return q.Promise(function(resolve, reject) {
         assert(streamName, baseErr + 'Stream Name not provided');
 
-        var connection = new Eventstore.Connection(config);
+        var connection = createConnection(config, reject);
 
         function handleResult(result) {
             debug('', 'Result: ' + JSON.stringify(result));

@@ -9,7 +9,7 @@ var baseErr = 'Get Events - ';
 module.exports = function(config) {
     var buildUrl = function(stream, startPosition, length, direction) {
         var urlObj = JSON.parse(JSON.stringify(config));
-        urlObj.pathname = '/streams/' + stream + '/' + startPosition + '/' + direction + '/' + length + '?embed=body';
+        urlObj.pathname = '/streams/' + stream + '/' + startPosition + '/' + direction + '/' + length;
         return url.format(urlObj);
     };
 
@@ -23,10 +23,13 @@ module.exports = function(config) {
 
             var options = {
                 uri: buildUrl(streamName, startPosition, length, direction),
+                method: 'GET',
                 headers: {
                     "Content-Type": "application/vnd.eventstore.events+json"
                 },
-                method: 'GET',
+                qs: {
+                    embed: 'body'
+                },
                 json: true
             };
             debug('', 'Getting Events: ' + JSON.stringify(options));
