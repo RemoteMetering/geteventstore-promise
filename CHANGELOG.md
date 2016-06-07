@@ -1,3 +1,9 @@
+# 1.1.5 (2016-06-07)
+
+#### TCP / HTTP Client
+
+- GetEvents return events in the correct order. Forwards and Backwards now return as expected. Reverse of what it used to be.
+
 # 1.1.4 (2016-04-15)
 
 #### TCP Client
