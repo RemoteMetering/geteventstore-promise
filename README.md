@@ -169,6 +169,38 @@ client.checkStreamExists(projectionStreamName).then(function(exists) {
 
 ---
 
+## deleteStream(streamName)
+
+Deletes a stream, fails the promise if stream does not exist.
+
+##### streamName
+The name of the stream (as in Event Store) to delete.
+
+#### Example
+
+```javascript
+var eventstore = require('geteventstore-promise');
+
+var client = eventstore.http({
+                hostname: 'localhost',
+                port: 2113,
+                credentials: {
+                    username: 'admin',
+                    password: 'changeit'
+                }
+            });
+
+var streamName = 'ExistingStreamName';
+
+client.delete(streamName).then(function() {
+    console.log('Stream deleted');
+}).catch(function(err){
+    // should only happen if something went wrong OR the stream does not exist
+    console.log(err);
+});
+```
+---
+
 # Projections
 
 # Supported Methods
