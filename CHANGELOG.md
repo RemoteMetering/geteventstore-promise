@@ -1,3 +1,9 @@
+# 1.1.6 (2016-06-07)
+
+#### HTTP Client
+
+- DeleteStream: deletes an existing stream, rejects if the stream does not exist
+
 # 1.1.5 (2016-06-07)
 
 #### HTTP Client

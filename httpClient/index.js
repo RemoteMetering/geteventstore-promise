@@ -20,6 +20,7 @@ module.exports = function(config) {
 		writeEvent: require('./writeEvent')(config),
 		writeEvents: require('./writeEvents')(config),
 		getEvents: require('./getEvents')(config),
+		deleteStream: require('./deleteStream')(config),
 		admin: {
 			scavenge: require('./admin/sendScavengeCommand')(config),
 			shutdown: require('./admin/sendShutdownCommand')(config)
