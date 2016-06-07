@@ -39,9 +39,9 @@ module.exports = function(config) {
                 });
 
                 if (direction == 'forward')
-                    return response.entries;
+                    return response.entries.reverse();
 
-                return response.entries.reverse();
+                return response.entries;
             });
         });
     };
