@@ -13,6 +13,7 @@ describe('TCP Client - Test Connection', function() {
     });
 
     it('Should not connect on incorrect hostname', function() {
+        this.timeout(5000);
         var config = JSON.parse(JSON.stringify(tcpConfig));
         config.hostname = 'MadeToFailHostName';
 
@@ -24,7 +25,7 @@ describe('TCP Client - Test Connection', function() {
         }).then(function() {
             assert.fail('Should not have written event successfully');
         }).catch(function(err) {
-             assert(err.message);
+            assert(err.message);
         });
     });
 
@@ -38,7 +39,6 @@ describe('TCP Client - Test Connection', function() {
         return client.writeEvent(testStream, 'TestEventType', {
             something: '123'
         }).then(function() {
-            console.log('then');
             assert.fail('Should not have written event successfully');
         }).catch(function(err) {
             assert(err.message);
