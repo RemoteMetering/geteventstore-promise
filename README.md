@@ -201,6 +201,33 @@ client.delete(streamName).then(function() {
 ```
 ---
 
+## ping()
+
+Performs Ping command, rejects promise if unsuccessful
+
+#### Example
+
+```javascript
+var eventstore = require('geteventstore-promise');
+
+var client = eventstore.http({
+                hostname: 'localhost',
+                port: 2113,
+                credentials: {
+                    username: 'admin',
+                    password: 'changeit'
+                }
+            });
+
+client.ping().then(function() {
+    console.log('EventStore is OK');
+}).catch(function(err){
+    // should only happen if something went wrong
+    console.log(err);
+});
+```
+---
+
 # Projections
 
 # Supported Methods
