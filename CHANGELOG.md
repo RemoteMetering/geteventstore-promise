@@ -1,3 +1,9 @@
+# 1.1.7 (2016-06-08)
+
+#### HTTP Client
+
+- Ping: returns successful if ping can be called, rejects if not
+
 # 1.1.6 (2016-06-07)
 
 #### HTTP Client

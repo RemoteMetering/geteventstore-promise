@@ -21,6 +21,7 @@ module.exports = function(config) {
 		writeEvents: require('./writeEvents')(config),
 		getEvents: require('./getEvents')(config),
 		deleteStream: require('./deleteStream')(config),
+		ping: require('./ping')(config),
 		admin: {
 			scavenge: require('./admin/sendScavengeCommand')(config),
 			shutdown: require('./admin/sendShutdownCommand')(config)
