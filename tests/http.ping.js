@@ -12,6 +12,7 @@ describe('Http Client - Ping', function() {
     });
 
     it('Should fail when not OK', function() {
+        this.timeout(5000);
         var config = JSON.parse(JSON.stringify(httpConfig));
         config.hostname = 'MadeToFailHostName';
 
