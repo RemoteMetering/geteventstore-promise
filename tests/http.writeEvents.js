@@ -18,4 +18,28 @@ describe('Http Client - Write Events', function() {
             });
         })
     });
+
+    it('Should not fail promise if no events provided', function() {
+        var client = eventstore.http(httpConfig);
+
+        var events = [];
+
+        var testStream = 'TestStream-' + uuid.v4();
+        return client.writeEvents(testStream, events);
+    });
+
+    it('Should fail promise if non array provided', function() {
+        var client = eventstore.http(httpConfig);
+
+        var events = {
+            something: 'here'
+        };
+
+        var testStream = 'TestStream-' + uuid.v4();
+        return client.writeEvents(testStream, events).then(function() {
+            assert.fail('should not have succeeded')
+        }).catch(function(err) {
+            assert(err, 'error expected');
+        })
+    });
 });

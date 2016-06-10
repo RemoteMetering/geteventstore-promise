@@ -12,6 +12,9 @@ module.exports = function(config) {
         return q.Promise(function(resolve, reject) {
             assert(streamName, baseErr + 'Stream Name not provided');
             assert(events, baseErr + 'Events not provided');
+            assert.equal(true, events.constructor === Array, baseErr + 'Events should be an array');
+            if (events.length == 0)
+                return resolve();
 
             options = options || {};
             options.expectedVersion = options.expectedVersion || -2;

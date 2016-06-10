@@ -1,3 +1,14 @@
+# 1.1.????
+
+#### HTTP Client
+
+- Fix: writeEvents return successful if empty array given
+
+#### Tests
+
+- Added tests to TCP and HTTP client to check for undefined, empty array in writeEvents
+
+
 # 1.1.7 (2016-06-08)
 
 #### HTTP Client
