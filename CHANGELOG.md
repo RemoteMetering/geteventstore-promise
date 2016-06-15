@@ -4,6 +4,10 @@
 
 - Fix: writeEvents return successful if empty array given
 
+#### TCP Client
+
+- Feature: added start event number on getAllStreamEvents
+
 #### Tests
 
 - Added tests to TCP and HTTP client to check for undefined, empty array in writeEvents

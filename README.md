@@ -23,6 +23,7 @@ The name of the stream (as in Event Store) to read from.
 
 ##### startPosition (optional)
 If specified, the stream will be read starting at event number startPosition, otherwise *0*;
+'head' will start reading from the back of the stream, if direction is specified as 'backward'
 
 ##### length (optional)
 The number of events to be read, defaults to *1000*;
@@ -406,6 +407,12 @@ Returns all events from a given stream.
 
 ##### streamName
 The name of the stream (as in Event Store) to read from.
+
+##### chunkSize (optional)
+The amount of events to read in each call to Event Store, defaults to *250, 
+
+##### startPosition (optional)
+If specified, the stream will be read starting at event number startPosition, otherwise *0*;
 
 #### Example
 
