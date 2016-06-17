@@ -7,7 +7,7 @@ var debug = require('debug')('geteventstore:getAllStreamEvents'),
 var baseErr = 'Get All Stream Events - ';
 
 module.exports = function(config) {
-    return function(streamName, chunkSize, startEvent) {
+    return function(streamName, chunkSize, startPosition) {
         return q.Promise(function(resolve, reject) {
             assert(streamName, baseErr + 'Stream Name not provided');
 
@@ -17,8 +17,8 @@ module.exports = function(config) {
             var connection = createConnection(config, reject);
             var events = [];
 
-            function getNextChunk(startEvent) {
-                connection.readStreamEventsForward(streamName, startEvent, chunkSize, true, false, null, config.credentials, function(result) {
+            function getNextChunk(startPosition) {
+                connection.readStreamEventsForward(streamName, startPosition, chunkSize, true, false, null, config.credentials, function(result) {
                     debug('', 'Result: ' + JSON.stringify(result));
                     if (!_.isEmpty(result.error))
                         return reject(baseErr + result.error);
@@ -34,7 +34,7 @@ module.exports = function(config) {
                     }
                 });
             }
-            getNextChunk(startEvent || 0);
+            getNextChunk(startPosition || 0);
         });
     };
 };
