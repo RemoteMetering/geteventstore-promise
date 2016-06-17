@@ -10,6 +10,7 @@
 
 - Feature: added start event number on getAllStreamEvents
 - Fix: any get events function will default to 4096 length if greater is requested
+- Change: default chunkSize of reads from 250 to 1000 
 
 #### Tests
 

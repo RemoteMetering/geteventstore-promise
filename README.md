@@ -409,7 +409,7 @@ Returns all events from a given stream.
 The name of the stream (as in Event Store) to read from.
 
 ##### chunkSize (optional)
-The amount of events to read in each call to Event Store, defaults to *250, 
+The amount of events to read in each call to Event Store, defaults to *1000*, 
 
 ##### startPosition (optional)
 If specified, the stream will be read starting at event number startPosition, otherwise *0*;
