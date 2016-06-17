@@ -19,9 +19,7 @@ describe('Http Client - Get Events', function() {
             }))
         };
 
-        return client.writeEvents(testStream, events).then(function() {
-            console.log('Written Events');
-        });
+        return client.writeEvents(testStream, events);
     });
 
     it('Should get events reading forward', function() {
