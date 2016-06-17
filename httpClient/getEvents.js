@@ -45,9 +45,6 @@ module.exports = function(config) {
                     return response.entries.reverse();
 
                 return response.entries;
-            }).catch(function(err) {
-                console.log('err ', err.stack);
-
             });
         });
     };

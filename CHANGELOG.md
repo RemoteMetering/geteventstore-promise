@@ -4,6 +4,7 @@
 
 - Fix: writeEvents return successful if empty array given
 - Fix: any get events function will default to 4096 length if greater is requested
+- Feature: add getAllStreamEvents function
 
 #### TCP Client
 

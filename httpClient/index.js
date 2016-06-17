@@ -19,6 +19,7 @@ module.exports = function(config) {
 		checkStreamExists: require('./checkStreamExists')(config),
 		writeEvent: require('./writeEvent')(config),
 		writeEvents: require('./writeEvents')(config),
+		getAllStreamEvents: require('./getAllStreamEvents')(config),
 		getEvents: require('./getEvents')(config),
 		deleteStream: require('./deleteStream')(config),
 		ping: require('./ping')(config),
