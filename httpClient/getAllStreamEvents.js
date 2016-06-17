@@ -49,13 +49,13 @@ module.exports = function(config) {
 					});
 
 					events.push(response.entries.reverse());
-					startPosition += chunkSize;
 
 					if (response.headOfStream == true) {
 						events = _.flatten(events);
 						return resolve(events);
 					}
 
+					startPosition += chunkSize;
 					return getNextChunk();
 				}).catch(function(err) {
 					return reject(baseErr + err);
