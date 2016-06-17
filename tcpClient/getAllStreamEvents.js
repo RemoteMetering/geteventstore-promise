@@ -1,6 +1,5 @@
 var debug = require('debug')('geteventstore:getAllStreamEvents'),
     createConnection = require('./createConnection'),
-    eventFactory = require('../eventFactory'),
     assert = require('assert'),
     q = require('q'),
     _ = require('underscore');
