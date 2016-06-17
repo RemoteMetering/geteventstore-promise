@@ -15,7 +15,7 @@
 #### Tests
 
 - Added tests to TCP and HTTP client to check for undefined, empty array in writeEvents
-
+- Added stress tests to TCP and HTTP client
 
 # 1.1.7 (2016-06-08)
 
