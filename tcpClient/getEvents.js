@@ -14,6 +14,7 @@ module.exports = function(config) {
             direction = direction || 'forward';
             startPosition = startPosition == undefined && direction == 'backward' ? -1 : startPosition || 0;
             length = length || 250;
+            length = length > 4096 ? 4096 : length;
 
             var connection = createConnection(config, reject);
 

@@ -3,10 +3,12 @@
 #### HTTP Client
 
 - Fix: writeEvents return successful if empty array given
+- Fix: any get events function will default to 4096 length if greater is requested
 
 #### TCP Client
 
 - Feature: added start event number on getAllStreamEvents
+- Fix: any get events function will default to 4096 length if greater is requested
 
 #### Tests
 

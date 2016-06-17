@@ -1,6 +1,7 @@
 var debug = require('debug')('geteventstore:getevents'),
     req = require('request-promise'),
     assert = require('assert'),
+    _ = require('underscore'),
     url = require('url'),
     q = require('q');
 
@@ -17,9 +18,11 @@ module.exports = function(config) {
         return q().then(function() {
             assert(streamName, baseErr + 'Stream Name not provided');
 
-            startPosition = startPosition || 0;
             length = length || 1000;
+            length = length > 4096 ? 4096 : length;
             direction = direction || 'forward';
+            startPosition = startPosition || 0;
+            startPosition = startPosition == 0 && direction == 'backward' ? 'head' : startPosition;
 
             var options = {
                 uri: buildUrl(streamName, startPosition, length, direction),
@@ -42,6 +45,9 @@ module.exports = function(config) {
                     return response.entries.reverse();
 
                 return response.entries;
+            }).catch(function(err) {
+                console.log('err ', err.stack);
+
             });
         });
     };

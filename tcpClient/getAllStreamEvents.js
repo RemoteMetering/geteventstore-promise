@@ -12,11 +12,14 @@ module.exports = function(config) {
         return q.Promise(function(resolve, reject) {
             assert(streamName, baseErr + 'Stream Name not provided');
 
+            chunkSize = chunkSize || 1000;
+            chunkSize = chunkSize > 4096 ? 4096 : chunkSize;
+
             var connection = createConnection(config, reject);
             var events = [];
 
             function getNextChunk(startEvent) {
-                connection.readStreamEventsForward(streamName, startEvent, chunkSize || 250, true, false, null, config.credentials, function(result) {
+                connection.readStreamEventsForward(streamName, startEvent, chunkSize, true, false, null, config.credentials, function(result) {
                     debug('', 'Result: ' + JSON.stringify(result));
                     if (!_.isEmpty(result.error))
                         return reject(baseErr + result.error);
