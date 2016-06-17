@@ -18,9 +18,9 @@ module.exports = function(config) {
     return function(streamName) {
         return q.Promise(function(resolve, reject) {
             assert(streamName, baseErr + 'Stream Name not provided');
-            return checkStreamExists(streamName).then(function(exists) {
-                if (!exists)
-                    return reject('Stream does not exist');
+
+            checkStreamExists(streamName).then(function(exists) {
+                if (!exists) return reject('Stream does not exist');
 
                 var options = {
                     uri: buildUrl(streamName),
@@ -28,12 +28,8 @@ module.exports = function(config) {
                     resolveWithFullResponse: true
                 };
 
-                return req(options).then(function(response){
-                    return resolve();
-                }).catch(function(err){
-                    return reject(err);
-                });
-            });
+                return req(options).then(resolve);
+            }).catch(reject);
         });
     };
 };
