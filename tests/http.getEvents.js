@@ -67,6 +67,7 @@ describe('Http Client - Get Events', function() {
     });
 
     it('Should get events reading forward with a length greater than the stream length return a maximum of 4096', function() {
+        this.timeout(10000);
         var client = eventstore.http(httpConfig);
 
         var testStream = 'TestStream-' + uuid.v4();

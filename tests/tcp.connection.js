@@ -13,7 +13,7 @@ describe('TCP Client - Test Connection', function() {
     });
 
     it('Should not connect on incorrect hostname', function() {
-        this.timeout(5000);
+        this.timeout(60 * 1000);
         var config = JSON.parse(JSON.stringify(tcpConfig));
         config.hostname = 'MadeToFailHostName';
 
@@ -30,6 +30,7 @@ describe('TCP Client - Test Connection', function() {
     });
 
     it('Should not connect on incorrect port', function() {
+        this.timeout(60 * 1000);
         var config = JSON.parse(JSON.stringify(tcpConfig));
         config.port = 9999;
 
