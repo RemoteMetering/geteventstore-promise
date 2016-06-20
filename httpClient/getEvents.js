@@ -1,6 +1,7 @@
 var debug = require('debug')('geteventstore:getevents'),
     req = require('request-promise'),
     assert = require('assert'),
+    _ = require('underscore'),
     url = require('url'),
     q = require('q');
 
@@ -17,9 +18,16 @@ module.exports = function(config) {
         return q().then(function() {
             assert(streamName, baseErr + 'Stream Name not provided');
 
-            startPosition = startPosition || 0;
             length = length || 1000;
+
+            if (length > 4096) {
+                console.warn('WARNING: Max event return limit exceeded. Using the max of 4096');
+                length = 4096;
+            }
+
             direction = direction || 'forward';
+            startPosition = startPosition || 0;
+            startPosition = startPosition == 0 && direction == 'backward' ? 'head' : startPosition;
 
             var options = {
                 uri: buildUrl(streamName, startPosition, length, direction),

@@ -1,6 +1,5 @@
 var debug = require('debug')('geteventstore:getAllStreamEvents'),
     createConnection = require('./createConnection'),
-    eventFactory = require('../eventFactory'),
     assert = require('assert'),
     q = require('q'),
     _ = require('underscore');
@@ -8,15 +7,21 @@ var debug = require('debug')('geteventstore:getAllStreamEvents'),
 var baseErr = 'Get All Stream Events - ';
 
 module.exports = function(config) {
-    return function(streamName, chunkSize) {
+    return function(streamName, chunkSize, startPosition) {
         return q.Promise(function(resolve, reject) {
             assert(streamName, baseErr + 'Stream Name not provided');
+
+            chunkSize = chunkSize || 1000;
+            if (chunkSize > 4096) {
+                console.warn('WARNING: Max event chunk size exceeded. Using the max of 4096');
+                chunkSize = 4096;
+            }
 
             var connection = createConnection(config, reject);
             var events = [];
 
-            function getNextChunk(startEvent) {
-                connection.readStreamEventsForward(streamName, startEvent, chunkSize || 250, true, false, null, config.credentials, function(result) {
+            function getNextChunk(startPosition) {
+                connection.readStreamEventsForward(streamName, startPosition, chunkSize, true, false, null, config.credentials, function(result) {
                     debug('', 'Result: ' + JSON.stringify(result));
                     if (!_.isEmpty(result.error))
                         return reject(baseErr + result.error);
@@ -32,7 +37,7 @@ module.exports = function(config) {
                     }
                 });
             }
-            getNextChunk(0);
+            getNextChunk(startPosition || 0);
         });
     };
 };

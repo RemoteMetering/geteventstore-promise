@@ -1,11 +1,11 @@
-var tcpConfig = require('./support/tcpConfig');
+var httpConfig = require('./support/httpConfig');
 var assert = require('assert');
 var eventstore = require('../index.js');
 var uuid = require('node-uuid');
 
-describe('TCP Client - Get All Stream Events', function() {
+describe('Http Client - Get All Stream Events', function() {
     it('Should write events and read back all stream events', function() {
-        var client = eventstore.tcp(tcpConfig);
+        var client = eventstore.http(httpConfig);
 
         var events = [];
         for (var k = 0; k < 1000; k++) {
@@ -25,7 +25,7 @@ describe('TCP Client - Get All Stream Events', function() {
     });
 
     it('Should write events and read back all events from start event', function() {
-        var client = eventstore.tcp(tcpConfig);
+        var client = eventstore.http(httpConfig);
 
         var events = [];
         for (var k = 0; k < 1000; k++) {

@@ -14,17 +14,10 @@ module.exports = function(config) {
     };
 
     return function() {
-        return q.Promise(function(resolve, reject){
-            var options = {
-                uri: buildUrl(),
-                method: 'GET'
-            };
-
-            return req(options).then(function(response){
-                return resolve();
-            }).catch(function(err){
-                return reject(err);
-            });
-        });
+        var options = {
+            uri: buildUrl(),
+            method: 'GET'
+        };
+        return req(options);
     };
 };
