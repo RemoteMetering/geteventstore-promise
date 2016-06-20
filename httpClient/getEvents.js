@@ -19,7 +19,12 @@ module.exports = function(config) {
             assert(streamName, baseErr + 'Stream Name not provided');
 
             length = length || 1000;
-            length = length > 4096 ? 4096 : length;
+
+            if (length > 4096) {
+                console.warn('WARNING: Max event return limit exceeded. Using the max of 4096');
+                length = 4096;
+            }
+
             direction = direction || 'forward';
             startPosition = startPosition || 0;
             startPosition = startPosition == 0 && direction == 'backward' ? 'head' : startPosition;

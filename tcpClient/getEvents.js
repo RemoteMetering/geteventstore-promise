@@ -14,7 +14,11 @@ module.exports = function(config) {
             direction = direction || 'forward';
             startPosition = startPosition == undefined && direction == 'backward' ? -1 : startPosition || 0;
             length = length || 1000;
-            length = length > 4096 ? 4096 : length;
+            
+            if (length > 4096) {
+                console.warn('WARNING: Max event return limit exceeded. Using the max of 4096');
+                length = 4096;
+            }
 
             var connection = createConnection(config, reject);
 

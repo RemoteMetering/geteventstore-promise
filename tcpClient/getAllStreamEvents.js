@@ -12,7 +12,10 @@ module.exports = function(config) {
             assert(streamName, baseErr + 'Stream Name not provided');
 
             chunkSize = chunkSize || 1000;
-            chunkSize = chunkSize > 4096 ? 4096 : chunkSize;
+            if (chunkSize > 4096) {
+                console.warn('WARNING: Max event chunk size exceeded. Using the max of 4096');
+                chunkSize = 4096;
+            }
 
             var connection = createConnection(config, reject);
             var events = [];
