@@ -1,3 +1,5 @@
+var globalHooks = require('./_globalHooks');
+
 var httpConfig = require('./support/httpConfig');
 var assert = require('assert');
 var eventstore = require('../index.js');

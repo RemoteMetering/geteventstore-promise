@@ -1,3 +1,5 @@
+var globalHooks = require('./_globalHooks');
+
 var httpConfig = require('./support/httpConfig');
 var assert = require('assert');
 var eventstore = require('../index.js');
@@ -180,7 +182,7 @@ describe('Projections', function() {
         });
 
          it('Should return content for test partioned projection', function(done) {
-            this.timeout(1000 * 5);
+            this.timeout(1000 * 10);
             var client = eventstore.http(httpConfig);
 
             var projectionName = 'TestProjection' + uuid.v4();
@@ -210,7 +212,7 @@ describe('Projections', function() {
                                     }).catch(done);
                                 }).catch(done);
                             }).catch(done);
-                        }, 1000);
+                        }, 4000);
                     }).catch(done);
                 }, 500);
             });

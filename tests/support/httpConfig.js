@@ -1,6 +1,6 @@
 module.exports = {
-	hostname: 'localhost',
-	port: 2113,
+	hostname: process.env.ES_HOST || 'localhost',
+	port: 2117,
 	credentials: {
 		username: 'admin',
 		password: 'changeit'
