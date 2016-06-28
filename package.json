@@ -1,6 +1,6 @@
 {
   "name": "geteventstore-promise",
-  "version": "1.1.8",
+  "version": "1.1.9",
   "description": "GetEventStore client using promises",
   "main": "index.js",
   "scripts": {
@@ -26,10 +26,10 @@
   "homepage": "https://github.com/RemoteMetering/geteventstore-promise",
   "dependencies": {
     "debug": "^2.2.0",
-    "event-store-client": "0.0.5",
+    "event-store-client": "0.0.7",
+    "lodash": "^4.13.1",
     "node-uuid": "^1.4.7",
     "q": "^1.4.1",
-    "request-promise": "^2.0.1",
-    "underscore": "^1.8.3"
+    "request-promise": "^2.0.1"
   }
 }

@@ -3,7 +3,7 @@ var assert = require('assert');
 var eventstore = require('../index.js');
 var uuid = require('node-uuid');
 var fs = require('fs');
-var _ = require('underscore');
+var _ = require('lodash');
 
 describe('Projections', function() {
     describe('Default Settings', function() {
@@ -61,17 +61,17 @@ describe('Projections', function() {
             });
         });
 
-        it('Should remove continous projection', function(done) {
+        it('Should remove continous projection', function() {
+            this.timeout(1000 * 9);
             var client = eventstore.http(httpConfig);
-            client.projections.stop(assertionProjection).then(function(stopResponse) {
+            return client.projections.stop(assertionProjection).then(function(stopResponse) {
                 setTimeout(function() {
                     assert.equal(stopResponse.name, assertionProjection);
-                    client.projections.remove(assertionProjection).then(function(removeResponse) {
+                    return client.projections.remove(assertionProjection).then(function(removeResponse) {
                         assert.equal(removeResponse.name, assertionProjection);
-                        done();
-                    }).catch(done);
+                    })
                 }, 1000);
-            }).catch(done);
+            })
         });
     });
 
@@ -163,6 +163,43 @@ describe('Projections', function() {
                     }).then(function() {
                         setTimeout(function() {
                             client.projections.getState(projectionName).then(function(projectionState) {
+                                assert.equal(projectionState.data.something, '123');
+
+                                client.projections.stop(projectionName).then(function(response) {
+                                    assert.equal(response.name, projectionName);
+                                    client.projections.remove(projectionName).then(function(response) {
+                                        assert.equal(response.name, projectionName);
+                                        done();
+                                    }).catch(done);
+                                }).catch(done);
+                            }).catch(done);
+                        }, 1000);
+                    }).catch(done);
+                }, 500);
+            });
+        });
+
+         it('Should return content for test partioned projection', function(done) {
+            this.timeout(1000 * 5);
+            var client = eventstore.http(httpConfig);
+
+            var projectionName = 'TestProjection' + uuid.v4();
+            var projectionContent = fs.readFileSync(__dirname + '/support/testPartionedProjection.js', {
+                encoding: 'utf8'
+            });
+
+            client.projections.assert(projectionName, projectionContent).then(function() {
+                setTimeout(function() {
+                    var testStream = 'TestProjectionStream-' + uuid.v4();
+                    client.writeEvent(testStream, 'TestProjectionEventType', {
+                        something: '123'
+                    }).then(function() {
+                        setTimeout(function() {
+                            var options ={
+                                partition: testStream
+                            };
+                          
+                            client.projections.getState(projectionName,options).then(function(projectionState) {
                                 assert.equal(projectionState.data.something, '123');
 
                                 client.projections.stop(projectionName).then(function(response) {

@@ -19,7 +19,7 @@ In your Node.js application:
 Returns events from a given stream.
 
 ##### streamName
-The name of the stream (as in Event Store) to read from.
+The name of the stream to read from.
 
 ##### startPosition (optional)
 If specified, the stream will be read starting at event number startPosition, otherwise *0*;
@@ -58,7 +58,7 @@ client.getEvents('TestStream', 0, 1000, 'forward') // defaults for getEvents if 
 Writes a single event of a specific type to a stream.
 
 ##### streamName
-The name of the stream (as in Event Store) to read from.
+The name of the stream to read from.
 
 ##### eventType
 The type of event to save. Any string value is accepted.
@@ -103,7 +103,7 @@ client.writeEvent(testStream, 'TestEventType', { something: '123' }).then(functi
 Writes an array of Event Store ready events to a stream.
 
 ##### streamName
-The name of the stream (as in Event Store) to read from.
+The name of the stream to read from.
 
 ##### events
 The array of Event Store ready events to save.
@@ -145,7 +145,7 @@ client.writeEvents(testStream, events).then(function() {
 Check if a stream exists, returns true or false.
 
 ##### streamName
-The name of the stream (as in Event Store) to check.
+The name of the stream to check.
 
 #### Example
 
@@ -175,7 +175,7 @@ client.checkStreamExists(projectionStreamName).then(function(exists) {
 Deletes a stream, fails the promise if stream does not exist.
 
 ##### streamName
-The name of the stream (as in Event Store) to delete.
+The name of the stream to delete.
 
 #### Example
 
@@ -237,7 +237,7 @@ client.ping().then(function() {
 * stop(projectionName)
 * reset(projectionName)
 * remove(projectionName)
-* getState(projectionName)
+* getState(projectionName, options)
 * getInfo(projectionName)
 * enableAll()
 * disableAll()
@@ -268,6 +268,13 @@ client.ping().then(function() {
 
 Returns the state of the Projection as a JSON object.
 
+##### projectionName
+The name of the projection to get state of.
+
+##### options(optional)
+    ##### partition
+    The name of the partition to retrieve.
+
 #### Example
 
 ```javascript
@@ -281,6 +288,7 @@ var client = eventstore.http({
                     password: 'changeit'
                 }
             });
+
 
 client.projections.getState('TestProjection').then(function(projectionState) {
     console.log('Projection State ', JSON.stringify(projectionState));
@@ -366,7 +374,7 @@ Github: [https://github.com/x-cubed/event-store-client](https://github.com/x-cub
 Returns all events from a given stream by Event Types.
 
 ##### streamName
-The name of the stream (as in Event Store) to read from.
+The name of the stream to read from.
 
 ##### eventTypes
 An array of event types to filter by.
@@ -406,7 +414,7 @@ client.getEventsByType('TestStream', ['TestType']).then(function(events){
 Returns all events from a given stream.
 
 ##### streamName
-The name of the stream (as in Event Store) to read from.
+The name of the stream to read from.
 
 ##### chunkSize (optional)
 The amount of events to read in each call to Event Store, defaults to *1000*, 
@@ -435,12 +443,70 @@ client.getAllStreamEvents('TestStream').then(function(events){
 
 ---
 
+## SubscribeToStreamFrom(streamName, fromEventNumber, onEventAppeared, onLiveProcessingStarted, onDropped, settings)
+
+Subscribes to a Stream from a given event number
+
+##### streamName
+The name of the stream to read from.
+
+##### fromEventNumber
+The event number to subribe from
+
+##### onEventAppeared (optional)
+function
+
+##### onLiveProcessingStarted
+function
+
+##### onDropped
+function
+
+##### settings
+function
+
+#### Example
+
+```javascript
+var eventstore = require('geteventstore-promise');
+
+var client = eventstore.tcp({
+                hostname: 'localhost',
+                port: 1113,
+                credentials: {
+                    username: 'admin',
+                    password: 'changeit'
+                }
+            });
+
+        var proccessedEventCount = 0;
+
+        function onEventAppeared(ev) {
+            proccessedEventCount++;
+            return;
+        };
+
+        function onLiveProcessingStarted() {
+            return;
+        }
+
+        function onDropped(reason) {
+            done('should not drop');
+        };
+
+client.SubscribeToStreamFrom('TestStream',0,onEventAppeared,onLiveProcessingStarted,onDropped ).then(function(events){
+    console.log('subsription started');
+});
+```
+
+---
+
 ## eventEnumerator(streamName, direction)
 
 Returns an events enumerator on which events can be iterated.
 
 ##### streamName
-The name of the stream (as in Event Store) to read from.
+The name of the stream to read from.
 
 ##### direction (optional)
 The direction to the read the stream. Can be either 'forward' or 'backward'. Defaults to *'forward'*.
