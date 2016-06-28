@@ -61,17 +61,17 @@ describe('Projections', function() {
             });
         });
 
-        it('Should remove continous projection', function(done) {
+        it('Should remove continous projection', function() {
+            this.timeout(1000 * 9);
             var client = eventstore.http(httpConfig);
-            client.projections.stop(assertionProjection).then(function(stopResponse) {
+            return client.projections.stop(assertionProjection).then(function(stopResponse) {
                 setTimeout(function() {
                     assert.equal(stopResponse.name, assertionProjection);
-                    client.projections.remove(assertionProjection).then(function(removeResponse) {
+                    return client.projections.remove(assertionProjection).then(function(removeResponse) {
                         assert.equal(removeResponse.name, assertionProjection);
-                        done();
-                    }).catch(done);
+                    })
                 }, 1000);
-            }).catch(done);
+            })
         });
     });
 
