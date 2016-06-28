@@ -1,3 +1,9 @@
+# 1.1.10 (2016-06-28)
+
+#### TCP Client
+
+- Feature: subscribeToStreamFrom to allow resolveLinkTos setting
+
 # 1.1.9 (2016-06-28)
 
 #### TCP Client
