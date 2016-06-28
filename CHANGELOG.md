@@ -1,3 +1,9 @@
+# 1.1.?? (2016-06-??)
+
+#### HTTP Client
+
+- Feature: get state of partitioned projection
+
 # 1.1.8 (2016-06-20)
 
 #### HTTP Client

@@ -179,6 +179,43 @@ describe('Projections', function() {
             });
         });
 
+         it('Should return content for test partioned projection', function(done) {
+            this.timeout(1000 * 5);
+            var client = eventstore.http(httpConfig);
+
+            var projectionName = 'TestProjection' + uuid.v4();
+            var projectionContent = fs.readFileSync(__dirname + '/support/testPartionedProjection.js', {
+                encoding: 'utf8'
+            });
+
+            client.projections.assert(projectionName, projectionContent).then(function() {
+                setTimeout(function() {
+                    var testStream = 'TestProjectionStream-' + uuid.v4();
+                    client.writeEvent(testStream, 'TestProjectionEventType', {
+                        something: '123'
+                    }).then(function() {
+                        setTimeout(function() {
+                            var options ={
+                                partition: testStream
+                            };
+                          
+                            client.projections.getState(projectionName,options).then(function(projectionState) {
+                                assert.equal(projectionState.data.something, '123');
+
+                                client.projections.stop(projectionName).then(function(response) {
+                                    assert.equal(response.name, projectionName);
+                                    client.projections.remove(projectionName).then(function(response) {
+                                        assert.equal(response.name, projectionName);
+                                        done();
+                                    }).catch(done);
+                                }).catch(done);
+                            }).catch(done);
+                        }, 1000);
+                    }).catch(done);
+                }, 500);
+            });
+        });
+
         it('Should return rejected promise for non-existant projection state', function() {
             var client = eventstore.http(httpConfig);
 
