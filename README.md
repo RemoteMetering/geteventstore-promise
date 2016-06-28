@@ -443,6 +443,64 @@ client.getAllStreamEvents('TestStream').then(function(events){
 
 ---
 
+## SubscribeToStreamFrom(streamName, fromEventNumber, onEventAppeared, onLiveProcessingStarted, onDropped, settings)
+
+Subscribes to a Stream from a given event number
+
+##### streamName
+The name of the stream to read from.
+
+##### fromEventNumber
+The event number to subribe from
+
+##### onEventAppeared (optional)
+function
+
+##### onLiveProcessingStarted
+function
+
+##### onDropped
+function
+
+##### settings
+function
+
+#### Example
+
+```javascript
+var eventstore = require('geteventstore-promise');
+
+var client = eventstore.tcp({
+                hostname: 'localhost',
+                port: 1113,
+                credentials: {
+                    username: 'admin',
+                    password: 'changeit'
+                }
+            });
+
+        var proccessedEventCount = 0;
+
+        function onEventAppeared(ev) {
+            proccessedEventCount++;
+            return;
+        };
+
+        function onLiveProcessingStarted() {
+            return;
+        }
+
+        function onDropped(reason) {
+            done('should not drop');
+        };
+
+client.SubscribeToStreamFrom('TestStream',0,onEventAppeared,onLiveProcessingStarted,onDropped ).then(function(events){
+    console.log('subsription started');
+});
+```
+
+---
+
 ## eventEnumerator(streamName, direction)
 
 Returns an events enumerator on which events can be iterated.

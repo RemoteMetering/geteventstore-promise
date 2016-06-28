@@ -1,5 +1,9 @@
 # 1.1.?? (2016-06-??)
 
+#### TCP Client
+
+- Feature: add subscribeToStreamFrom
+
 #### HTTP Client
 
 - Feature: get state of partitioned projection
