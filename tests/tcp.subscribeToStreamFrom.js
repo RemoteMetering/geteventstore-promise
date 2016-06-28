@@ -1,13 +1,13 @@
 var globalHooks = require('./_globalHooks');
 
 var tcpConfig = require('./support/tcpConfig');
-var assert = require('assert');
 var eventstore = require('../index.js');
 var uuid = require('node-uuid');
+var assert = require('assert');
+var q = require('q');
 
-describe('TCP Client - SubscribeToStreamFrom', function() {
+describe('TCP Client - Subscribe To Stream', function() {
     it('Should get all events written to a subscription stream', function(done) {
-
         this.timeout(9 * 1000);
         var client = eventstore.tcp(tcpConfig);
 
@@ -20,15 +20,9 @@ describe('TCP Client - SubscribeToStreamFrom', function() {
             return;
         };
 
-        function onLiveProcessingStarted() {
-            return;
-        }
-
         function onDropped(reason) {
             done('should not drop');
-        };
-
-
+        }
 
         var events = [];
         for (var k = 0; k < 10; k++) {
@@ -36,19 +30,54 @@ describe('TCP Client - SubscribeToStreamFrom', function() {
                 id: k
             }));
         }
-        
-        return client.writeEvents(testStream, events).then(function() {
-            return client.subscribeToStreamFrom(testStream, 0, onEventAppeared, onLiveProcessingStarted, onDropped).then(function(connection) {
-                setTimeout(function() {
 
+        return client.writeEvents(testStream, events).then(function() {
+            return client.subscribeToStreamFrom(testStream, 0, onEventAppeared, undefined, onDropped).then(function(connection) {
+                return q.delay(3000).then(function() {
                     assert.equal(10, proccessedEventCount);
-                    assert(connection,'Connection Expected');
+                    assert(connection, 'Connection Expected');
                     connection.close();
                     done();
-                }, 3000);
+                });
             });
         });
+    });
 
+    it('Should get all resolved events read from a linked stream', function(done) {
+        this.timeout(9 * 1000);
 
+        var client = eventstore.tcp(tcpConfig);
+        var testStream = 'TestStream-' + uuid.v4();
+        var connection;
+        var doDone = true;
+
+        function onEventAppeared(ev) {
+            assert(ev.link, 'link object expected');
+            if (doDone) {
+                connection.close();
+                done();
+            }
+            doDone = false;
+        };
+
+        function onDropped(reason) {
+            done('should not drop during test');
+        };
+
+        var events = [];
+        for (var k = 0; k < 10; k++) {
+            events.push(eventstore.eventFactory.NewEvent('TestEventType', {
+                id: k
+            }));
+        }
+
+        return client.writeEvents(testStream, events).then(function() {
+            var settings = {
+                resolveLinkTos: true
+            };
+            return client.subscribeToStreamFrom('$ce-TestStream', 5, onEventAppeared, undefined, onDropped, settings).then(function(subscriptionConnection) {
+                connection = subscriptionConnection;
+            });
+        });
     });
 });
