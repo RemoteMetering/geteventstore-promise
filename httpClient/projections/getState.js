@@ -1,7 +1,7 @@
 var debug = require('debug')('geteventstore:getProjectionState'),
     assert = require('assert'),
     req = require('request-promise'),
-    _ = require('underscore'),
+    _ = require('lodash'),
     url = require('url'),
     q = require('q');
 

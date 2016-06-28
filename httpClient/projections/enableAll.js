@@ -1,7 +1,7 @@
 var debug = require('debug')('geteventstore:enableAllProjections'),
     req = require('request-promise'),
     q = require('q'),
-    _ = require('underscore');
+    _ = require('lodash');
 
 module.exports = function(config) {
     var getAllProjectionsInfo = require('./getAllProjectionsInfo')(config);

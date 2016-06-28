@@ -3,7 +3,7 @@ var debug = require('debug')('geteventstore:writeEvent'),
     eventFactory = require('../eventFactory'),
     assert = require('assert'),
     q = require('q'),
-    _ = require('underscore');
+    _ = require('lodash');
 
 var baseErr = 'Write Event - ';
 

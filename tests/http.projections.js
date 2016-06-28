@@ -3,7 +3,7 @@ var assert = require('assert');
 var eventstore = require('../index.js');
 var uuid = require('node-uuid');
 var fs = require('fs');
-var _ = require('underscore');
+var _ = require('lodash');
 
 describe('Projections', function() {
     describe('Default Settings', function() {

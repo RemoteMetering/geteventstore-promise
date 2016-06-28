@@ -2,7 +2,7 @@ var debug = require('debug')('geteventstore:eventEnumerator'),
     createConnection = require('./createConnection'),
     assert = require('assert'),
     q = require('q'),
-    _ = require('underscore');
+    _ = require('lodash');
 
 var baseErr = 'Event Enumerator - ';
 

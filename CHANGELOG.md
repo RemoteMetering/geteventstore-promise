@@ -4,6 +4,11 @@
 
 - Feature: get state of partitioned projection
 
+#### Dependencies
+
+- replace underscore with lodash
+- upgrade version event-store-client 0.0.7
+
 # 1.1.8 (2016-06-20)
 
 #### HTTP Client

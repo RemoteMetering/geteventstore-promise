@@ -1,7 +1,7 @@
 var debug = require('debug')('geteventstore:getEventsByType'),
     assert = require('assert'),
     q = require('q'),
-    _ = require('underscore');
+    _ = require('lodash');
 
 var baseErr = 'Get Events by Type - ';
 
@@ -13,7 +13,7 @@ module.exports = function(config) {
             var getEvents = require('./getEvents')(config);
             return getEvents(streamName, startPosition, length, direction).then(function(events) {
                 return _.filter(events, function(event) {
-                    return _.contains(eventTypes, event.eventType);
+                    return _.includes(eventTypes, event.eventType);
                 });
             });
         });

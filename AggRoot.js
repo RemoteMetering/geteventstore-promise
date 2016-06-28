@@ -1,5 +1,5 @@
 var debug = require('debug')('rms:eventstore'),
-	_ = require('underscore');
+	_ = require('lodash');
 
 var AggRoot = function(when) {
 	var eventhandlers = when;

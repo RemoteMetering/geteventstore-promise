@@ -1,7 +1,7 @@
 var debug = require('debug')('geteventstore:getevents'),
     req = require('request-promise'),
     assert = require('assert'),
-    _ = require('underscore'),
+    _ = require('lodash'),
     url = require('url'),
     q = require('q');
 

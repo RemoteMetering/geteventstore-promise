@@ -27,9 +27,9 @@
   "dependencies": {
     "debug": "^2.2.0",
     "event-store-client": "0.0.7",
+    "lodash": "^4.13.1",
     "node-uuid": "^1.4.7",
     "q": "^1.4.1",
-    "request-promise": "^2.0.1",
-    "underscore": "^1.8.3"
+    "request-promise": "^2.0.1"
   }
 }
