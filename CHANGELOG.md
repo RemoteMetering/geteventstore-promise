@@ -1,3 +1,9 @@
+# 1.1.10 (2016-07-18)
+
+#### TCP Client
+
+- Upgrade to lastest event-store-client library(0.0.8)
+
 # 1.1.10 (2016-06-28)
 
 #### TCP Client
