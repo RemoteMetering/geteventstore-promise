@@ -18,7 +18,7 @@ var getNextBatch = function(config, streamName, state, length, direction) {
             connection.close();
 
             if (!_.isEmpty(result.error))
-                return reject(baseErr + result.error);
+                return reject(result.error);
 
             state.nextEventNumber = result.nextEventNumber;
             return resolve({

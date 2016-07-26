@@ -25,7 +25,7 @@ module.exports = function(config) {
                 debug('', 'Result: ' + JSON.stringify(result));
                 connection.close();
                 if (!_.isEmpty(result.error))
-                    return reject(baseErr + result.error);
+                    return reject(result.error);
 
                 return resolve(result);
             });
