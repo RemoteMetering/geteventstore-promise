@@ -43,7 +43,7 @@ module.exports = function(config) {
             debug('', 'Getting Events: ' + JSON.stringify(options));
             return req(options).then(function(response) {
                 response.entries.forEach(function(entry) {
-                    entry.data = JSON.parse(entry.data);
+                    if (entry.data) entry.data = JSON.parse(entry.data);
                 });
 
                 if (direction == 'forward')

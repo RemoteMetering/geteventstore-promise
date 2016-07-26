@@ -49,7 +49,7 @@ module.exports = function(config) {
 					debug('', 'Result: ' + JSON.stringify(response));
 
 					response.entries.forEach(function(entry) {
-						entry.data = JSON.parse(entry.data);
+						if (entry.data) entry.data = JSON.parse(entry.data);
 					});
 
 					events.push(response.entries.reverse());
@@ -61,9 +61,7 @@ module.exports = function(config) {
 
 					startPosition += chunkSize;
 					return getNextChunk();
-				}).catch(function(err) {
-					return reject(baseErr + err);
-				});
+				}).catch(reject);
 			}
 
 			getNextChunk();

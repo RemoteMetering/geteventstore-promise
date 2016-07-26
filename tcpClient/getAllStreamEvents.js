@@ -24,7 +24,7 @@ module.exports = function(config) {
                 connection.readStreamEventsForward(streamName, startPosition, chunkSize, true, false, null, config.credentials, function(result) {
                     debug('', 'Result: ' + JSON.stringify(result));
                     if (!_.isEmpty(result.error))
-                        return reject(baseErr + result.error);
+                        return reject(result.error);
 
                     events.push(result.events);
 

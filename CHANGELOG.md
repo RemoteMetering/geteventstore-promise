@@ -1,4 +1,16 @@
-# 1.1.10 (2016-07-18)
+# 1.1.12 (2016-07-26)
+
+#### HTTP Client
+
+- Fix: Only parse event data when defined
+- Fix: Return full error object on getAllStreamEvents
+
+#### TCP Client
+
+- Fix: Return full errors
+- Upgrade to lastest event-store-client library(0.0.9)
+
+# 1.1.11 (2016-07-18)
 
 #### TCP Client
 
