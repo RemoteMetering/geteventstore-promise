@@ -17,10 +17,10 @@ module.exports = function(config) {
             options = options || {};
             options.expectedVersion = options.expectedVersion || -2;
 
-            var events = [eventFactory.NewEvent(eventType, data, metaData)];
+            var dataToWrite = _.cloneDeep(data);
+            var events = [eventFactory.NewEvent(eventType, dataToWrite, metaData)];
 
             var connection = createConnection(config, reject);
-
             connection.writeEvents(streamName, options.expectedVersion, false, events, config.credentials, function(result) {
                 debug('', 'Result: ' + JSON.stringify(result));
                 connection.close();

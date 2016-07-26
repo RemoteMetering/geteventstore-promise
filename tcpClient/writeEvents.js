@@ -13,15 +13,17 @@ module.exports = function(config) {
             assert(streamName, baseErr + 'Stream Name not provided');
             assert(events, baseErr + 'Events not provided');
             assert.equal(true, events.constructor === Array, baseErr + 'Events should be an array');
+
             if (events.length == 0)
                 return resolve();
 
             options = options || {};
             options.expectedVersion = options.expectedVersion || -2;
 
-            var connection = createConnection(config, reject);
+            var eventsToWrite = _.cloneDeep(events);
 
-            connection.writeEvents(streamName, options.expectedVersion, false, events, config.credentials, function(result) {
+            var connection = createConnection(config, reject);
+            connection.writeEvents(streamName, options.expectedVersion, false, eventsToWrite, config.credentials, function(result) {
                 debug('', 'Result: ' + JSON.stringify(result));
                 connection.close();
                 if (!_.isEmpty(result.error))
