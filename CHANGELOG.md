@@ -1,3 +1,9 @@
+# 1.1.13 (2016-07-26)
+
+#### TCP Client
+
+- Fix: Create local references of events when writing
+
 # 1.1.12 (2016-07-26)
 
 #### HTTP Client
