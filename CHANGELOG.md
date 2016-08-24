@@ -1,3 +1,9 @@
+# 1.1.14 (2016-08-24)
+
+#### HTTP Client
+
+- Fix: GetEvents: When passing starting position of 0 for backward read, only event 0 should be returned. Was starting read over from the back of the stream(Potential breaking change)
+
 # 1.1.13 (2016-07-26)
 
 #### TCP Client
