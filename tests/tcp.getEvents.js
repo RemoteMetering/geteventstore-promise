@@ -42,6 +42,15 @@ describe('TCP Client - Get Events', function() {
         });
     });
 
+    it('Should get last event reading backward with larger size than events', function() {
+        var client = eventstore.tcp(tcpConfig);
+
+        return client.getEvents(testStream, 0, 250, 'backward').then(function(events) {
+            assert.equal(events.length, 1);
+            assert.equal(events[0].data.something, 1);
+        });
+    });
+
     it('Should not get any events when start event is greater than the stream length', function() {
         var client = eventstore.tcp(tcpConfig);
 

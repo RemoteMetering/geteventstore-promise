@@ -26,8 +26,7 @@ module.exports = function(config) {
             }
 
             direction = direction || 'forward';
-            startPosition = startPosition || 0;
-            startPosition = startPosition == 0 && direction == 'backward' ? 'head' : startPosition;
+            startPosition = startPosition == undefined && direction == 'backward' ? 'head' : startPosition || 0;
 
             var options = {
                 uri: buildUrl(streamName, startPosition, length, direction),
