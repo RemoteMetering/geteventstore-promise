@@ -8,7 +8,7 @@ before(function() {
 	this.timeout(10 * 1000);
 
 	if (eventstore == undefined) {
-		console.log('Starting in-mem ES');
+		console.log('Starting in-mem ES...');
 
 		var intTcpPort = '--int-tcp-port=' + esConfig.options.intTcpPort;
 		var extTcpPort = '--ext-tcp-port=' + esConfig.options.extTcpPort;
@@ -32,6 +32,7 @@ before(function() {
 })
 
 after(function(done) {
+	console.log('Killing in-mem ES...');
 	if (eventstore) eventstore.kill();
 	eventstore = undefined;
 	done();
