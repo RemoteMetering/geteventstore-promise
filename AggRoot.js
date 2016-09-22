@@ -1,4 +1,4 @@
-var debug = require('debug')('rms:eventstore'),
+var debug = require('debug')('geteventstore:aggRoot'),
 	_ = require('lodash');
 
 var AggRoot = function(when) {
@@ -11,7 +11,7 @@ var AggRoot = function(when) {
 			_.each(events, function(ev) {
 				if (eventhandlers[ev.eventType] !== undefined) {
 					eventhandlers[ev.eventType].call(self, ev);
-					if (ev.eventNumber) {
+					if (ev.eventNumber !== undefined) {
 						self._version = ev.eventNumber;
 					}
 				}
