@@ -1,3 +1,17 @@
+# 1.1.15 (2016-09-22)
+
+#### Aggregate Root
+
+- Fix: version of aggregrate not setting on event 0
+
+#### TCP Client
+
+- Upgrade to lastest event-store-client library(0.0.10)
+
+#### Misc.
+
+- Update to latest lodash(4.15.0)
+
 # 1.1.14 (2016-08-24)
 
 #### HTTP Client
