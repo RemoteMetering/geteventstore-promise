@@ -4,6 +4,7 @@ var httpConfig = require('./support/httpConfig');
 var assert = require('assert');
 var eventstore = require('../index.js');
 var uuid = require('node-uuid');
+var _ = require('lodash');
 
 describe('Http Client - Get Events', function() {
 
@@ -98,5 +99,33 @@ describe('Http Client - Get Events', function() {
                 assert.equal(events[4095].data.something, 4096);
             });
         })
+    });
+});
+
+describe('Http Client - Get Events Failure', function() {
+    var testStream = 'TestStream-' + uuid.v4();
+    var numberOfEvents = 10;
+
+    it('Should return 404 when stream does not exist', function() {
+        var client = eventstore.http(httpConfig);
+
+        return client.getEvents(testStream, undefined, undefined, 'forward').then(function(events) {
+            throw new Error('Should not have received events');
+        }).catch(function(err) {
+            assert.equal(404, err.statusCode, 'Should have received 404');
+        });
+    });
+
+    it('Should not return 404 when stream does not exist if ignore 404 is set on config', function() {
+        var httpConfigWithIgnore = _.cloneDeep(httpConfig);
+        httpConfigWithIgnore.ignore = [404];
+
+        var client = eventstore.http(httpConfigWithIgnore);
+
+        return client.getEvents(testStream, undefined, undefined, 'forward').then(function(events) {
+            throw new Error('Should not have received events');
+        }).catch(function(err) {
+            assert.equal(404, err.statusCode, 'Should have received 404');
+        });
     });
 });
