@@ -443,9 +443,62 @@ client.getAllStreamEvents('TestStream').then(function(events){
 
 ---
 
+## SubscribeToStream(streamName, onEventAppeared, onConfirm, onDropped, resloveLinkTos)
+
+Subscribes to a Stream (live subscription)
+
+##### streamName
+The name of the stream to read from.
+
+##### onEventAppeared (optional)
+function
+
+##### onConfirm
+function
+
+##### onDropped
+function
+
+##### resloveLinkTos
+function
+
+#### Example
+
+```javascript
+var eventstore = require('geteventstore-promise');
+
+var client = eventstore.tcp({
+                hostname: 'localhost',
+                port: 1113,
+                credentials: {
+                    username: 'admin',
+                    password: 'changeit'
+                }
+            });
+
+    
+
+        function onEventAppeared(ev) {
+            proccessedEventCount++;
+            return;
+        };
+
+        function onConfirm() {
+            return;
+        }
+
+        function onDropped(reason) {
+            done('should not drop');
+        };
+
+client.SubscribeToStream('TestStream',onEventAppeared,onConfirm,onDropped,false);
+```
+
+---
+
 ## SubscribeToStreamFrom(streamName, fromEventNumber, onEventAppeared, onLiveProcessingStarted, onDropped, settings)
 
-Subscribes to a Stream from a given event number
+Subscribes to a Stream from a given event number (Catch up Subscription)
 
 ##### streamName
 The name of the stream to read from.
@@ -494,9 +547,7 @@ var client = eventstore.tcp({
             done('should not drop');
         };
 
-client.SubscribeToStreamFrom('TestStream',0,onEventAppeared,onLiveProcessingStarted,onDropped ).then(function(events){
-    console.log('subsription started');
-});
+client.SubscribeToStreamFrom('TestStream',0,onEventAppeared,onLiveProcessingStarted,onDropped);
 ```
 
 ---

@@ -1,3 +1,11 @@
+# 1.1.16 (2016-11-10)
+
+#### TCP Client
+
+- Add Subcribe to stream to start a live subscription to a stream
+
+#### Misc.
+
 # 1.1.15 (2016-09-22)
 
 #### Aggregate Root
