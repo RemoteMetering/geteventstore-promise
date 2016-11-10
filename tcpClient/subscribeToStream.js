@@ -14,7 +14,6 @@ module.exports = function(config) {
             resolveLinkTos = resolveLinkTos || false;
 
             var connection = createConnection(config, reject);
-            console.log('connection', connection);
             connection.subscribeToStream(streamName, resolveLinkTos, onEventAppeared, onConfirmed, onDropped, config.credentials);
             resolve(connection);
         });
