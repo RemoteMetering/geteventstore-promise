@@ -23,6 +23,7 @@ module.exports = function(config) {
 		getEvents: require('./getEvents')(config),
 		getEventsByType: require('./getEventsByType')(config),
 		eventEnumerator: require('./eventEnumerator')(config),
+		subscribeToStream: require('./subscribeToStream')(config),
 		subscribeToStreamFrom: require('./subscribeToStreamFrom')(config)
 	};
 };
