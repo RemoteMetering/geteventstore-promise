@@ -1,3 +1,9 @@
+# 1.1.17 (2016-11-17)
+
+#### TCP Client
+
+- clean up console log on live subscription
+
 # 1.1.16 (2016-11-10)
 
 #### TCP Client
