@@ -3,7 +3,7 @@ var globalHooks = require('./_globalHooks');
 var httpConfig = require('./support/httpConfig');
 var assert = require('assert');
 var eventstore = require('../index.js');
-var uuid = require('node-uuid');
+var uuid = require('uuid');
 
 describe('Http Client - Write Event', function() {
     it('Write to a new stream and read the event', function() {

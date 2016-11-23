@@ -3,7 +3,7 @@ var globalHooks = require('./_globalHooks');
 var tcpConfig = require('./support/tcpConfig');
 var assert = require('assert');
 var eventstore = require('../index.js');
-var uuid = require('node-uuid');
+var uuid = require('uuid');
 
 describe('TCP Client - Write Events', function() {
     it('Write to a new stream and read the events', function() {
