@@ -2,7 +2,7 @@ var globalHooks = require('./_globalHooks');
 
 var tcpConfig = require('./support/tcpConfig');
 var eventstore = require('../index.js');
-var uuid = require('node-uuid');
+var uuid = require('uuid');
 var assert = require('assert');
 var q = require('q');
 

@@ -3,7 +3,7 @@ var globalHooks = require('./_globalHooks');
 var tcpConfig = require('./support/tcpConfig');
 var assert = require('assert');
 var eventstore = require('../index.js');
-var uuid = require('node-uuid');
+var uuid = require('uuid');
 
 describe('TCP Client - Test Connection', function() {
     it('Should connect and write event on correct connection properties', function() {
