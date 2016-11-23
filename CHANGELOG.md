@@ -1,3 +1,9 @@
+# 1.1.18 (2016-11-23)
+
+#### Dependencies
+
+- 'node-uuid' got deprecated and renamed to 'uuid'(3.0.0)
+
 # 1.1.17 (2016-11-17)
 
 #### TCP Client

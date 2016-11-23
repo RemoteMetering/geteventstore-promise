@@ -22,11 +22,11 @@ Returns events from a given stream.
 The name of the stream to read from.
 
 ##### startPosition (optional)
-If specified, the stream will be read starting at event number startPosition, otherwise *0*;
+If specified, the stream will be read starting at event number startPosition, otherwise *0*
 'head' will start reading from the back of the stream, if direction is specified as 'backward'
 
 ##### length (optional)
-The number of events to be read, defaults to *1000*, max of *4096*;
+The number of events to be read, defaults to *1000*, max of *4096*
 
 ##### direction (optional)
 The direction to the read the stream. Can be either 'forward' or 'backward'. Defaults to *'forward'*.
@@ -76,7 +76,7 @@ Any options to be specified (as documented in GetEvent Store documentation). Def
 
 ```javascript
 var eventstore = require('geteventstore-promise');
-var uuid = require('node-uuid');
+var uuid = require('uuid');
 
 var client = eventstore.http({
                 hostname: 'localhost',
@@ -116,7 +116,7 @@ Any options to be specified (as documented in GetEvent Store documentation). Def
 
 ```javascript
 var eventstore = require('geteventstore-promise');
-var uuid = require('node-uuid');
+var uuid = require('uuid');
 
 var client = eventstore.http({
                 hostname: 'localhost',
@@ -380,10 +380,10 @@ The name of the stream to read from.
 An array of event types to filter by.
 
 ##### startPosition (optional)
-If specified, the stream will be read starting at event number startPosition, otherwise *0*;
+If specified, the stream will be read starting at event number startPosition, otherwise *0*
 
 ##### length (optional)
-The number of events to be read, defaults to *1000*, max of *4096*;;
+The number of events to be read, defaults to *1000*, max of *4096*
 
 ##### direction (optional)
 The direction to the read the stream. Can be either 'forward' or 'backward'. Defaults to *'forward'*.
@@ -420,7 +420,7 @@ The name of the stream to read from.
 The amount of events to read in each call to Event Store, defaults to *1000*, 
 
 ##### startPosition (optional)
-If specified, the stream will be read starting at event number startPosition, otherwise *0*;
+If specified, the stream will be read starting at event number startPosition, otherwise *0*
 
 #### Example
 
@@ -595,8 +595,6 @@ enumerator.next(20).then(function(result) {
     //     isEndOfStream: true/false,
     //     events: [ ..., ..., ... ]
     // }
-
-    console.log('Result ' , result);
 });
 
 ```
