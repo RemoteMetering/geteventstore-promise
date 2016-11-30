@@ -1,8 +1,8 @@
 var debug = require('debug')('geteventstore:checkStreamExists'),
     req = require('request-promise'),
+    Promise = require('bluebird'),
     assert = require('assert'),
-    url = require('url'),
-    q = require('q');
+    url = require('url');
 
 var baseErr = 'Check Stream Exists - ';
 
@@ -14,7 +14,7 @@ module.exports = function(config) {
     };
 
     return function(streamName) {
-        return q().then(function() {
+        return Promise.resolve().then(function() {
             assert(streamName, baseErr + 'Stream Name not provided');
 
             var options = {

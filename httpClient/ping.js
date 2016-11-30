@@ -1,8 +1,8 @@
 var debug = require('debug')('geteventstore:ping'),
     req = require('request-promise'),
+    Promise = require('bluebird'),
     assert = require('assert'),
-    url = require('url'),
-    q = require('q');
+    url = require('url');
 
 var baseErr = 'Ping - ';
 

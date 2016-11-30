@@ -1,7 +1,7 @@
 var debug = require('debug')('geteventstore:sendScavengeCommand'),
-    q = require('q'),
-    url = require('url'),
-    req = require('request-promise');
+    req = require('request-promise'),
+    Promise = require('bluebird'),
+    url = require('url');
 
 module.exports = function(config) {
     var buildUrl = function() {

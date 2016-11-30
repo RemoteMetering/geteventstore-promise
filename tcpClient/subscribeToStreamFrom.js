@@ -1,15 +1,15 @@
 var debug = require('debug')('geteventstore:getAllStreamEvents'),
     EventStoreClient = require('event-store-client'),
     createConnection = require('./createConnection'),
+    Promise = require('bluebird'),
     assert = require('assert'),
-    q = require('q'),
     _ = require('lodash');
 
 var baseErr = 'Subscribe to Stream From - ';
 
 module.exports = function(config) {
     return function(streamName, fromEventNumber, onEventAppeared, onLiveProcessingStarted, onDropped, settings) {
-        return q.Promise(function(resolve, reject) {
+        return new Promise(function(resolve, reject) {
             assert(streamName, baseErr + 'Stream Name not provided');
             if (fromEventNumber == 0) fromEventNumber = undefined;
 

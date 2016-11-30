@@ -1,9 +1,9 @@
 var debug = require('debug')('geteventstore:getProjectionState'),
     assert = require('assert'),
     req = require('request-promise'),
+    Promise = require('bluebird'),
     _ = require('lodash'),
-    url = require('url'),
-    q = require('q');
+    url = require('url');
 
 var baseErr = 'Get Projection State - ';
 
@@ -15,12 +15,12 @@ module.exports = function(config) {
     };
 
     return function(name, options) {
-        return q().then(function() {
+        return Promise.resolve().then(function() {
             assert(name, baseErr + 'Name not provided');
 
             var qs = {};
             options = options || {};
-      
+
             if (!_.isEmpty(options.partition)) qs.partition = options.partition;
             var urlOptions = {
                 uri: buildUrl(name),

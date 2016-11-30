@@ -1,6 +1,6 @@
 var esConfig = require('./support/inMemEventStoreConfig');
 var spawn = require('child_process').spawn;
-var q = require('q');
+var Promise = require('bluebird');
 
 var eventstore;
 
@@ -26,9 +26,9 @@ before(function() {
 
 		eventstore = eventstore;
 
-		return q.delay(4000);
+		return Promise.delay(4000);
 	}
-	return q();
+	return Promise.resolve();
 })
 
 after(function(done) {

@@ -1,6 +1,6 @@
 var debug = require('debug')('geteventstore:disableAllProjections'),
     req = require('request-promise'),
-    q = require('q'),
+    Promise = require('bluebird'),
     _ = require('lodash');
 
 module.exports = function(config) {
@@ -8,12 +8,10 @@ module.exports = function(config) {
     var stopProjection = require('./stop')(config);
 
     return function() {
-        var disablePromises = [];
         return getAllProjectionsInfo().then(function(projectionsInfo) {
-            _.each(projectionsInfo.projections, function(projection) {
-                disablePromises.push(stopProjection(projection.name))
+            return Promise.map(projectionsInfo.projections, function(projection) {
+                return stopProjection(projection.name);
             });
-            return q.allSettled(disablePromises);
         });
     };
 };

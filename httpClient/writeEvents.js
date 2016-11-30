@@ -1,8 +1,8 @@
 var debug = require('debug')('geteventstore:writeEvents'),
     req = require('request-promise'),
+    Promise = require('bluebird'),
     assert = require('assert'),
-    url = require('url'),
-    q = require('q');
+    url = require('url');
 
 var baseErr = 'Write Events - ';
 
@@ -14,7 +14,7 @@ module.exports = function(config) {
     };
 
     return function(streamName, events, options) {
-        return q().then(function() {
+        return Promise.resolve().then(function() {
             assert(streamName, baseErr + 'Stream Name not provided');
             assert(events, baseErr + 'Events not provided');
             assert.equal(true, events.constructor === Array, baseErr + 'Events should be an array');

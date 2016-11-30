@@ -2,9 +2,9 @@ var globalHooks = require('./_globalHooks');
 
 var tcpConfig = require('./support/tcpConfig');
 var eventstore = require('../index.js');
-var uuid = require('uuid');
+var Promise = require('bluebird');
 var assert = require('assert');
-var q = require('q');
+var uuid = require('uuid');
 
 describe('TCP Client - Subscribe To Stream', function() {
     it('Should get all events written to a subscription stream', function(done) {
@@ -33,7 +33,7 @@ describe('TCP Client - Subscribe To Stream', function() {
 
         return client.writeEvents(testStream, events).then(function() {
             return client.subscribeToStreamFrom(testStream, 0, onEventAppeared, undefined, onDropped).then(function(connection) {
-                return q.delay(3000).then(function() {
+                return Promise.delay(3000).then(function() {
                     assert.equal(10, proccessedEventCount);
                     assert(connection, 'Connection Expected');
                     connection.close();

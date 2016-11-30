@@ -1,8 +1,8 @@
 var debug = require('debug')('geteventstore:deleteStream'),
     req = require('request-promise'),
+    Promise = require('bluebird'),
     assert = require('assert'),
-    url = require('url'),
-    q = require('q');
+    url = require('url');
 
 var baseErr = 'Delete Stream - ';
 
@@ -16,7 +16,7 @@ module.exports = function(config) {
     };
 
     return function(streamName) {
-        return q.Promise(function(resolve, reject) {
+        return new Promise(function(resolve, reject) {
             assert(streamName, baseErr + 'Stream Name not provided');
 
             checkStreamExists(streamName).then(function(exists) {
