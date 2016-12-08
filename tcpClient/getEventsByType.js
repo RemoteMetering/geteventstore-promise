@@ -1,13 +1,13 @@
 var debug = require('debug')('geteventstore:getEventsByType'),
+    Promise = require('bluebird'),
     assert = require('assert'),
-    q = require('q'),
     _ = require('lodash');
 
 var baseErr = 'Get Events by Type - ';
 
 module.exports = function(config) {
     return function(streamName, eventTypes, startPosition, length, direction) {
-        return q().then(function() {
+        return Promise.resolve().then(function() {
             assert(eventTypes, baseErr + 'Event Types not provided');
 
             var getEvents = require('./getEvents')(config);

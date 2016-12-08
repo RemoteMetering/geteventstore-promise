@@ -1,8 +1,8 @@
 var debug = require('debug')('geteventstore:startProjection'),
-    assert = require('assert'),
     req = require('request-promise'),
-    url = require('url'),
-    q = require('q');
+    Promise = require('bluebird'),
+    assert = require('assert'),
+    url = require('url');
 
 var baseErr = 'Start Projection - ';
 
@@ -14,7 +14,7 @@ module.exports = function(config) {
     };
 
     return function(name) {
-        return q().then(function() {
+        return Promise.resolve().then(function() {
             assert(name, baseErr + 'Name not provided');
 
             var options = {

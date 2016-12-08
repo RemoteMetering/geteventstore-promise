@@ -3,8 +3,8 @@ var uuid = require('uuid');
 
 module.exports = {
     NewEvent: function(eventType, data, metadata) {
-        assert.ok(eventType);
-        assert.ok(data);
+        assert(eventType);
+        assert(data);
 
         var event = {
             eventId: uuid.v4(),

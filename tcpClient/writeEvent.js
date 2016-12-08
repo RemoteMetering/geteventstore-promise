@@ -1,15 +1,15 @@
 var debug = require('debug')('geteventstore:writeEvent'),
     createConnection = require('./createConnection'),
     eventFactory = require('../eventFactory'),
+    Promise = require('bluebird'),
     assert = require('assert'),
-    q = require('q'),
     _ = require('lodash');
 
 var baseErr = 'Write Event - ';
 
 module.exports = function(config) {
     return function(streamName, eventType, data, metaData, options) {
-        return q.Promise(function(resolve, reject) {
+        return new Promise(function(resolve, reject) {
             assert(streamName, baseErr + 'Stream Name not provided');
             assert(eventType, baseErr + 'Event Type not provided');
             assert(data, baseErr + 'Event Data not provided');

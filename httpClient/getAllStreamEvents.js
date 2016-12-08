@@ -1,9 +1,9 @@
 var debug = require('debug')('geteventstore:getAllStreamEvents'),
 	req = require('request-promise'),
+	Promise = require('bluebird'),
 	assert = require('assert'),
 	_ = require('lodash'),
-	url = require('url'),
-	q = require('q');
+	url = require('url');
 
 var baseErr = 'Get All Stream Events - ';
 
@@ -29,7 +29,7 @@ module.exports = function(config) {
 	}
 
 	return function(streamName, chunkSize, startPosition) {
-		return q.Promise(function(resolve, reject) {
+		return new Promise(function(resolve, reject) {
 			assert(streamName, baseErr + 'Stream Name not provided');
 
 			startPosition = startPosition || 0;

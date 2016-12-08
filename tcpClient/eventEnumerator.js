@@ -1,14 +1,14 @@
 var debug = require('debug')('geteventstore:eventEnumerator'),
     createConnection = require('./createConnection'),
+    Promise = require('bluebird'),
     assert = require('assert'),
-    q = require('q'),
     _ = require('lodash');
 
 var baseErr = 'Event Enumerator - ';
 
 var getNextBatch = function(config, streamName, state, length, direction) {
     state.isFirstEnumeration = false;
-    return q.Promise(function(resolve, reject) {
+    return new Promise(function(resolve, reject) {
         assert(streamName, baseErr + 'Stream Name not provided');
 
         var connection = createConnection(config, reject);

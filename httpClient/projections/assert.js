@@ -1,14 +1,14 @@
 var debug = require('debug')('geteventstore:assertProjection'),
     req = require('request-promise'),
+    Promise = require('bluebird'),
     assert = require('assert'),
     _ = require('lodash'),
-    url = require('url'),
-    q = require('q');
+    url = require('url');
 
 var baseErr = 'Assert Projection - ';
 
 var doesProjectionExist = function(config, name) {
-    return q().then(function() {
+    return Promise.resolve().then(function() {
         var getAllProjectionsInfo = require('./getAllProjectionsInfo')(config);
         return getAllProjectionsInfo().then(function(projectionsInfo) {
             var projection = _.find(projectionsInfo.projections, function(projection) {
@@ -68,7 +68,7 @@ var buildUpdateOptions = function(config, name, projectionContent, emitEnabled) 
 
 module.exports = function(config) {
     return function(name, projectionContent, mode, enabled, checkpointsEnabled, emitEnabled) {
-        return q().then(function() {
+        return Promise.resolve().then(function() {
             assert(name, baseErr + 'Name not provided');
             assert(projectionContent, baseErr + 'Projecion Contnet not provided');
 
