@@ -476,8 +476,6 @@ var client = eventstore.tcp({
                 }
             });
 
-    
-
         function onEventAppeared(ev) {
             proccessedEventCount++;
             return;
