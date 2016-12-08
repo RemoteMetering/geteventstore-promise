@@ -1,3 +1,9 @@
+# 1.1.19 (2016-12-08)
+
+#### Dependencies
+
+- 'q' promise library replaced by bluebird (3.4.6)
+
 # 1.1.18 (2016-11-23)
 
 #### Dependencies
