@@ -443,7 +443,7 @@ client.getAllStreamEvents('TestStream').then(function(events){
 
 ---
 
-## SubscribeToStream(streamName, onEventAppeared, onConfirm, onDropped, resloveLinkTos)
+## SubscribeToStream(streamName, onEventAppeared, onConfirm, onDropped, resolveLinkTos)
 
 Subscribes to a Stream (live subscription)
 
@@ -459,7 +459,7 @@ function
 ##### onDropped
 function
 
-##### resloveLinkTos
+##### resolveLinkTos
 function
 
 #### Example
@@ -514,7 +514,13 @@ function
 function
 
 ##### settings
-function
+resolveLinkTos - Whether or not to resolve link events 
+
+maxLiveQueueSize - The max amount to buffer when processing from live subscription
+
+readBatchSize - The number of events to read per batch when reading history
+
+debug - in debug mode(true/false)
 
 #### Example
 

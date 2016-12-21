@@ -1,3 +1,9 @@
+# 1.1.20 (2016-12-21)
+
+#### TCP Client
+
+- SubscribeToStreamFrom, added missing event-store-client settings(maxLiveQueueSize, readBatchSize, debug)
+
 # 1.1.19 (2016-12-08)
 
 #### Dependencies
