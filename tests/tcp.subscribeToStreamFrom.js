@@ -29,7 +29,7 @@ describe('TCP Client - Subscribe To Stream', function() {
         }
 
         return client.writeEvents(testStream, events).then(function() {
-            return client.subscribeToStreamFrom(testStream, 0, onEventAppeared, undefined, onDropped, settings).then(function(connection) {
+            return client.subscribeToStreamFrom(testStream, 0, onEventAppeared, undefined, onDropped).then(function(connection) {
                 return Promise.delay(3000).then(function() {
                     assert.equal(10, processedEventCount);
                     assert(connection, 'Connection Expected');
