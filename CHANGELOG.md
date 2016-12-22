@@ -2,7 +2,7 @@
 
 #### HTTP Client
 
-- deleteStream, added option to hard delete streams
+- deleteStream, added option to hard delete streams(thanks @mjaric)
 
 #### TCP Client
 
