@@ -170,12 +170,15 @@ client.checkStreamExists(projectionStreamName).then(function(exists) {
 
 ---
 
-## deleteStream(streamName)
+## deleteStream(streamName, hardDelete)
 
 Deletes a stream, fails the promise if stream does not exist.
 
 ##### streamName
 The name of the stream to delete.
+
+##### hardDelete
+Hard delete the stream, defaults to false
 
 #### Example
 

@@ -1,5 +1,9 @@
 # 1.1.20 (2016-12-21)
 
+#### HTTP Client
+
+- deleteStream, added option to hard delete streams
+
 #### TCP Client
 
 - SubscribeToStreamFrom, added missing event-store-client settings(maxLiveQueueSize, readBatchSize, debug)
