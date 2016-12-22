@@ -15,7 +15,7 @@ module.exports = function(config) {
         return url.format(urlObj);
     };
 
-    return function(streamName) {
+    return function(streamName, hardDelete) {
         return new Promise(function(resolve, reject) {
             assert(streamName, baseErr + 'Stream Name not provided');
 
@@ -27,6 +27,14 @@ module.exports = function(config) {
                     method: 'DELETE',
                     resolveWithFullResponse: true
                 };
+                
+                if(hardDelete){
+                    options = Object.assign({}, options, {
+                        "headers" : {
+                            "ES-HardDelete": "true"
+                        } 
+                    });
+                }
 
                 return req(options).then(resolve);
             }).catch(reject);
