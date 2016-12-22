@@ -29,7 +29,11 @@ module.exports = function(config) {
                 };
                 
                 if(hardDelete){
-                    options = Object.assign({}, options, {'ES-HardDelete':true});
+                    options = Object.assign({}, options, {
+                        "headers" : {
+                            "ES-HardDelete": "true"
+                        } 
+                    });
                 }
 
                 return req(options).then(resolve);
