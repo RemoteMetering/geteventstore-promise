@@ -103,10 +103,8 @@ describe('HTTP Client - Persistent Subscription', function() {
                     readBatchSize: 121,
                 };
                 return client.persistentSubscriptions.assert(testSubscriptionName, testStream, options).then(function() {
-                    return Promise.delay(3000).then(function() {
-                        return client.persistentSubscriptions.getSubscriptionInfo(testSubscriptionName, testStream).then(function(result) {
-                            assert.equal(options.readBatchSize, result.config.readBatchSize);
-                        });
+                    return client.persistentSubscriptions.getSubscriptionInfo(testSubscriptionName, testStream).then(function(result) {
+                        assert.equal(options.readBatchSize, result.config.readBatchSize);
                     });
                 });
             });
@@ -169,29 +167,6 @@ describe('HTTP Client - Persistent Subscription', function() {
         });
     });
 
-    it('Should return persistent subscriptions info for all', function() {
-        this.timeout(9 * 1000);
-        var client = eventstore.http(httpConfig);
-        var testStream = 'TestStream-' + uuid.v4();
-
-        var events = [];
-        for (var k = 0; k < 10; k++) {
-            events.push(eventstore.eventFactory.NewEvent('TestEventType', {
-                id: k
-            }));
-        }
-
-        var testSubscriptionName = testStream;
-
-        return client.writeEvents(testStream, events).then(function() {
-            return client.persistentSubscriptions.assert(testSubscriptionName, testStream).then(function() {
-                return client.persistentSubscriptions.getAllSubscriptionsInfo().then(function(results) {
-                    assert.equal(5, results.length);
-                });
-            });
-        });
-    });
-
     it('Should return persistent subscriptions info for a stream', function() {
         this.timeout(9 * 1000);
         var client = eventstore.http(httpConfig);
@@ -210,6 +185,29 @@ describe('HTTP Client - Persistent Subscription', function() {
             return client.persistentSubscriptions.assert(testSubscriptionName, testStream).then(function() {
                 return client.persistentSubscriptions.getStreamSubscriptionsInfo(testStream).then(function(results) {
                     assert.equal(1, results.length);
+                });
+            });
+        });
+    });
+
+    it('Should return persistent subscriptions info for all', function() {
+        this.timeout(9 * 1000);
+        var client = eventstore.http(httpConfig);
+        var testStream = 'TestStream-' + uuid.v4();
+
+        var events = [];
+        for (var k = 0; k < 10; k++) {
+            events.push(eventstore.eventFactory.NewEvent('TestEventType', {
+                id: k
+            }));
+        }
+
+        var testSubscriptionName = testStream;
+
+        return client.writeEvents(testStream, events).then(function() {
+            return client.persistentSubscriptions.assert(testSubscriptionName, testStream).then(function() {
+                return client.persistentSubscriptions.getAllSubscriptionsInfo().then(function(results) {
+                    assert.equal(6, results.length);
                 });
             });
         });
