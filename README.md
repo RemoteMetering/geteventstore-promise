@@ -14,7 +14,7 @@ In your Node.js application:
 
 # Supported Methods
 
-## getEvents(streamName, startPosition, length, direction)
+## getEvents(streamName, startPosition, length, direction, resolveLinkTos)
 
 Returns events from a given stream.
 
@@ -30,6 +30,9 @@ The number of events to be read, defaults to *1000*, max of *4096*
 
 ##### direction (optional)
 The direction to the read the stream. Can be either 'forward' or 'backward'. Defaults to *'forward'*.
+
+##### resolveLinkTos (optional)
+Resolve linked events. Defaults to *true*
 
 #### Example
 
@@ -52,6 +55,41 @@ client.getEvents('TestStream', 0, 1000, 'forward') // defaults for getEvents if 
 ```
 
 ---
+
+## getAllStreamEvents(streamName, chunkSize, startPosition, resolveLinkTos)
+
+Returns all events from a given stream.
+
+##### streamName
+The name of the stream to read from.
+
+##### chunkSize (optional)
+The amount of events to read in each call to Event Store, defaults to *1000*, 
+
+##### startPosition (optional)
+If specified, the stream will be read starting at event number startPosition, otherwise *0*
+
+##### resolveLinkTos (optional)
+Resolve linked events. Defaults to *true*
+
+#### Example
+
+```javascript
+var eventstore = require('geteventstore-promise');
+
+var client = eventstore.http({
+                hostname: 'localhost',
+                port: 2113,
+                credentials: {
+                    username: 'admin',
+                    password: 'changeit'
+                }
+            });
+
+client.getAllStreamEvents('TestStream').then(function(events){
+    console.log('Events ', JSON.stringify(events));
+});
+```
 
 ## writeEvent(streamName, eventType, data, metaData, options)
 
@@ -366,13 +404,13 @@ Github: [https://github.com/x-cubed/event-store-client](https://github.com/x-cub
 
 # Common methods(same as HTTP, just use TCP configuration)
 
-* getEvents(streamName, startPosition, length, direction)
+* getEvents(streamName, startPosition, length, direction, resolveLinkTos)
 * writeEvent(streamName, eventType, data, metaData, options)
 * writeEvents(streamName, events, options)
 
 # Supported Methods 
 
-## getEventsByType(streamName, eventTypes, startPosition, length, direction)
+## getEventsByType(streamName, eventTypes, startPosition, length, direction, resolveLinkTos)
 
 Returns all events from a given stream by Event Types.
 
@@ -390,6 +428,9 @@ The number of events to be read, defaults to *1000*, max of *4096*
 
 ##### direction (optional)
 The direction to the read the stream. Can be either 'forward' or 'backward'. Defaults to *'forward'*.
+
+##### resolveLinkTos (optional)
+Resolve linked events. Defaults to *true*
 
 #### Example
 
@@ -412,7 +453,7 @@ client.getEventsByType('TestStream', ['TestType']).then(function(events){
 
 ---
 
-## getAllStreamEvents(streamName)
+## getAllStreamEvents(streamName, chunkSize, startPosition, resolveLinkTos)
 
 Returns all events from a given stream.
 
@@ -424,6 +465,9 @@ The amount of events to read in each call to Event Store, defaults to *1000*,
 
 ##### startPosition (optional)
 If specified, the stream will be read starting at event number startPosition, otherwise *0*
+
+##### resolveLinkTos (optional)
+Resolve linked events. Defaults to *true*
 
 #### Example
 
@@ -463,7 +507,7 @@ function
 function
 
 ##### resolveLinkTos
-function
+Resolve linked events
 
 #### Example
 
@@ -559,7 +603,7 @@ client.SubscribeToStreamFrom('TestStream',0,onEventAppeared,onLiveProcessingStar
 
 ---
 
-## eventEnumerator(streamName, direction)
+## eventEnumerator(streamName, direction, resolveLinkTos)
 
 Returns an events enumerator on which events can be iterated.
 
@@ -568,6 +612,9 @@ The name of the stream to read from.
 
 ##### direction (optional)
 The direction to the read the stream. Can be either 'forward' or 'backward'. Defaults to *'forward'*.
+
+##### resolveLinkTos (optional)
+Resolve linked events. Defaults to *true*
 
 ## Supported Functions
 
