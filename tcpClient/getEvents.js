@@ -14,7 +14,7 @@ module.exports = function(config) {
             direction = direction || 'forward';
             startPosition = startPosition == undefined && direction == 'backward' ? -1 : startPosition || 0;
             length = length || 1000;
-            resolveLinkTos = resolveLinkTos == undefined ? true : false;
+            resolveLinkTos = resolveLinkTos == undefined ? true : resolveLinkTos;
 
             if (length > 4096) {
                 console.warn('WARNING: Max event return limit exceeded. Using the max of 4096');
