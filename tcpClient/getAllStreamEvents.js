@@ -7,7 +7,7 @@ var debug = require('debug')('geteventstore:getAllStreamEvents'),
 var baseErr = 'Get All Stream Events - ';
 
 module.exports = function(config) {
-    return function(streamName, chunkSize, startPosition) {
+    return function(streamName, chunkSize, startPosition, resolveLinkTos) {
         return new Promise(function(resolve, reject) {
             assert(streamName, baseErr + 'Stream Name not provided');
 
@@ -16,12 +16,13 @@ module.exports = function(config) {
                 console.warn('WARNING: Max event chunk size exceeded. Using the max of 4096');
                 chunkSize = 4096;
             }
+            resolveLinkTos = resolveLinkTos == undefined ? true : resolveLinkTos;
 
             var connection = createConnection(config, reject);
             var events = [];
 
             function getNextChunk(startPosition) {
-                connection.readStreamEventsForward(streamName, startPosition, chunkSize, true, false, null, config.credentials, function(result) {
+                connection.readStreamEventsForward(streamName, startPosition, chunkSize, resolveLinkTos, false, null, config.credentials, function(result) {
                     debug('', 'Result: ' + JSON.stringify(result));
                     if (!_.isEmpty(result.error))
                         return reject(result.error);
