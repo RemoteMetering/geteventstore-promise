@@ -1,3 +1,9 @@
+# 1.1.21 (2017-01-04)
+
+#### All Clients
+
+- add resolveLinkTos optional param for all read functions
+
 # 1.1.20 (2016-12-22)
 
 #### HTTP Client

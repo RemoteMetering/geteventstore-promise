@@ -14,7 +14,7 @@ module.exports = function(config) {
         return url.format(urlObj);
     };
 
-    return function(streamName, startPosition, length, direction) {
+    return function(streamName, startPosition, length, direction, resolveLinkTos) {
         return Promise.resolve().then(function() {
             assert(streamName, baseErr + 'Stream Name not provided');
 
@@ -27,12 +27,14 @@ module.exports = function(config) {
 
             direction = direction || 'forward';
             startPosition = startPosition == undefined && direction == 'backward' ? 'head' : startPosition || 0;
+            resolveLinkTos = resolveLinkTos == undefined ? true : resolveLinkTos;
 
             var options = {
                 uri: buildUrl(streamName, startPosition, length, direction),
                 method: 'GET',
                 headers: {
-                    "Content-Type": "application/vnd.eventstore.events+json"
+                    "Content-Type": "application/vnd.eventstore.events+json",
+                    "ES-ResolveLinkTos": resolveLinkTos.toString()
                 },
                 qs: {
                     embed: 'body'
