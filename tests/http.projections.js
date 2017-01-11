@@ -15,6 +15,7 @@ describe('Projections', function() {
         });
 
         it('Should create continous projection', function() {
+            this.timeout(10 * 1000);
             var client = eventstore.http(httpConfig);
 
             return client.projections.assert(assertionProjection, assertionProjectionContent).then(function(response) {
@@ -23,6 +24,7 @@ describe('Projections', function() {
         });
 
         it('Should update existing projection', function() {
+            this.timeout(10 * 1000);
             var client = eventstore.http(httpConfig);
 
             return client.projections.assert(assertionProjection, assertionProjectionContent).then(function(response) {
@@ -31,6 +33,7 @@ describe('Projections', function() {
         });
 
         it('Should stop projection', function() {
+            this.timeout(10 * 1000);
             var client = eventstore.http(httpConfig);
 
             return client.projections.stop(assertionProjection).then(function(response) {
@@ -42,6 +45,7 @@ describe('Projections', function() {
         });
 
         it('Should start projection', function() {
+            this.timeout(10 * 1000);
             var client = eventstore.http(httpConfig);
 
             return client.projections.start(assertionProjection).then(function(response) {
@@ -53,6 +57,7 @@ describe('Projections', function() {
         });
 
         it('Should reset projection', function() {
+            this.timeout(10 * 1000);
             var client = eventstore.http(httpConfig);
 
             return client.projections.reset(assertionProjection).then(function(response) {
@@ -64,8 +69,9 @@ describe('Projections', function() {
         });
 
         it('Should remove continous projection', function() {
-            this.timeout(1000 * 9);
+            this.timeout(10 * 1000);
             var client = eventstore.http(httpConfig);
+
             return client.projections.stop(assertionProjection).then(function(stopResponse) {
                 setTimeout(function() {
                     assert.equal(stopResponse.name, assertionProjection);
@@ -84,8 +90,9 @@ describe('Projections', function() {
         });
 
         it('Should create one-time projection with all settings enabled', function(done) {
-            this.timeout(1000 * 5);
+            this.timeout(10 * 1000);
             var client = eventstore.http(httpConfig);
+
             client.projections.assert(assertionProjection, assertionProjectionContent, 'onetime', true, true, true).then(function(response) {
                 setTimeout(function() {
                     assert.equal(response.name, assertionProjection);
@@ -95,7 +102,9 @@ describe('Projections', function() {
         });
 
         it('Should remove one-time projection', function() {
+            this.timeout(10 * 1000);
             var client = eventstore.http(httpConfig);
+
             return client.projections.stop(assertionProjection).then(function(stopResponse) {
                 assert.equal(stopResponse.name, assertionProjection);
                 return client.projections.remove(assertionProjection).then(function(removeResponse) {
@@ -108,8 +117,8 @@ describe('Projections', function() {
     describe('Global Projections Operations', function() {
         it('Should enable all projections', function(done) {
             this.timeout(10 * 1000);
-
             var client = eventstore.http(httpConfig);
+
             client.projections.enableAll().then(function(response) {
                 setTimeout(function() {
                     client.projections.getAllProjectionsInfo().then(function(projectionsInfo) {
@@ -125,6 +134,7 @@ describe('Projections', function() {
         it('Should disable all projections', function(done) {
             this.timeout(1000 * 10);
             var client = eventstore.http(httpConfig);
+
             client.projections.disableAll().then(function(response) {
                 setTimeout(function() {
                     client.projections.getAllProjectionsInfo().then(function(projectionsInfo) {
@@ -140,6 +150,7 @@ describe('Projections', function() {
 
     describe('General', function() {
         it('Should return content with all eventstore projections information', function() {
+            this.timeout(10 * 1000);
             var client = eventstore.http(httpConfig);
 
             return client.projections.getAllProjectionsInfo().then(function(projectionsInfo) {
@@ -149,7 +160,7 @@ describe('Projections', function() {
         });
 
         it('Should return content for test projection state', function(done) {
-            this.timeout(1000 * 5);
+            this.timeout(10 * 1000);
             var client = eventstore.http(httpConfig);
 
             var projectionName = 'TestProjection';
@@ -181,7 +192,7 @@ describe('Projections', function() {
             });
         });
 
-         it('Should return content for test partioned projection', function(done) {
+        it('Should return content for test partioned projection', function(done) {
             this.timeout(1000 * 10);
             var client = eventstore.http(httpConfig);
 
@@ -197,11 +208,11 @@ describe('Projections', function() {
                         something: '123'
                     }).then(function() {
                         setTimeout(function() {
-                            var options ={
+                            var options = {
                                 partition: testStream
                             };
-                          
-                            client.projections.getState(projectionName,options).then(function(projectionState) {
+
+                            client.projections.getState(projectionName, options).then(function(projectionState) {
                                 assert.equal(projectionState.data.something, '123');
 
                                 client.projections.stop(projectionName).then(function(response) {
@@ -219,6 +230,7 @@ describe('Projections', function() {
         });
 
         it('Should return rejected promise for non-existant projection state', function() {
+            this.timeout(10 * 1000);
             var client = eventstore.http(httpConfig);
 
             return client.projections.getState('SomeProjectionNameThatDoesNotExist').catch(function(err) {
