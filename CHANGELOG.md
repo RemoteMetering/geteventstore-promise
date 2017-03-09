@@ -1,3 +1,9 @@
+# 1.1.21 (2017-03-09)
+
+#### HTTP Client
+
+- add timeout option
+
 # 1.1.21 (2017-01-04)
 
 #### All Clients
