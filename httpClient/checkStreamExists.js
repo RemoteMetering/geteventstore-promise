@@ -23,7 +23,8 @@ module.exports = function(config) {
                 json: true,
                 headers: {
                     "Content-Type": "application/vnd.eventstore.events+json"
-                }
+                },
+                timeout: config.timeout
             };
 
             return req(options).then(function(response) {

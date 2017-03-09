@@ -19,7 +19,7 @@ module.exports = function(config) {
             assert(events, baseErr + 'Events not provided');
             assert.equal(true, events.constructor === Array, baseErr + 'Events should be an array');
 
-            if (events.length == 0)
+            if (events.length === 0)
                 return;
 
             options = options || {};
@@ -33,7 +33,8 @@ module.exports = function(config) {
                 },
                 method: 'POST',
                 body: events,
-                json: true
+                json: true,
+                timeout: config.timeout
             };
             debug('', 'Write events: ' + JSON.stringify(reqOptions));
             return req(reqOptions);

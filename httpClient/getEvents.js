@@ -2,7 +2,6 @@ var debug = require('debug')('geteventstore:getevents'),
     req = require('request-promise'),
     Promise = require('bluebird'),
     assert = require('assert'),
-    _ = require('lodash'),
     url = require('url');
 
 var baseErr = 'Get Events - ';
@@ -26,8 +25,8 @@ module.exports = function(config) {
             }
 
             direction = direction || 'forward';
-            startPosition = startPosition == undefined && direction == 'backward' ? 'head' : startPosition || 0;
-            resolveLinkTos = resolveLinkTos == undefined ? true : resolveLinkTos;
+            startPosition = startPosition === undefined && direction === 'backward' ? 'head' : startPosition || 0;
+            resolveLinkTos = resolveLinkTos === undefined ? true : resolveLinkTos;
 
             var options = {
                 uri: buildUrl(streamName, startPosition, length, direction),
@@ -39,7 +38,8 @@ module.exports = function(config) {
                 qs: {
                     embed: 'body'
                 },
-                json: true
+                json: true,
+                timeout: config.timeout
             };
             debug('', 'Getting Events: ' + JSON.stringify(options));
             return req(options).then(function(response) {
@@ -47,7 +47,7 @@ module.exports = function(config) {
                     if (entry.data) entry.data = JSON.parse(entry.data);
                 });
 
-                if (direction == 'forward')
+                if (direction === 'forward')
                     return response.entries.reverse();
 
                 return response.entries;

@@ -1,4 +1,4 @@
-var globalHooks = require('./_globalHooks');
+require('./_globalHooks');
 
 var httpConfig = require('./support/httpConfig');
 var assert = require('assert');
@@ -10,7 +10,7 @@ describe('Http Client - Config', function() {
             var client = eventstore.http();
             done('Config should not pass assertion');
         } catch (err) {
-            assert.equal(err == undefined, false);
+            assert.equal(err === undefined, false);
             assert.equal(err.message, 'geteventstore-promise - HTTP client - config not provided');
             done();
         }
@@ -28,7 +28,7 @@ describe('Http Client - Config', function() {
             var client = eventstore.http(config);
             done();
         } catch (err) {
-            assert.equal(err == undefined, false);
+            assert.equal(err === undefined, false);
             assert.equal(err.message, 'geteventstore-promise - HTTP client - hostname property not provided');
             done();
         }
@@ -43,7 +43,7 @@ describe('Http Client - Config', function() {
             var client = eventstore.http(config);
             done();
         } catch (err) {
-            assert.equal(err == undefined, false);
+            assert.equal(err === undefined, false);
             assert.equal(err.message, 'geteventstore-promise - HTTP client - credentials property not provided');
             done();
         }

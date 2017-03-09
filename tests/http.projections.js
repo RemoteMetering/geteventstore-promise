@@ -1,4 +1,4 @@
-var globalHooks = require('./_globalHooks');
+require('./_globalHooks');
 
 var httpConfig = require('./support/httpConfig');
 var assert = require('assert');

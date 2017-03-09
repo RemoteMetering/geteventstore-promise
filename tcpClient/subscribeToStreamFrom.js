@@ -12,7 +12,7 @@ module.exports = function(config) {
         settings = settings || {};
         return new Promise(function(resolve, reject) {
             assert(streamName, baseErr + 'Stream Name not provided');
-            if (fromEventNumber == 0) fromEventNumber = undefined;
+            if (fromEventNumber === 0) fromEventNumber = undefined;
 
             var catchUpSettings = new EventStoreClient.CatchUpSubscription.Settings();
 

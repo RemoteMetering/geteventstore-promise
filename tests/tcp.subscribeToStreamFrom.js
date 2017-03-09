@@ -1,4 +1,4 @@
-var globalHooks = require('./_globalHooks');
+require('./_globalHooks');
 
 var tcpConfig = require('./support/tcpConfig');
 var eventstore = require('../index.js');

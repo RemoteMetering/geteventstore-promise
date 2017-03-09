@@ -14,7 +14,7 @@ module.exports = function(config) {
             assert(events, baseErr + 'Events not provided');
             assert.equal(true, events.constructor === Array, baseErr + 'Events should be an array');
 
-            if (events.length == 0)
+            if (events.length === 0)
                 return resolve();
 
             options = options || {};

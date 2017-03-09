@@ -16,7 +16,8 @@ module.exports = function(config) {
     return function() {
         var options = {
             uri: buildUrl(),
-            method: 'GET'
+            method: 'GET',
+            timeout: config.timeout
         };
         return req(options);
     };
