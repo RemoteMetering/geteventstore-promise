@@ -2,12 +2,12 @@ var assert = require('assert');
 var uuid = require('uuid');
 
 module.exports = {
-    NewEvent: function(eventType, data, metadata) {
+    NewEvent: function(eventType, data, metadata, eventId) {
         assert(eventType);
         assert(data);
 
         var event = {
-            eventId: uuid.v4(),
+            eventId: eventId || uuid.v4(),
             eventType: eventType,
             data: data
         }
