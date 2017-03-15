@@ -48,7 +48,7 @@ module.exports = function(config) {
 			function getNextChunk() {
 				var options = buildOptions(streamName, startPosition, chunkSize, resolveLinkTos);
 
-				req(options).then(function(response) {
+				return req(options).then(function(response) {
 					debug('', 'Result: ' + JSON.stringify(response));
 
 					response.entries.forEach(function(entry) {
