@@ -1,7 +1,4 @@
-var debug = require('debug')('geteventstore:disableAllProjections'),
-    req = require('request-promise'),
-    Promise = require('bluebird'),
-    _ = require('lodash');
+var Promise = require('bluebird');
 
 module.exports = function(config) {
     var getAllProjectionsInfo = require('./getAllProjectionsInfo')(config);

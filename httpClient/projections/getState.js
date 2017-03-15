@@ -1,7 +1,7 @@
 var debug = require('debug')('geteventstore:getProjectionState'),
-    assert = require('assert'),
     req = require('request-promise'),
     Promise = require('bluebird'),
+    assert = require('assert'),
     _ = require('lodash'),
     url = require('url');
 
@@ -32,7 +32,11 @@ module.exports = function(config) {
                 qs: qs
             };
 
-            return req(urlOptions);
+            debug('', 'Options: ' + JSON.stringify(options));
+            return req(urlOptions).then(function(response) {
+                debug('', 'Response: ' + JSON.stringify(response));
+                return response;
+            });
         });
     };
 };

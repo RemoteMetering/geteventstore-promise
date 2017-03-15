@@ -1,9 +1,7 @@
 var debug = require('debug')('geteventstore:getProjectionInfo'),
-    req = require('request-promise'),
     Promise = require('bluebird'),
     assert = require('assert'),
-    _ = require('lodash'),
-    url = require('url');
+    _ = require('lodash');
 
 var baseErr = 'Get Projection Info - ';
 

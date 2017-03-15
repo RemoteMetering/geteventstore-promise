@@ -51,7 +51,7 @@ var esDirectionWorkaroundHandler = function(direction) {
             }
             return result;
         }
-    }
+    };
 };
 
 var stateHandler = function(direction) {

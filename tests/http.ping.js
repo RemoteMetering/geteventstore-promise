@@ -1,8 +1,8 @@
 require('./_globalHooks');
 
 var httpConfig = require('./support/httpConfig');
-var assert = require('assert');
 var eventstore = require('../index.js');
+var assert = require('assert');
 
 describe('Http Client - Ping', function() {
     it('Should return successful when OK', function() {

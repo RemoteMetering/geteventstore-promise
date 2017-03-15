@@ -14,15 +14,15 @@ describe('TCP Client - Subscribe To Stream', function() {
         var processedEventCount = 0;
         var confirmCalled = false;
 
-        function onEventAppeared(ev) {
+        function onEventAppeared() {
             processedEventCount++;
-        };
+        }
 
         function onConfirmed() {
             confirmCalled = true;
-        };
+        }
 
-        function onDropped(reason) {
+        function onDropped() {
             done('should not drop');
         }
 
@@ -44,7 +44,7 @@ describe('TCP Client - Subscribe To Stream', function() {
                     done();
                 });
             });
-            events = [];
+            var events = [];
             for (var k = 0; k < 10; k++) {
                 events.push(eventstore.eventFactory.NewEvent('TestEventType', {
                     id: k

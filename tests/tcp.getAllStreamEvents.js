@@ -1,8 +1,8 @@
 require('./_globalHooks');
 
 var tcpConfig = require('./support/tcpConfig');
-var assert = require('assert');
 var eventstore = require('../index.js');
+var assert = require('assert');
 var uuid = require('uuid');
 
 describe('TCP Client - Get All Stream Events', function() {
@@ -21,7 +21,7 @@ describe('TCP Client - Get All Stream Events', function() {
             return client.getAllStreamEvents(testStream).then(function(events) {
                 assert.equal(events.length, 1000);
                 assert.equal(events[0].data.id, 0);
-                assert.equal(events[999].data.id, 999)
+                assert.equal(events[999].data.id, 999);
             });
         });
     });
@@ -41,7 +41,7 @@ describe('TCP Client - Get All Stream Events', function() {
             return client.getAllStreamEvents(testStream, 250, 500).then(function(events) {
                 assert.equal(events.length, 500);
                 assert.equal(events[0].data.id, 500);
-                assert.equal(events[499].data.id, 999)
+                assert.equal(events[499].data.id, 999);
             });
         });
     });
