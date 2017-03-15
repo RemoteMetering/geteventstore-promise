@@ -1,4 +1,4 @@
-var globalHooks = require('./_globalHooks');
+require('./_globalHooks');
 
 var httpConfig = require('./support/httpConfig');
 var eventstore = require('../index.js');
@@ -26,7 +26,7 @@ describe('HTTP Client - Persistent Subscription', function() {
             return client.persistentSubscriptions.assert(testSubscriptionName, testStream).then(function() {
                 return client.persistentSubscriptions.getEvents(testSubscriptionName, testStream, 10).then(function(result) {
                     assert.equal(10, result.entries.length);
-                    return result.ackAll().then(function(aa) {
+                    return result.ackAll().then(function() {
                         return client.persistentSubscriptions.getEvents(testSubscriptionName, testStream, 10).then(function(result) {
                             assert.equal(0, result.entries.length);
                         });
@@ -128,7 +128,7 @@ describe('HTTP Client - Persistent Subscription', function() {
         return client.writeEvents(testStream, events).then(function() {
             return client.persistentSubscriptions.assert(testSubscriptionName, testStream).then(function() {
                 return client.persistentSubscriptions.remove(testSubscriptionName, testStream).then(function() {
-                    return client.persistentSubscriptions.getEvents(testSubscriptionName, testStream, 10).then(function(result) {
+                    return client.persistentSubscriptions.getEvents(testSubscriptionName, testStream, 10).then(function() {
                         done('Should have not gotten events');
                     }).catch(function(err) {
                         try {
