@@ -32,6 +32,7 @@ module.exports = function(config) {
                 debug('', 'Response: ' + JSON.stringify(response));
                 return true;
             }).catch(function(err) {
+                if (err.statusCode !== 404) return Promise.reject(err);
                 return false;
             });
         });
