@@ -41,21 +41,22 @@ describe('Http Client - Delete stream', function() {
         });
     });
 
-    it('Should return successful on stream delete hard delete', function() {
+    it('Should return successful on stream delete hard delete', function(callback) {
         var client = eventstore.http(httpConfig);
 
         var testStream = 'TestStream-' + uuid.v4();
-        return client.writeEvent(testStream, 'TestEventType', {
+        client.writeEvent(testStream, 'TestEventType', {
             something: '123'
         }).then(function() {
             return client.deleteStream(testStream, true).then(function() {
-                return client.checkStreamExists(testStream).then(function(exists) {
-                    assert.equal(false, exists);
+                return client.checkStreamExists(testStream).then(function() {
+                    callback('Should not have returned resolved promise');
+                }).catch(function(err) {
+                    assert(err.message.indexOf('410') > -1, 'Expected http 410');
+                    callback();
                 });
-            }).catch(function(err) {
-                assert.fail(err.message);
-            });
-        });
+            }).catch(callback);
+        }).catch(callback);
     });
 
     it('Should fail when a stream does not exist', function() {

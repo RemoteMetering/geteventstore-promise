@@ -23,8 +23,22 @@ describe('Http Client - Check Stream Exist', function() {
     it('Should return false when a stream does not exist', function() {
         var client = eventstore.http(httpConfig);
 
-        return client.checkStreamExists('Non-existentStream').then(function(exists) {
+        return client.checkStreamExists('Non_existentStream').then(function(exists) {
             assert.equal(exists, false);
+        });
+    });
+
+    it('Should return rejected promise when the request error is anything other than a 404', function(callback) {
+        var config = _.cloneDeep(httpConfig);
+        config.port = 1;
+        var client = eventstore.http(config);
+
+        client.checkStreamExists('Non_existentStream_wrong_port_config').then(function() {
+            callback('Should not have returned successful promise');
+        }).catch(function(err) {
+            assert(err, 'No error received');
+            assert(err.message.indexOf('ECONNREFUSED') > -1, 'Connection refused error expected');
+            callback();
         });
     });
 
