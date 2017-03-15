@@ -41,6 +41,14 @@ module.exports = function(config) {
 			getAllProjectionsInfo: require('./projections/getAllProjectionsInfo')(config),
 			disableAll: require('./projections/disableAll')(config),
 			enableAll: require('./projections/enableAll')(config)
+		},
+		persistentSubscriptions: {
+			assert: require('./persistentSubscriptions/assert')(config),
+			remove: require('./persistentSubscriptions/remove')(config),
+			getEvents: require('./persistentSubscriptions/getEvents')(config),
+			getSubscriptionInfo: require('./persistentSubscriptions/getSubscriptionInfo')(config),
+			getAllSubscriptionsInfo: require('./persistentSubscriptions/getAllSubscriptionsInfo')(config),
+			getStreamSubscriptionsInfo: require('./persistentSubscriptions/getStreamSubscriptionsInfo')(config)
 		}
 	};
 };

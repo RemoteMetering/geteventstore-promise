@@ -270,6 +270,103 @@ client.ping().then(function() {
 ```
 ---
 
+# Persistent Subscriptions
+
+# Supported Methods
+
+* assert(subscriptionName, streamName, options)
+* getEvents(subscriptionName, streamName, count, embed)
+* getSubscriptionInfo(subscriptionName, streamName)
+* getStreamSubsciptionsInfo(streamName)
+* getAllSubsciptionsInfo()
+* remove(subscriptionName, streamName)
+
+## persistentSubscriptions.assert(subscriptionName, streamName, options)
+Upsert the persistent subscription
+
+#### subscriptionName
+The name of the subscription group
+
+#### streamName
+The stream name
+
+#### options(optional)
+The mode of the projection to create, defaults to 'continous'
+
+##### resolveLinktos
+Tells the subscription to resolve link events.
+
+##### startFrom
+Start the subscription from the position-th event in the stream.
+
+##### extraStatistics
+Tells the backend to measure timings on the clients so statistics will contain histograms of them.
+
+##### checkPointAfterMilliseconds
+The amount of time the system should try to checkpoint after.
+
+##### liveBufferSize
+The size of the live buffer (in memory) before resorting to paging.
+
+##### readBatchSize  
+The size of the read batch when in paging mode.
+
+##### bufferSize
+The number of messages that should be buffered when in paging mode.
+
+##### maxCheckPointCount
+The maximum number of messages not checkpointed before forcing a checkpoint.
+
+##### maxRetryCount
+Sets the number of times a message should be retried before being considered a bad message.
+
+##### maxSubscriberCount
+Sets the maximum number of allowed subscribers
+
+##### messageTimeoutMilliseconds
+Sets the timeout for a client before the message will be retried.
+
+##### minCheckPointCount
+The minimum number of messages to write a checkpoint for.
+
+##### namedConsumerStrategy
+RoundRobin/DispatchToSingle/Pinned
+
+## persistentSubscriptions.getEvents(subscriptionName, streamName, count, embed)
+Get events
+
+#### subscriptionName
+The name of the subscription group
+
+#### streamName
+The stream name
+
+#### count (optional)
+Number of events to return(defaults to 1)
+
+#### embed (optional)
+None, Content, Rich, Body, PrettyBody, TryHarder(defaults to 'Body')
+
+## persistentSubscriptions.getSubscriptionInfo(subscriptionName, streamName)
+Get specific subscriptions info
+
+#### subscriptionName
+The name of the subscription group
+
+#### streamName
+The stream name
+
+## persistentSubscriptions.getStreamSubscriptionsInfo(streamName)
+Get all subscriptions info for a stream
+
+#### streamName
+The stream name
+
+## persistentSubscriptions.getAllSubscriptionsInfo()
+Get all subscriptions info
+
+---
+
 # Projections
 
 # Supported Methods
