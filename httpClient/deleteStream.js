@@ -19,8 +19,8 @@ module.exports = function(config) {
         return new Promise(function(resolve, reject) {
             assert(streamName, baseErr + 'Stream Name not provided');
 
-            checkStreamExists(streamName).then(function(exists) {
-                if (!exists) return reject('Stream does not exist');
+            return checkStreamExists(streamName).then(function(exists) {
+                if (!exists) return reject(new Error('Stream does not exist'));
 
                 var options = {
                     uri: buildUrl(streamName),
