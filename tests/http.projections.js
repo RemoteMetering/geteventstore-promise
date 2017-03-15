@@ -178,13 +178,13 @@ describe('Projections', function() {
                             client.projections.getState(projectionName).then(function(projectionState) {
                                 assert.equal(projectionState.data.something, '123');
 
-                                client.projections.stop(projectionName).then(function(response) {
+                                return client.projections.stop(projectionName).then(function(response) {
                                     assert.equal(response.name, projectionName);
-                                    client.projections.remove(projectionName).then(function(response) {
+                                    return client.projections.remove(projectionName).then(function(response) {
                                         assert.equal(response.name, projectionName);
                                         done();
-                                    }).catch(done);
-                                }).catch(done);
+                                    });
+                                });
                             }).catch(done);
                         }, 1000);
                     }).catch(done);
@@ -215,13 +215,13 @@ describe('Projections', function() {
                             client.projections.getState(projectionName, options).then(function(projectionState) {
                                 assert.equal(projectionState.data.something, '123');
 
-                                client.projections.stop(projectionName).then(function(response) {
+                                return client.projections.stop(projectionName).then(function(response) {
                                     assert.equal(response.name, projectionName);
-                                    client.projections.remove(projectionName).then(function(response) {
+                                    return client.projections.remove(projectionName).then(function(response) {
                                         assert.equal(response.name, projectionName);
                                         done();
-                                    }).catch(done);
-                                }).catch(done);
+                                    });
+                                });
                             }).catch(done);
                         }, 4000);
                     }).catch(done);
