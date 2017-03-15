@@ -1,3 +1,10 @@
+# 1.1.24 (2017-03-15)
+
+#### HTTP Client
+
+- New Feature: persistent subscriptions v1
+- Fix: deleteStream, return error object on stream 404
+
 # 1.1.23 (2017-03-15)
 
 #### HTTP Client
