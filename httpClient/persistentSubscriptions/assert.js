@@ -9,10 +9,9 @@ var baseErr = 'Assert persistent subscriptions - ';
 var createPersistentSubscriptionRequest = function(name, streamName, options, config) {
     var urlObj = JSON.parse(JSON.stringify(config));
     urlObj.pathname = '/subscriptions/' + streamName + '/' + name;
-
     var uri = url.format(urlObj);
 
-    var request = {
+    return {
         uri: uri,
         method: 'PUT',
         json: true,
@@ -21,7 +20,6 @@ var createPersistentSubscriptionRequest = function(name, streamName, options, co
         },
         body: options
     };
-    return request;
 };
 
 var createPersistentSubscriptionOptions = function(options) {
@@ -29,7 +27,7 @@ var createPersistentSubscriptionOptions = function(options) {
 
     return {
         resolveLinktos: options.resolveLinktos,
-        startFrom: options.startFrom == undefined ? 0 : options.startFrom,
+        startFrom: options.startFrom === undefined ? 0 : options.startFrom,
         extraStatistics: options.extraStatistics,
         checkPointAfterMilliseconds: options.checkPointAfterMilliseconds,
         liveBufferSize: options.liveBufferSize,
@@ -50,14 +48,23 @@ module.exports = function(config) {
             assert(name, baseErr + 'Persistent Subscription Name not provided');
             assert(streamName, baseErr + 'Stream Name not provided');
 
-            var requestOptions = createPersistentSubscriptionOptions(options);
-            var createRequst = createPersistentSubscriptionRequest(name, streamName, requestOptions, config);
-            return req(createRequst).catch(function(err) {
+            var persistentSubscriptionOptions = createPersistentSubscriptionOptions(options);
+            var createRequest = createPersistentSubscriptionRequest(name, streamName, persistentSubscriptionOptions, config);
+            debug('', 'Options: ' + JSON.stringify(createRequest));
+            return req(createRequest).then(function(response) {
+                debug('', 'Response: ' + JSON.stringify(response));
+                return response;
+            }).catch(function(err) {
                 if (err.statusCode !== 409) throw err;
 
-                var updateRequest = createPersistentSubscriptionRequest(name, streamName, requestOptions, config);
+                var updateRequest = createPersistentSubscriptionRequest(name, streamName, persistentSubscriptionOptions, config);
                 updateRequest.method = 'POST';
-                return req(updateRequest);
+
+                debug('', 'Update Options: ' + JSON.stringify(updateRequest));
+                return req(updateRequest).then(function(response) {
+                    debug('', 'Response: ' + JSON.stringify(response));
+                    return response;
+                });
             });
         });
     };

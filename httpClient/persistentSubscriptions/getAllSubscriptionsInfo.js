@@ -19,6 +19,7 @@ module.exports = function(config) {
             }
         };
 
+        debug('', 'Options: ' + JSON.stringify(options));
         return req(options).then(function(response) {
             debug('', 'Response: ' + JSON.stringify(response));
             return response;

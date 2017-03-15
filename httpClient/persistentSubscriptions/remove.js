@@ -26,8 +26,12 @@ module.exports = function(config) {
             assert(name, baseErr + 'Persistent Subscription Name not provided');
             assert(streamName, baseErr + 'Stream Name not provided');
 
-            var createRequst = createRemoveRequest(name, streamName, config);
-            return req(createRequst);
+            var options = createRemoveRequest(name, streamName, config);
+            debug('', 'Options: ' + JSON.stringify(options));
+            return req(options).then(function(response) {
+                debug('', 'Response: ' + JSON.stringify(response));
+                return response;
+            });
         });
     };
 };

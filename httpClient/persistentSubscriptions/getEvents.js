@@ -43,14 +43,15 @@ var appendLinkFunctions = function(resultObject, links) {
     });
 };
 
-var buildResultObject = function(result) {
-    var resultObject = {
+var buildResultObject = function(response) {
+    debug('', 'Response: ' + JSON.stringify(response));
+    var result = {
         entries: []
     };
 
-    appendLinkFunctions(resultObject, result.links);
+    appendLinkFunctions(result, response.links);
 
-    resultObject.entries = _.map(result.entries, function(entry) {
+    result.entries = _.map(response.entries, function(entry) {
         if (entry.data) entry.data = JSON.parse(entry.data);
 
         var formattedEntry = {
@@ -60,7 +61,8 @@ var buildResultObject = function(result) {
         return formattedEntry;
     });
 
-    return resultObject;
+    debug('', 'Result: ' + JSON.stringify(result));
+    return result;
 };
 
 module.exports = function(config) {
@@ -69,11 +71,12 @@ module.exports = function(config) {
             assert(name, baseErr + 'Persistent Subscription Name not provided');
             assert(streamName, baseErr + 'Stream Name not provided');
 
-            count = count == undefined ? 1 : count;
+            count = count === undefined ? 1 : count;
             embed = embed || 'Body';
 
-            var getEventsRequest = createRequest(name, streamName, count, embed, config);
-            return req(getEventsRequest).then(buildResultObject);
+            var options = createRequest(name, streamName, count, embed, config);
+            debug('', 'Options: ' + JSON.stringify(options));
+            return req(options).then(buildResultObject);
         });
     };
 };
