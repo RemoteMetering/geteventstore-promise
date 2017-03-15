@@ -1,8 +1,8 @@
-var globalHooks = require('./_globalHooks');
+require('./_globalHooks');
 
 var httpConfig = require('./support/httpConfig');
-var assert = require('assert');
 var eventstore = require('../index.js');
+var assert = require('assert');
 var uuid = require('uuid');
 var _ = require('lodash');
 
@@ -19,8 +19,8 @@ describe('Http Client - Get Events', function() {
         for (var i = 1; i <= numberOfEvents; i++) {
             events.push(eventstore.eventFactory.NewEvent('TestEventType', {
                 something: i
-            }))
-        };
+            }));
+        }
 
         return client.writeEvents(testStream, events);
     });
@@ -89,8 +89,8 @@ describe('Http Client - Get Events', function() {
         for (var i = 1; i <= numberOfEvents; i++) {
             events.push(eventstore.eventFactory.NewEvent('TestEventType', {
                 something: i
-            }))
-        };
+            }));
+        }
 
         return client.writeEvents(testStream, events).then(function() {
             return client.getEvents(testStream, undefined, 5000).then(function(events) {
@@ -98,18 +98,17 @@ describe('Http Client - Get Events', function() {
                 assert.equal(events[0].data.something, 1);
                 assert.equal(events[4095].data.something, 4096);
             });
-        })
+        });
     });
 });
 
 describe('Http Client - Get Events Failure', function() {
     var testStream = 'TestStream-' + uuid.v4();
-    var numberOfEvents = 10;
 
     it('Should return 404 when stream does not exist', function() {
         var client = eventstore.http(httpConfig);
 
-        return client.getEvents(testStream, undefined, undefined, 'forward').then(function(events) {
+        return client.getEvents(testStream, undefined, undefined, 'forward').then(function() {
             throw new Error('Should not have received events');
         }).catch(function(err) {
             assert.equal(404, err.statusCode, 'Should have received 404');
@@ -122,7 +121,7 @@ describe('Http Client - Get Events Failure', function() {
 
         var client = eventstore.http(httpConfigWithIgnore);
 
-        return client.getEvents(testStream, undefined, undefined, 'forward').then(function(events) {
+        return client.getEvents(testStream, undefined, undefined, 'forward').then(function() {
             throw new Error('Should not have received events');
         }).catch(function(err) {
             assert.equal(404, err.statusCode, 'Should have received 404');

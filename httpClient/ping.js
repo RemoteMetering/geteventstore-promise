@@ -1,10 +1,6 @@
 var debug = require('debug')('geteventstore:ping'),
     req = require('request-promise'),
-    Promise = require('bluebird'),
-    assert = require('assert'),
     url = require('url');
-
-var baseErr = 'Ping - ';
 
 module.exports = function(config) {
     var buildUrl = function() {
@@ -16,8 +12,13 @@ module.exports = function(config) {
     return function() {
         var options = {
             uri: buildUrl(),
-            method: 'GET'
+            method: 'GET',
+            timeout: config.timeout
         };
-        return req(options);
+        debug('', 'Options: ' + JSON.stringify(options));
+        return req(options).then(function(response) {
+            debug('', 'Response: ' + JSON.stringify(response));
+            return response;
+        });
     };
 };

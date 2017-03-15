@@ -27,7 +27,7 @@ var getNextBatch = function(config, streamName, state, length, direction, resolv
             });
         }
 
-        if (direction == 'forward')
+        if (direction === 'forward')
             connection.readStreamEventsForward(streamName, state.nextEventNumber, length, resolveLinkTos, false, null, config.credentials, handleResult);
         else
             connection.readStreamEventsBackward(streamName, state.nextEventNumber, length, resolveLinkTos, false, null, config.credentials, handleResult);
@@ -37,7 +37,7 @@ var getNextBatch = function(config, streamName, state, length, direction, resolv
 var esDirectionWorkaroundHandler = function(direction) {
     var wasSwopped = false;
 
-    if (direction == 'forward') {
+    if (direction === 'forward') {
         wasSwopped = true;
         direction = 'backward';
     }
@@ -51,7 +51,7 @@ var esDirectionWorkaroundHandler = function(direction) {
             }
             return result;
         }
-    }
+    };
 };
 
 var stateHandler = function(direction) {
@@ -61,11 +61,11 @@ var stateHandler = function(direction) {
     };
 
     Handler.prototype.setToFirst = function() {
-        this.nextEventNumber = direction == 'forward' ? 0 : -1;
+        this.nextEventNumber = direction === 'forward' ? 0 : -1;
     };
 
     Handler.prototype.setToLast = function(length) {
-        this.nextEventNumber = direction == 'forward' ? -1 : length - 1;
+        this.nextEventNumber = direction === 'forward' ? -1 : length - 1;
     };
 
     Handler.prototype.setToPrevious = function(length) {
@@ -74,7 +74,7 @@ var stateHandler = function(direction) {
     };
 
     Handler.prototype.keepInBoundsAdjustment = function(length) {
-        if (direction == 'backward')
+        if (direction === 'backward')
             return length;
 
         var adjustment = length;
@@ -87,7 +87,7 @@ var stateHandler = function(direction) {
     };
 
     Handler.prototype.adjustByLength = function(length) {
-        this.nextEventNumber += direction == 'forward' ? length * -1 : length;
+        this.nextEventNumber += direction === 'forward' ? length * -1 : length;
     };
 
     return new Handler();
@@ -96,7 +96,7 @@ var stateHandler = function(direction) {
 module.exports = function(config) {
     return function(streamName, direction, resolveLinkTos) {
         direction = direction || 'forward';
-        resolveLinkTos = resolveLinkTos == undefined ? true : resolveLinkTos;
+        resolveLinkTos = resolveLinkTos === undefined ? true : resolveLinkTos;
         var state = stateHandler(direction);
 
         return {

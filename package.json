@@ -1,10 +1,10 @@
 {
   "name": "geteventstore-promise",
-  "version": "1.1.21",
+  "version": "1.1.23",
   "description": "GetEventStore client using promises",
   "main": "index.js",
   "scripts": {
-    "test": "mocha -R spec tests/"
+    "test": "mocha tests/"
   },
   "repository": {
     "type": "git",
@@ -25,11 +25,12 @@
   },
   "homepage": "https://github.com/RemoteMetering/geteventstore-promise",
   "dependencies": {
-    "bluebird": "^3.4.6",
-    "debug": "^2.2.0",
-    "event-store-client": "^0.0.10",
-    "lodash": "^4.15.0",
-    "request-promise": "^2.0.1",
-    "uuid": "^3.0.0"
+    "bluebird": "^3.5.0",
+    "debug": "^2.6.3",
+    "event-store-client": "^0.0.11",
+    "lodash": "^4.17.4",
+    "request": "^2.81.0",
+    "request-promise": "^4.1.1",
+    "uuid": "^3.0.1"
   }
 }

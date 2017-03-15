@@ -1,6 +1,6 @@
 var debug = require('debug')('geteventstore:getAllProjectionsInfo'),
-    url = require('url'),
-    req = require('request-promise');
+    req = require('request-promise'),
+    url = require('url');
 
 module.exports = function(config) {
     var buildUrl = function() {

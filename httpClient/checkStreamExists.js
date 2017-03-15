@@ -23,12 +23,16 @@ module.exports = function(config) {
                 json: true,
                 headers: {
                     "Content-Type": "application/vnd.eventstore.events+json"
-                }
+                },
+                timeout: config.timeout
             };
 
+            debug('', 'Options: ' + JSON.stringify(options));
             return req(options).then(function(response) {
+                debug('', 'Response: ' + JSON.stringify(response));
                 return true;
             }).catch(function(err) {
+                if (err.statusCode !== 404) return Promise.reject(err);
                 return false;
             });
         });

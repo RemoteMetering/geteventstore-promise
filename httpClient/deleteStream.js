@@ -25,18 +25,23 @@ module.exports = function(config) {
                 var options = {
                     uri: buildUrl(streamName),
                     method: 'DELETE',
-                    resolveWithFullResponse: true
+                    resolveWithFullResponse: true,
+                    timeout: config.timeout
                 };
-                
-                if(hardDelete){
+
+                if (hardDelete) {
                     options = Object.assign({}, options, {
-                        "headers" : {
+                        "headers": {
                             "ES-HardDelete": "true"
-                        } 
+                        }
                     });
                 }
 
-                return req(options).then(resolve);
+                debug('', 'Options: ' + JSON.stringify(options));
+                return req(options).then(function(response) {
+                    debug('', 'Response: ' + JSON.stringify(response));
+                    resolve();
+                });
             }).catch(reject);
         });
     };

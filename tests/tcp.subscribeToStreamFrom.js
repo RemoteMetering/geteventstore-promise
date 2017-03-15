@@ -1,4 +1,4 @@
-var globalHooks = require('./_globalHooks');
+require('./_globalHooks');
 
 var tcpConfig = require('./support/tcpConfig');
 var eventstore = require('../index.js');
@@ -13,11 +13,11 @@ describe('TCP Client - Subscribe To Stream', function() {
         var testStream = 'TestStream-' + uuid.v4();
         var processedEventCount = 0;
 
-        function onEventAppeared(ev) {
+        function onEventAppeared() {
             processedEventCount++;
-        };
+        }
 
-        function onDropped(reason) {
+        function onDropped() {
             done('should not drop');
         }
 
@@ -55,11 +55,11 @@ describe('TCP Client - Subscribe To Stream', function() {
                 done();
             }
             doDone = false;
-        };
+        }
 
-        function onDropped(reason) {
+        function onDropped() {
             done('should not drop during test');
-        };
+        }
 
         var events = [];
         for (var k = 0; k < 10; k++) {

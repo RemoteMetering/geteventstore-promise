@@ -33,7 +33,8 @@ module.exports = function(config) {
                 },
                 method: 'POST',
                 body: events,
-                json: true
+                json: true,
+                timeout: config.timeout
             };
             debug('', 'Write Event: ' + JSON.stringify(reqOptions));
             return req(reqOptions);

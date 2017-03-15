@@ -16,7 +16,7 @@ module.exports = function(config) {
                 console.warn('WARNING: Max event chunk size exceeded. Using the max of 4096');
                 chunkSize = 4096;
             }
-            resolveLinkTos = resolveLinkTos == undefined ? true : resolveLinkTos;
+            resolveLinkTos = resolveLinkTos === undefined ? true : resolveLinkTos;
 
             var connection = createConnection(config, reject);
             var events = [];

@@ -1,3 +1,37 @@
+# 1.1.23 (2017-03-15)
+
+#### HTTP Client
+
+- Fix checkStreamExists, return rejected promise on any error other than a 404
+
+#### TCP Client
+
+- Use latest event-store-client
+
+#### EventFactory
+
+- Added support for custom eventId(thanks @krazar)
+
+#### Dependencies
+
+- bluebird, 3.4.6 > 3.5.0
+- debug, 2.2.0 > 2.6.3
+- event-store-client, 0.0.10 > 0.0.11
+- lodash, 4.15.0 > 4.17.4
+- request-promise, 2.0.1 > 4.1.1 (requires request 2.81.0)
+- uuid, 3.0.0 > 3.0.1
+
+#### Misc
+
+- added missing debug logs
+
+
+# 1.1.22 (2017-03-09)
+
+#### HTTP Client
+
+- add timeout option
+
 # 1.1.21 (2017-01-04)
 
 #### All Clients

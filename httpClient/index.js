@@ -1,4 +1,6 @@
 var assert = require('assert');
+var _ = require('lodash');
+
 var baseErr = 'geteventstore-promise - HTTP client - ';
 
 module.exports = function(config) {
@@ -10,6 +12,7 @@ module.exports = function(config) {
 	assert(config.credentials.username, baseErr + 'credentials.username property not provided');
 	assert(config.credentials.password, baseErr + 'credentials.password property not provided');
 
+	if (config.timeout) assert(_.isNumber(config.timeout), baseErr + 'timeout not defined');
 	//Add additional internal configuration properties
 	config = JSON.parse(JSON.stringify(config));
 	config.protocol = 'http';
@@ -47,5 +50,5 @@ module.exports = function(config) {
 			getAllSubscriptionsInfo: require('./persistentSubscriptions/getAllSubscriptionsInfo')(config),
 			getStreamSubscriptionsInfo: require('./persistentSubscriptions/getStreamSubscriptionsInfo')(config)
 		}
-	}
-}
+	};
+};

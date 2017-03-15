@@ -25,9 +25,10 @@ module.exports = function(config) {
 			qs: {
 				embed: 'body'
 			},
-			json: true
+			json: true,
+			timeout: config.timeout
 		};
-	}
+	};
 
 	return function(streamName, chunkSize, startPosition, resolveLinkTos) {
 		return new Promise(function(resolve, reject) {
@@ -35,7 +36,7 @@ module.exports = function(config) {
 
 			startPosition = startPosition || 0;
 			chunkSize = chunkSize || 1000;
-			resolveLinkTos = resolveLinkTos == undefined ? true : resolveLinkTos;
+			resolveLinkTos = resolveLinkTos === undefined ? true : resolveLinkTos;
 
 			if (chunkSize > 4096) {
 				console.warn('WARNING: Max event chunk size exceeded. Using the max of 4096');
@@ -56,7 +57,7 @@ module.exports = function(config) {
 
 					events.push(response.entries.reverse());
 
-					if (response.headOfStream == true) {
+					if (response.headOfStream === true) {
 						events = _.flatten(events);
 						return resolve(events);
 					}

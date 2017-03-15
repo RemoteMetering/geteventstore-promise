@@ -1,8 +1,8 @@
-var globalHooks = require('./_globalHooks');
+require('./_globalHooks');
 
 var httpConfig = require('./support/httpConfig');
-var assert = require('assert');
 var eventstore = require('../index.js');
+var assert = require('assert');
 var uuid = require('uuid');
 
 describe('Http Client - Write Event', function() {

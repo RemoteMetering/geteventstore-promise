@@ -1,8 +1,8 @@
-var globalHooks = require('./_globalHooks');
+require('./_globalHooks');
 
 var tcpConfig = require('./support/tcpConfig');
-var assert = require('assert');
 var eventstore = require('../index.js');
+var assert = require('assert');
 var uuid = require('uuid');
 
 describe('TCP Client - Write Event', function() {

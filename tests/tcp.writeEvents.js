@@ -1,8 +1,8 @@
-var globalHooks = require('./_globalHooks');
+require('./_globalHooks');
 
 var tcpConfig = require('./support/tcpConfig');
-var assert = require('assert');
 var eventstore = require('../index.js');
+var assert = require('assert');
 var uuid = require('uuid');
 
 describe('TCP Client - Write Events', function() {
@@ -18,7 +18,7 @@ describe('TCP Client - Write Events', function() {
             return client.getEvents(testStream).then(function(events) {
                 assert.equal(events[0].data.something, '456');
             });
-        })
+        });
     });
 
     it('Write to a new stream and read the events by type', function() {
@@ -37,7 +37,7 @@ describe('TCP Client - Write Events', function() {
                 assert.equal(events[0].eventType, 'TestEventType');
                 assert.equal(events[0].data.something, '456');
             });
-        })
+        });
     });
 
      it('Should not fail promise if no events provided', function() {
@@ -58,9 +58,9 @@ describe('TCP Client - Write Events', function() {
 
         var testStream = 'TestStream-' + uuid.v4();
         return client.writeEvents(testStream, events).then(function() {
-            assert.fail('should not have succeeded')
+            assert.fail('should not have succeeded');
         }).catch(function(err) {
             assert(err, 'error expected');
-        })
+        });
     });
 });

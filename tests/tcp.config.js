@@ -1,16 +1,16 @@
-var globalHooks = require('./_globalHooks');
+require('./_globalHooks');
 
 var tcpConfig = require('./support/tcpConfig');
-var assert = require('assert');
 var eventstore = require('../index.js');
+var assert = require('assert');
 
 describe('TCP Client - Config', function() {
     it('Should return assertion error when config is undefined', function(done) {
         try {
-            var client = eventstore.tcp();
+            eventstore.tcp();
             done('Config should not pass assertion');
         } catch (err) {
-            assert.equal(err == undefined, false);
+            assert.equal(err === undefined, false);
             assert.equal(err.message, 'geteventstore-promise - TCP client - config not provided');
             done();
         }
@@ -25,10 +25,10 @@ describe('TCP Client - Config', function() {
                     password: 'changeit'
                 }
             };
-            var client = eventstore.tcp(config);
+            eventstore.tcp(config);
             done();
         } catch (err) {
-            assert.equal(err == undefined, false);
+            assert.equal(err === undefined, false);
             assert.equal(err.message, 'geteventstore-promise - TCP client - hostname property not provided');
             done();
         }
@@ -40,10 +40,10 @@ describe('TCP Client - Config', function() {
                 hostname: 'localhost',
                 port: 1113
             };
-            var client = eventstore.tcp(config);
+            eventstore.tcp(config);
             done();
         } catch (err) {
-            assert.equal(err == undefined, false);
+            assert.equal(err === undefined, false);
             assert.equal(err.message, 'geteventstore-promise - TCP client - credentials property not provided');
             done();
         }

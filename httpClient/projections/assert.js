@@ -74,7 +74,7 @@ module.exports = function(config) {
 
             mode = mode || 'continuous';
             enabled = enabled || true;
-            checkpointsEnabled = mode == 'continuous' ? true : checkpointsEnabled || false;
+            checkpointsEnabled = mode === 'continuous' ? true : checkpointsEnabled || false;
             emitEnabled = emitEnabled || false;
 
             return doesProjectionExist(config, name).then(function(projectionExists) {

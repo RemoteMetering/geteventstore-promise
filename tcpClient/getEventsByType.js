@@ -1,5 +1,4 @@
-var debug = require('debug')('geteventstore:getEventsByType'),
-    Promise = require('bluebird'),
+var Promise = require('bluebird'),
     assert = require('assert'),
     _ = require('lodash');
 
