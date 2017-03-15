@@ -1,8 +1,8 @@
 require('./_globalHooks');
 
 var tcpConfig = require('./support/tcpConfig');
-var assert = require('assert');
 var eventstore = require('../index.js');
+var assert = require('assert');
 var uuid = require('uuid');
 
 describe('TCP Client - Get Events', function() {
@@ -18,8 +18,8 @@ describe('TCP Client - Get Events', function() {
         for (var i = 1; i <= numberOfEvents; i++) {
             events.push(eventstore.eventFactory.NewEvent('TestEventType', {
                 something: i
-            }))
-        };
+            }));
+        }
 
         return client.writeEvents(testStream, events);
     });
@@ -88,8 +88,8 @@ describe('TCP Client - Get Events', function() {
         for (var i = 1; i <= numberOfEvents; i++) {
             events.push(eventstore.eventFactory.NewEvent('TestEventType', {
                 something: i
-            }))
-        };
+            }));
+        }
 
         return client.writeEvents(testStream, events).then(function() {
             return client.getEvents(testStream, undefined, 5000).then(function(events) {
@@ -97,6 +97,6 @@ describe('TCP Client - Get Events', function() {
                 assert.equal(events[0].data.something, 1);
                 assert.equal(events[4095].data.something, 4096);
             });
-        })
+        });
     });
 });

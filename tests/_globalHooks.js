@@ -29,7 +29,7 @@ before(function() {
 		return Promise.delay(4000);
 	}
 	return Promise.resolve();
-})
+});
 
 after(function(done) {
 	console.log('Killing in-mem ES...');

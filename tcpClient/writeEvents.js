@@ -1,6 +1,5 @@
 var debug = require('debug')('geteventstore:writeEvents'),
     createConnection = require('./createConnection'),
-    eventFactory = require('../eventFactory'),
     Promise = require('bluebird'),
     assert = require('assert'),
     _ = require('lodash');

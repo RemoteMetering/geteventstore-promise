@@ -1,9 +1,8 @@
-var debug = require('debug')('geteventstore:getAllStreamEvents'),
+var debug = require('debug')('geteventstore:subscribeToStreamFrom'),
     EventStoreClient = require('event-store-client'),
     createConnection = require('./createConnection'),
     Promise = require('bluebird'),
-    assert = require('assert'),
-    _ = require('lodash');
+    assert = require('assert');
 
 var baseErr = 'Subscribe to Stream From - ';
 
@@ -22,7 +21,8 @@ module.exports = function(config) {
             if (settings.debug) catchUpSettings.debug = settings.debug;
 
             var connection = createConnection(config, reject);
-            connection.subscribeToStreamFrom(streamName, fromEventNumber, config.credentials, onEventAppeared, onLiveProcessingStarted, onDropped, catchUpSettings);
+            var subscription = connection.subscribeToStreamFrom(streamName, fromEventNumber, config.credentials, onEventAppeared, onLiveProcessingStarted, onDropped, catchUpSettings);
+            debug('', 'Subscription:', subscription);
             resolve(connection);
         });
     };

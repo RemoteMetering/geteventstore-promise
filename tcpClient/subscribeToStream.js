@@ -1,8 +1,7 @@
-var debug = require('debug')('geteventstore:getAllStreamEvents'),
+var debug = require('debug')('geteventstore:subscribeToStream'),
     createConnection = require('./createConnection'),
     Promise = require('bluebird'),
-    assert = require('assert'),
-    _ = require('lodash');
+    assert = require('assert');
 
 var baseErr = 'Subscribe to Stream - ';
 
@@ -14,7 +13,8 @@ module.exports = function(config) {
             resolveLinkTos = resolveLinkTos || false;
 
             var connection = createConnection(config, reject);
-            connection.subscribeToStream(streamName, resolveLinkTos, onEventAppeared, onConfirmed, onDropped, config.credentials);
+            var subscription = connection.subscribeToStream(streamName, resolveLinkTos, onEventAppeared, onConfirmed, onDropped, config.credentials);
+            debug('', 'Subscription:', subscription);
             resolve(connection);
         });
     };

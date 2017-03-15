@@ -28,7 +28,7 @@ module.exports = function(config) {
 			json: true,
 			timeout: config.timeout
 		};
-	}
+	};
 
 	return function(streamName, chunkSize, startPosition, resolveLinkTos) {
 		return new Promise(function(resolve, reject) {

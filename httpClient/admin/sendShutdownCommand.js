@@ -1,6 +1,5 @@
 var debug = require('debug')('geteventstore:sendShutdownCommand'),
     req = require('request-promise'),
-    Promise = require('bluebird'),
     url = require('url');
 
 module.exports = function(config) {

@@ -37,7 +37,11 @@ module.exports = function(config) {
                     });
                 }
 
-                return req(options).then(resolve);
+                debug('', 'Options: ' + JSON.stringify(options));
+                return req(options).then(function(response) {
+                    debug('', 'Response: ' + JSON.stringify(response));
+                    resolve();
+                });
             }).catch(reject);
         });
     };

@@ -1,8 +1,8 @@
 require('./_globalHooks');
 
 var httpConfig = require('./support/httpConfig');
-var assert = require('assert');
 var eventstore = require('../index.js');
+var assert = require('assert');
 var uuid = require('uuid');
 var fs = require('fs');
 var _ = require('lodash');
@@ -77,9 +77,9 @@ describe('Projections', function() {
                     assert.equal(stopResponse.name, assertionProjection);
                     return client.projections.remove(assertionProjection).then(function(removeResponse) {
                         assert.equal(removeResponse.name, assertionProjection);
-                    })
+                    });
                 }, 1000);
-            })
+            });
         });
     });
 
@@ -119,7 +119,7 @@ describe('Projections', function() {
             this.timeout(10 * 1000);
             var client = eventstore.http(httpConfig);
 
-            client.projections.enableAll().then(function(response) {
+            client.projections.enableAll().then(function() {
                 setTimeout(function() {
                     client.projections.getAllProjectionsInfo().then(function(projectionsInfo) {
                         _.each(projectionsInfo.projections, function(projection) {
@@ -135,7 +135,7 @@ describe('Projections', function() {
             this.timeout(1000 * 10);
             var client = eventstore.http(httpConfig);
 
-            client.projections.disableAll().then(function(response) {
+            client.projections.disableAll().then(function() {
                 setTimeout(function() {
                     client.projections.getAllProjectionsInfo().then(function(projectionsInfo) {
                         _.each(projectionsInfo.projections, function(projection) {
