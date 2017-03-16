@@ -128,7 +128,7 @@ var client = eventstore.http({
 var testStream = 'TestStream-' + uuid.v4();
 
 client.writeEvent(testStream, 'TestEventType', { something: '123' }).then(function() {
-    client.getEvents(testStream).then(function(events){
+    return client.getEvents(testStream).then(function(events){
         console.log('Events ', JSON.stringify(events));
     });
 });
@@ -170,7 +170,7 @@ var events = [eventstore.eventFactory.NewEvent('TestEventType', { something: '45
 var testStream = 'TestStream-' + uuid.v4();
 
 client.writeEvents(testStream, events).then(function() {
-    client.getEvents(testStream).then(function(events){
+    return client.getEvents(testStream).then(function(events){
         console.log('Events ', JSON.stringify(events));
     });
 });
