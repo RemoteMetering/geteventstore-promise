@@ -1,5 +1,5 @@
 module.exports = {
-	cluster: process.env.ES_CLUSTER || 'C:/EventStore/EventStore.ClusterNode.exe',
+	cluster: process.env.ES_CLUSTER || 'C:/Software/EventStore/EventStore.ClusterNode.exe',
 	options: {
 		host: process.env.ES_HOST || 'localhost',
 		intTcpPort: 1116,

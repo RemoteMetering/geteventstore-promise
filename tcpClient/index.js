@@ -24,6 +24,8 @@ module.exports = function(config) {
 		getEventsByType: require('./getEventsByType')(config),
 		eventEnumerator: require('./eventEnumerator')(config),
 		subscribeToStream: require('./subscribeToStream')(config),
-		subscribeToStreamFrom: require('./subscribeToStreamFrom')(config)
+		subscribeToStreamFrom: require('./subscribeToStreamFrom')(config),
+		closeConnections: require('./connectionManager').closeAll,
+		getConnections: require('./connectionManager').getConnections,
 	};
 };

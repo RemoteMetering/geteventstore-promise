@@ -17,8 +17,7 @@ module.exports = function(config) {
             options = options || {};
             options.expectedVersion = options.expectedVersion || -2;
 
-            var dataToWrite = _.cloneDeep(data);
-            var events = [eventFactory.NewEvent(eventType, dataToWrite, metaData)];
+            var events = [eventFactory.NewEvent(eventType, data, metaData)];
 
             var connection = createConnection(config, reject);
             connection.writeEvents(streamName, options.expectedVersion, false, events, config.credentials, function(result) {

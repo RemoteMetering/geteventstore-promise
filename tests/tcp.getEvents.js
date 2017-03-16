@@ -6,7 +6,6 @@ var assert = require('assert');
 var uuid = require('uuid');
 
 describe('TCP Client - Get Events', function() {
-
     var testStream = 'TestStream-' + uuid.v4();
     var numberOfEvents = 10;
 
@@ -78,7 +77,7 @@ describe('TCP Client - Get Events', function() {
     });
 
     it('Should get events reading forward with a length greater than the stream length return a maximum of 4096', function() {
-        this.timeout(10000);
+        this.timeout(40000);
         var client = eventstore.tcp(tcpConfig);
 
         var testStream = 'TestStream-' + uuid.v4();

@@ -42,6 +42,7 @@ describe('TCP Client - Get All Stream Events', function() {
                 assert.equal(events.length, 500);
                 assert.equal(events[0].data.id, 500);
                 assert.equal(events[499].data.id, 999);
+                return client.closeConnections();
             });
         });
     });
