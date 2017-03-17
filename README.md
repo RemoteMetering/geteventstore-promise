@@ -1,5 +1,5 @@
 # geteventstore-promise
-A Node.js Event Store client implementation using promises
+A Node.js Event Store client API wrapper using promises
 
 [![NPM](https://nodei.co/npm/geteventstore-promise.png?stars&downloads&downloadRank)](https://nodei.co/npm/geteventstore-promise/) [![NPM](https://nodei.co/npm-dl/geteventstore-promise.png?months=3&height=3)](https://nodei.co/npm/geteventstore-promise/)
 
@@ -499,6 +499,10 @@ Uses the `event-store-client` as authored by Carey Bishop
 
 Github: [https://github.com/x-cubed/event-store-client](https://github.com/x-cubed/event-store-client)
 
+Uses the `eventstore-node` as authored by nicdex
+
+Github: [https://github.com/nicdex/eventstore-node](https://github.com/nicdex/eventstore-node)
+
 # Common methods(same as HTTP, just use TCP configuration)
 
 * getEvents(streamName, startPosition, length, direction, resolveLinkTos)
@@ -506,6 +510,12 @@ Github: [https://github.com/x-cubed/event-store-client](https://github.com/x-cub
 * writeEvents(streamName, events, options)
 
 # Supported Methods 
+
+## closeConnections()
+Closes all active connections.
+
+## closeConnections()
+Returns all active connections.
 
 ## getEventsByType(streamName, eventTypes, startPosition, length, direction, resolveLinkTos)
 
