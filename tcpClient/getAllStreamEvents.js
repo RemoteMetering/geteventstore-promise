@@ -34,7 +34,6 @@ module.exports = function(config) {
                         if (result.isEndOfStream === false)
                             return getNextChunk(result.nextEventNumber);
                         else {
-                            //connection.close();
                             events = _.flatten(events);
                             return events;
                         }

@@ -1,15 +1,16 @@
 var debug = require('debug')('geteventstore:writeEvent'),
-    createConnection = require('./createConnection'),
-    eventFactory = require('../eventFactory'),
+    connectionManager = require('./connectionManager'),
+    client = require('eventstore-node'),
     Promise = require('bluebird'),
     assert = require('assert'),
+     uuid = require('uuid'),
     _ = require('lodash');
 
 var baseErr = 'Write Event - ';
 
 module.exports = function(config) {
     return function(streamName, eventType, data, metaData, options) {
-        return new Promise(function(resolve, reject) {
+        return Promise.resolve().then(function() {
             assert(streamName, baseErr + 'Stream Name not provided');
             assert(eventType, baseErr + 'Event Type not provided');
             assert(data, baseErr + 'Event Data not provided');
@@ -17,16 +18,16 @@ module.exports = function(config) {
             options = options || {};
             options.expectedVersion = options.expectedVersion || -2;
 
-            var events = [eventFactory.NewEvent(eventType, data, metaData)];
+           var event = client.createJsonEventData(uuid.v4(), data, metaData, eventType);
 
-            var connection = createConnection(config, reject);
-            connection.writeEvents(streamName, options.expectedVersion, false, events, config.credentials, function(result) {
-                debug('', 'Result: ' + JSON.stringify(result));
-                connection.close();
-                if (!_.isEmpty(result.error))
-                    return reject(result.error);
+            return connectionManager.create(config).then(function(connection) {
+              return  connection.appendToStream(streamName, options.expectedVersion, [event], config.credentials).then(function(result) {
+                    debug('', 'Result: ' + JSON.stringify(result));
+                    if (!_.isEmpty(result.error))
+                         throw new Error(result.error);
 
-                return resolve(result);
+                    return result;
+                });
             });
         });
     };

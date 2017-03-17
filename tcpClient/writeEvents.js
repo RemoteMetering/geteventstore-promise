@@ -1,5 +1,4 @@
-var debug = require('debug')('geteventstore:writeEvents'),
-    connectionManager = require('./connectionManager'),
+var connectionManager = require('./connectionManager'),
     client = require('eventstore-node'),
     Promise = require('bluebird'),
     assert = require('assert'),
@@ -31,7 +30,6 @@ module.exports = function(config) {
                         return transaction.write(events);
                     }).then(function() {
                         return transaction.commit().then(function(result) {
-                            debug('', 'Result: ' + JSON.stringify(result));
                             return result;
                         });
                     });

@@ -7,6 +7,7 @@ module.exports = function(events) {
 			data: JSON.parse(event.data.toString()),
 			eventStreamId: event.eventStreamId,
 			eventNumber: event.eventNumber,
+			eventType: event.eventType,
 		};
 	});
 };
