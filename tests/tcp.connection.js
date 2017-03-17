@@ -47,4 +47,22 @@ describe('TCP Client - Test Connection', function() {
             assert(err.message);
         });
     });
+
+     it('Should close all streams', function() {
+        this.timeout(60 * 1000);
+        var config = JSON.parse(JSON.stringify(tcpConfig));
+        var client = eventstore.tcp(config);
+
+        var testStream = 'TestStream-' + uuid.v4();
+        return client.writeEvent(testStream, 'TestEventType', {
+            something: '123'
+        }).then(function() {
+            return client.closeConnections().then(function(){
+                return client.getConnections().then(function(connections){
+                    assert(connections);
+                    assert.equal(0,connections.length);
+                });
+            });
+        });
+    });
 });

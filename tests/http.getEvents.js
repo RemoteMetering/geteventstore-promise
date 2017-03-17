@@ -100,6 +100,17 @@ describe('Http Client - Get Events', function() {
             });
         });
     });
+
+    it('Should get linked to events and map correctly', function() {
+        var client = eventstore.http(httpConfig);
+
+        return client.getEvents('$ce-TestStream', 0, 1, 'forward').then(function(events) {
+            assert.equal(events.length, 1);
+            assert(events[0].data.something);
+            assert.equal(0, events[0].positionEventNumber);
+            assert.equal('$ce-TestStream', events[0].positionStreamId);
+        });
+    });
 });
 
 describe('Http Client - Get Events Failure', function() {
