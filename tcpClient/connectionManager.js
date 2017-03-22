@@ -21,6 +21,12 @@ var create = function(config) {
 
 		isConnecting = true;
 		var esConnection = esClient.EventStoreConnection.create(config, `tcp://${config.hostname}:${config.port}`);
+		esConnection.on('disconnected', function() {
+			debug('', 'Connection Disconnected');
+		});
+		esConnection.on('reconnecting', function() {
+			debug('', 'Connection Reconnecting...');
+		});
 		esConnection.on('closed', function(reason) {
 			debug('', 'Connection Closed:', reason);
 			if (esConnection === connection) {
@@ -37,7 +43,7 @@ var create = function(config) {
 			} catch (ex) {}
 		});
 		esConnection.on('connected', function() {
-			debug('', 'Connection Connected:');
+			debug('', 'Connection Connected');
 		});
 		return esConnection.connect().then(function() {
 			connection = esConnection;
