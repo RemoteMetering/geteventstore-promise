@@ -1,10 +1,10 @@
-# 1.2.0 (2017-03-22)
+# 1.1.25 (2017-03-22)
 
 #### TCP Client
 
+- Changed write+read backend to [https://github.com/nicdex/eventstore-node](https://github.com/nicdex/eventstore-node)
 - New Feature: connection pooling so calls use single open connection
 - New Feature: ablility to close connections and get connections
-
 
 # 1.1.24 (2017-03-15)
 
