@@ -7,8 +7,8 @@ var assert = require('assert');
 var uuid = require('uuid');
 var _ = require('lodash');
 
-describe('TCP Client - Get Events', function() {
-    it('Should handle parrell writes', function() {
+describe('TCP Client - Stress Tests', function() {
+    it('Should handle parallel writes', function() {
         this.timeout(20000);
         var client = eventstore.tcp(tcpConfig);
 
@@ -33,7 +33,7 @@ describe('TCP Client - Get Events', function() {
 
     });
 
-    it('Should handle parrell reads and writes', function(callback) {
+    it('Should handle parallel reads and writes', function(callback) {
         this.timeout(60000);
         var client = eventstore.tcp(tcpConfig);
 
