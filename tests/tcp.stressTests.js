@@ -30,7 +30,6 @@ describe('TCP Client - Stress Tests', function() {
                 assert.equal(events.length, 4096);
             });
         });
-
     });
 
     it('Should handle parallel reads and writes', function(callback) {
