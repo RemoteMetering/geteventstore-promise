@@ -17,7 +17,7 @@ module.exports = function(config) {
             if (events.length === 0) return;
 
             options = options || {};
-            options.transactionWriteSize = options.transactionWriteSize || 1000;
+            options.transactionWriteSize = options.transactionWriteSize || 50;
             options.expectedVersion = options.expectedVersion || -2;
 
             var eventsToWrite = _.map(events, function(ev) {
