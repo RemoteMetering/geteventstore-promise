@@ -1,5 +1,6 @@
 var debug = require('debug')('geteventstore:writeEvents'),
-    createConnection = require('./createConnection'),
+    connectionManager = require('./connectionManager'),
+    client = require('eventstore-node'),
     Promise = require('bluebird'),
     assert = require('assert'),
     _ = require('lodash');
@@ -8,27 +9,36 @@ var baseErr = 'Write Events - ';
 
 module.exports = function(config) {
     return function(streamName, events, options) {
-        return new Promise(function(resolve, reject) {
+        return Promise.resolve().then(function() {
             assert(streamName, baseErr + 'Stream Name not provided');
             assert(events, baseErr + 'Events not provided');
             assert.equal(true, events.constructor === Array, baseErr + 'Events should be an array');
 
-            if (events.length === 0)
-                return resolve();
+            if (events.length === 0) return;
 
             options = options || {};
+            options.transactionWriteSize = options.transactionWriteSize || 50;
             options.expectedVersion = options.expectedVersion || -2;
 
-            var eventsToWrite = _.cloneDeep(events);
+            var eventsToWrite = _.map(events, function(ev) {
+                return client.createJsonEventData(ev.eventId, ev.data, ev.metadata, ev.eventType);
+            });
 
-            var connection = createConnection(config, reject);
-            connection.writeEvents(streamName, options.expectedVersion, false, eventsToWrite, config.credentials, function(result) {
-                debug('', 'Result: ' + JSON.stringify(result));
-                connection.close();
-                if (!_.isEmpty(result.error))
-                    return reject(result.error);
-
-                return resolve(result);
+            return connectionManager.create(config).then(function(connection) {
+                return connection.startTransaction(streamName, options.expectedVersion, config.credentials).then(function(transaction) {
+                    var eventChunks = _.chunk(eventsToWrite, options.transactionWriteSize);
+                    return Promise.each(eventChunks, function(events) {
+                        return transaction.write(events);
+                    }).then(function() {
+                        return transaction.commit().then(function(result) {
+                            debug('', 'Result:', JSON.stringify(result));
+                            return result;
+                        });
+                    }).catch(function(err) {
+                        transaction.rollback();
+                        throw err;
+                    });
+                });
             });
         });
     };

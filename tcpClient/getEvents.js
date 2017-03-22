@@ -1,5 +1,6 @@
 var debug = require('debug')('geteventstore:getevents'),
-    createConnection = require('./createConnection'),
+    connectionManager = require('./connectionManager'),
+    mapEvents = require('./utilities/mapEvents'),
     Promise = require('bluebird'),
     assert = require('assert'),
     _ = require('lodash');
@@ -8,7 +9,7 @@ var baseErr = 'Get Events - ';
 
 module.exports = function(config) {
     return function(streamName, startPosition, length, direction, resolveLinkTos) {
-        return new Promise(function(resolve, reject) {
+        return Promise.resolve().then(function() {
             assert(streamName, baseErr + 'Stream Name not provided');
 
             direction = direction || 'forward';
@@ -21,21 +22,18 @@ module.exports = function(config) {
                 length = 4096;
             }
 
-            var connection = createConnection(config, reject);
+            return connectionManager.create(config).then(function(connection) {
+                function handleResult(result) {
+                    debug('', 'Result: ' + JSON.stringify(result));
+                    if (!_.isEmpty(result.error)) throw new Error(result.error);
+                    return mapEvents(result.events);
+                }
 
-            function handleResult(result) {
-                connection.close();
-                debug('', 'Result: ' + JSON.stringify(result));
-                if (!_.isEmpty(result.error))
-                    return reject(result.error);
-
-                return resolve(result.events);
-            }
-
-            if (direction === 'forward')
-                connection.readStreamEventsForward(streamName, startPosition, length, resolveLinkTos, false, null, config.credentials, handleResult);
-            else
-                connection.readStreamEventsBackward(streamName, startPosition, length, resolveLinkTos, false, null, config.credentials, handleResult);
+                if (direction === 'forward')
+                    return connection.readStreamEventsForward(streamName, startPosition, length, resolveLinkTos, config.credentials).then(handleResult);
+                else
+                    return connection.readStreamEventsBackward(streamName, startPosition, length, resolveLinkTos, config.credentials).then(handleResult);
+            });
         });
     };
 };

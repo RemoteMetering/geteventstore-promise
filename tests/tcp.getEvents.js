@@ -6,7 +6,6 @@ var assert = require('assert');
 var uuid = require('uuid');
 
 describe('TCP Client - Get Events', function() {
-
     var testStream = 'TestStream-' + uuid.v4();
     var numberOfEvents = 10;
 
@@ -30,6 +29,10 @@ describe('TCP Client - Get Events', function() {
         return client.getEvents(testStream, undefined, undefined, 'forward').then(function(events) {
             assert.equal(events.length, 10);
             assert.equal(events[0].data.something, 1);
+            assert.equal('TestEventType', events[0].eventType);
+            assert(events[0].created);
+            assert(events[0].metadata);
+            assert(events[0].isJson !== undefined);
         });
     });
 
@@ -78,7 +81,7 @@ describe('TCP Client - Get Events', function() {
     });
 
     it('Should get events reading forward with a length greater than the stream length return a maximum of 4096', function() {
-        this.timeout(10000);
+        this.timeout(40000);
         var client = eventstore.tcp(tcpConfig);
 
         var testStream = 'TestStream-' + uuid.v4();
@@ -97,6 +100,17 @@ describe('TCP Client - Get Events', function() {
                 assert.equal(events[0].data.something, 1);
                 assert.equal(events[4095].data.something, 4096);
             });
+        });
+    });
+
+    it('Should get linked to events and map correctly', function() {
+        var client = eventstore.tcp(tcpConfig);
+
+        return client.getEvents('$ce-TestStream', 0, 1, 'forward').then(function(events) {
+            assert.equal(events.length, 1);
+            assert(events[0].data.something);
+            assert.equal(0, events[0].positionEventNumber);
+            assert.equal('$ce-TestStream', events[0].positionStreamId);
         });
     });
 });

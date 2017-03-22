@@ -1,5 +1,6 @@
 var debug = require('debug')('geteventstore:getAllStreamEvents'),
-    createConnection = require('./createConnection'),
+    connectionManager = require('./connectionManager'),
+    mapEvents = require('./utilities/mapEvents'),
     Promise = require('bluebird'),
     assert = require('assert'),
     _ = require('lodash');
@@ -8,7 +9,7 @@ var baseErr = 'Get All Stream Events - ';
 
 module.exports = function(config) {
     return function(streamName, chunkSize, startPosition, resolveLinkTos) {
-        return new Promise(function(resolve, reject) {
+        return Promise.resolve().then(function() {
             assert(streamName, baseErr + 'Stream Name not provided');
 
             chunkSize = chunkSize || 1000;
@@ -18,27 +19,29 @@ module.exports = function(config) {
             }
             resolveLinkTos = resolveLinkTos === undefined ? true : resolveLinkTos;
 
-            var connection = createConnection(config, reject);
-            var events = [];
+            return connectionManager.create(config).then(function(connection) {
+                var events = [];
 
-            function getNextChunk(startPosition) {
-                connection.readStreamEventsForward(streamName, startPosition, chunkSize, resolveLinkTos, false, null, config.credentials, function(result) {
-                    debug('', 'Result: ' + JSON.stringify(result));
-                    if (!_.isEmpty(result.error))
-                        return reject(result.error);
+                function getNextChunk(startPosition) {
+                    return connection.readStreamEventsForward(streamName, startPosition, chunkSize, resolveLinkTos, config.credentials).then(function(result) {
+                        debug('', 'Result: ' + JSON.stringify(result));
 
-                    events.push(result.events);
+                        if (!_.isEmpty(result.error))
+                            throw new Error(result.error);
 
-                    if (result.isEndOfStream === false)
-                        return getNextChunk(result.nextEventNumber);
-                    else {
-                        connection.close();
-                        events = _.flatten(events);
-                        return resolve(events);
-                    }
-                });
-            }
-            getNextChunk(startPosition || 0);
+                        events.push(mapEvents(result.events));
+
+                        if (result.isEndOfStream === false)
+                            return getNextChunk(result.nextEventNumber);
+                        else {
+                            events = _.flatten(events);
+                            return events;
+                        }
+                    });
+                }
+                return getNextChunk(startPosition || 0);
+            });
+
         });
     };
 };

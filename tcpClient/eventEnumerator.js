@@ -1,36 +1,31 @@
 var debug = require('debug')('geteventstore:eventEnumerator'),
-    createConnection = require('./createConnection'),
+    connectionManager = require('./connectionManager'),
+    mapEvents = require('./utilities/mapEvents'),
     Promise = require('bluebird'),
-    assert = require('assert'),
-    _ = require('lodash');
+    assert = require('assert');
 
 var baseErr = 'Event Enumerator - ';
 
 var getNextBatch = function(config, streamName, state, length, direction, resolveLinkTos) {
     state.isFirstEnumeration = false;
-    return new Promise(function(resolve, reject) {
+    return Promise.resolve().then(function() {
         assert(streamName, baseErr + 'Stream Name not provided');
 
-        var connection = createConnection(config, reject);
+        return connectionManager.create(config).then(function(connection) {
+            function handleResult(result) {
+                debug('', 'Result: ' + JSON.stringify(result));
 
-        function handleResult(result) {
-            debug('', 'Result: ' + JSON.stringify(result));
-            connection.close();
+                state.nextEventNumber = result.nextEventNumber;
+                return {
+                    isEndOfStream: result.isEndOfStream,
+                    events: mapEvents(result.events)
+                };
+            }
 
-            if (!_.isEmpty(result.error))
-                return reject(result.error);
-
-            state.nextEventNumber = result.nextEventNumber;
-            return resolve({
-                isEndOfStream: result.isEndOfStream,
-                events: result.events
-            });
-        }
-
-        if (direction === 'forward')
-            connection.readStreamEventsForward(streamName, state.nextEventNumber, length, resolveLinkTos, false, null, config.credentials, handleResult);
-        else
-            connection.readStreamEventsBackward(streamName, state.nextEventNumber, length, resolveLinkTos, false, null, config.credentials, handleResult);
+            if (direction === 'forward')
+                return connection.readStreamEventsForward(streamName, state.nextEventNumber, length, resolveLinkTos, config.credentials).then(handleResult);
+            return connection.readStreamEventsBackward(streamName, state.nextEventNumber, length, resolveLinkTos, config.credentials).then(handleResult);
+        });
     });
 };
 
