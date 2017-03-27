@@ -1,3 +1,9 @@
+# 1.1.25 (2017-03-27)
+
+#### TCP Client
+
+- Update to latest version of eventstore-node that inclues some fixes
+
 # 1.1.25 (2017-03-22)
 
 #### TCP Client
