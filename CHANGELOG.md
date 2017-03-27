@@ -1,3 +1,9 @@
+# 1.1.26 (2017-03-27)
+
+#### TCP Client
+
+- Add check stream exits
+
 # 1.1.25 (2017-03-27)
 
 #### TCP Client

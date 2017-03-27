@@ -8,6 +8,7 @@ var _ = require('lodash');
 
 describe('Http Client - Check Stream Exist', function() {
     it('Should return true when a stream exist', function() {
+       this.timeout(10 * 1000);
         var client = eventstore.http(httpConfig);
 
         var testStream = 'TestStream-' + uuid.v4();
