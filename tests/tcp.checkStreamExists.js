@@ -4,7 +4,6 @@ var tcpConfig = require('./support/tcpConfig');
 var eventstore = require('../index.js');
 var assert = require('assert');
 var uuid = require('uuid');
-var _ = require('lodash');
 
 describe('TCP Client - Check Stream Exist', function() {
     it('Should return true when a stream exist', function() {
