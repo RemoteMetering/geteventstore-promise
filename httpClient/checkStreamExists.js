@@ -27,9 +27,9 @@ module.exports = function(config) {
                 timeout: config.timeout
             };
 
-            debug('', 'Options: ' + JSON.stringify(options));
+            debug('', 'Options: %j', options);
             return req(options).then(function(response) {
-                debug('', 'Response: ' + JSON.stringify(response));
+                debug('', 'Response: %j', response);
                 return true;
             }).catch(function(err) {
                 if (err.statusCode !== 404) return Promise.reject(err);

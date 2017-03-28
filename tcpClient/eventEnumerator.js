@@ -13,7 +13,7 @@ var getNextBatch = function(config, streamName, state, length, direction, resolv
 
         return connectionManager.create(config).then(function(connection) {
             function handleResult(result) {
-                debug('', 'Result: ' + JSON.stringify(result));
+                debug('', 'Result: %j', result);
 
                 state.nextEventNumber = result.nextEventNumber;
                 return {

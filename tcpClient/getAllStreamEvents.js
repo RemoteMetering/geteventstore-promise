@@ -24,7 +24,7 @@ module.exports = function(config) {
 
                 function getNextChunk(startPosition) {
                     return connection.readStreamEventsForward(streamName, startPosition, chunkSize, resolveLinkTos, config.credentials).then(function(result) {
-                        debug('', 'Result: ' + JSON.stringify(result));
+                        debug('', 'Result: %j', result);
 
                         if (!_.isEmpty(result.error))
                             throw new Error(result.error);

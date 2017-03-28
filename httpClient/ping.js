@@ -15,9 +15,9 @@ module.exports = function(config) {
             method: 'GET',
             timeout: config.timeout
         };
-        debug('', 'Options: ' + JSON.stringify(options));
+        debug('', 'Options: %j', options);
         return req(options).then(function(response) {
-            debug('', 'Response: ' + JSON.stringify(response));
+            debug('', 'Response: %j', response);
             return response;
         });
     };

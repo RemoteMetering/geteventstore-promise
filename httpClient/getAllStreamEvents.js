@@ -49,7 +49,7 @@ module.exports = function(config) {
 				var options = buildOptions(streamName, startPosition, chunkSize, resolveLinkTos);
 
 				return req(options).then(function(response) {
-					debug('', 'Result: ' + JSON.stringify(response));
+					debug('', 'Result: %j', response);
 
 					response.entries.forEach(function(entry) {
 						if (entry.data) entry.data = JSON.parse(entry.data);
