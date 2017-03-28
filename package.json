@@ -4,10 +4,10 @@
   "description": "GetEventStore client wrapper using promises",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --require babel-core/register tests/",
-    "clean": "rm -R -f dist/ && rm -R -f geteventstore-promise*",
-    "compile": "babel --ignore node_modules -D -d dist/ ./",
-    "package": "npm run clean && npm run compile && cd dist/ && npm pack"
+    "test": "node node_modules/mocha/bin/mocha --require babel-core/register tests/",
+    "clean": "rm -r lib/",
+    "compile": "babel --ignore node_modules -D -d lib/ ./",
+    "package": "npm run clean && npm run compile && cd lib/ && npm pack"
   },
   "repository": {
     "type": "git",
@@ -43,6 +43,7 @@
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-preset-es2015": "^6.24.0",
     "babel-preset-stage-2": "^6.22.0",
-    "babel-register": "^6.24.0"
+    "babel-register": "^6.24.0",
+    "mocha": "^3.2.0"
   }
 }
