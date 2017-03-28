@@ -34,7 +34,7 @@ describe('TCP Client - Subscribe To Stream', () => {
             }));
         }
 
-        return client.writeEvents(testStream, initialEvents).then(() => {
+        client.writeEvents(testStream, initialEvents).then(() => {
             client.subscribeToStream(testStream, onEventAppeared, onConfirmed, onDropped, false).then(connection => Promise.delay(3000).then(() => {
                 assert.equal(true, confirmCalled, 'expected confirmed subscription to be called');
                 assert.equal(10, processedEventCount, 'expect proccessed eventst to be 10');
@@ -49,6 +49,6 @@ describe('TCP Client - Subscribe To Stream', () => {
                 }));
             }
             return Promise.delay(100).then(() => client.writeEvents(testStream, events));
-        });
+        }).catch(done);
     });
 });

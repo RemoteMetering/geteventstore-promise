@@ -28,12 +28,12 @@ describe('TCP Client - Subscribe To Stream', () => {
             }));
         }
 
-        return client.writeEvents(testStream, events).then(() => client.subscribeToStreamFrom(testStream, 0, onEventAppeared, undefined, onDropped).then(connection => Promise.delay(3000).then(() => {
+        client.writeEvents(testStream, events).then(() => client.subscribeToStreamFrom(testStream, 0, onEventAppeared, undefined, onDropped).then(connection => Promise.delay(3000).then(() => {
             assert.equal(10, processedEventCount);
             assert(connection, 'Connection Expected');
             connection.close();
             done();
-        })));
+        }))).catch(done);
     });
 
     it('Should get all resolved events read from a linked stream', function(done) {
@@ -64,13 +64,13 @@ describe('TCP Client - Subscribe To Stream', () => {
             }));
         }
 
-        return client.writeEvents(testStream, events).then(() => {
+        client.writeEvents(testStream, events).then(() => {
             const settings = {
                 resolveLinkTos: true
             };
             return client.subscribeToStreamFrom('$ce-TestStream', 5, onEventAppeared, undefined, onDropped, settings).then(subscriptionConnection => {
                 connection = subscriptionConnection;
             });
-        });
+        }).catch(done);
     });
 });
