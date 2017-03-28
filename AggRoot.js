@@ -1,5 +1,5 @@
-const debug = require('debug')('geteventstore:aggRoot'),
-	_ = require('lodash');
+const debug = require('debug')('geteventstore:aggRoot');
+const _ = require('lodash');
 
 const AggRoot = function(when) {
 	const eventhandlers = when;

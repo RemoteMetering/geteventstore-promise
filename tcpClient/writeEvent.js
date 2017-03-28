@@ -1,10 +1,10 @@
-const debug = require('debug')('geteventstore:writeEvent'),
-    connectionManager = require('./connectionManager'),
-    client = require('eventstore-node'),
-    Promise = require('bluebird'),
-    assert = require('assert'),
-    uuid = require('uuid'),
-    _ = require('lodash');
+const debug = require('debug')('geteventstore:writeEvent');
+const connectionManager = require('./connectionManager');
+const client = require('eventstore-node');
+const Promise = require('bluebird');
+const assert = require('assert');
+const uuid = require('uuid');
+const _ = require('lodash');
 
 const baseErr = 'Write Event - ';
 

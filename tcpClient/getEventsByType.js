@@ -1,6 +1,6 @@
-const Promise = require('bluebird'),
-    assert = require('assert'),
-    _ = require('lodash');
+const Promise = require('bluebird');
+const assert = require('assert');
+const _ = require('lodash');
 
 const baseErr = 'Get Events by Type - ';
 

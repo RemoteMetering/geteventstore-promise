@@ -1,8 +1,8 @@
-const debug = require('debug')('geteventstore:checkStreamExists'),
-    req = require('request-promise'),
-    Promise = require('bluebird'),
-    assert = require('assert'),
-    url = require('url');
+const debug = require('debug')('geteventstore:checkStreamExists');
+const req = require('request-promise');
+const Promise = require('bluebird');
+const assert = require('assert');
+const url = require('url');
 
 const baseErr = 'Check Stream Exists - ';
 

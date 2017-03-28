@@ -1,9 +1,9 @@
-const debug = require('debug')('geteventstore:getAllStreamEvents'),
-    connectionManager = require('./connectionManager'),
-    mapEvents = require('./utilities/mapEvents'),
-    Promise = require('bluebird'),
-    assert = require('assert'),
-    _ = require('lodash');
+const debug = require('debug')('geteventstore:getAllStreamEvents');
+const connectionManager = require('./connectionManager');
+const mapEvents = require('./utilities/mapEvents');
+const Promise = require('bluebird');
+const assert = require('assert');
+const _ = require('lodash');
 
 const baseErr = 'Get All Stream Events - ';
 

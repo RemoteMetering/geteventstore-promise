@@ -1,8 +1,8 @@
-const debug = require('debug')('geteventstore:eventEnumerator'),
-    connectionManager = require('./connectionManager'),
-    mapEvents = require('./utilities/mapEvents'),
-    Promise = require('bluebird'),
-    assert = require('assert');
+const debug = require('debug')('geteventstore:eventEnumerator');
+const connectionManager = require('./connectionManager');
+const mapEvents = require('./utilities/mapEvents');
+const Promise = require('bluebird');
+const assert = require('assert');
 
 const baseErr = 'Event Enumerator - ';
 

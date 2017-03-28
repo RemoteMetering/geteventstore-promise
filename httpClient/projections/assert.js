@@ -1,9 +1,9 @@
-const debug = require('debug')('geteventstore:assertProjection'),
-    req = require('request-promise'),
-    Promise = require('bluebird'),
-    assert = require('assert'),
-    _ = require('lodash'),
-    url = require('url');
+const debug = require('debug')('geteventstore:assertProjection');
+const req = require('request-promise');
+const Promise = require('bluebird');
+const assert = require('assert');
+const _ = require('lodash');
+const url = require('url');
 
 const baseErr = 'Assert Projection - ';
 
