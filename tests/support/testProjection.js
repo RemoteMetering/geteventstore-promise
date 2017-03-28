@@ -1,11 +1,11 @@
 fromAll()
 	.when({
-		$init: function() {
+		$init() {
 			return {
 				data: {}
 			};
 		},
-		TestProjectionEventType: function(state, ev) {
+		TestProjectionEventType(state, ev) {
 			state.data = ev.data;
 		}
 	});

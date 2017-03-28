@@ -39,7 +39,7 @@ var esDirectionWorkaroundHandler = direction => {
 
     return {
         direction: direction,
-        swopResult: function(state, length, result) {
+        swopResult(state, length, result) {
             if (wasSwopped) {
                 state.nextEventNumber += length + 1;
                 result.events.reverse();
@@ -94,17 +94,17 @@ module.exports = config => (streamName, direction, resolveLinkTos) => {
     var state = stateHandler(direction);
 
     return {
-        first: function(length) {
+        first(length) {
             state.setToFirst();
             return getNextBatch(config, streamName, state, length, direction, resolveLinkTos);
         },
-        last: function(length) {
+        last(length) {
             state.setToLast(length);
 
             var handler = esDirectionWorkaroundHandler(direction);
             return getNextBatch(config, streamName, state, length, handler.direction, resolveLinkTos).then(result => handler.swopResult(state, length, result));
         },
-        previous: function(length) {
+        previous(length) {
             state.setToPrevious(length);
             length = state.keepInBoundsAdjustment(length);
 
@@ -113,7 +113,7 @@ module.exports = config => (streamName, direction, resolveLinkTos) => {
                 return result;
             });
         },
-        next: function(length) {
+        next(length) {
             return getNextBatch(config, streamName, state, length, direction, resolveLinkTos);
         }
     };
