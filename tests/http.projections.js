@@ -123,7 +123,7 @@ describe('Projections', () => {
                 setTimeout(() => {
                     client.projections.getAllProjectionsInfo().then(projectionsInfo => {
                         _.each(projectionsInfo.projections, projection => {
-                            assert.equal(projection.status.toLowerCase().indexOf('running') > -1, true);
+                            assert.equal(projection.status.toLowerCase().includes('running'), true);
                         });
                         done();
                     }).catch(done);
@@ -139,7 +139,7 @@ describe('Projections', () => {
                 setTimeout(() => {
                     client.projections.getAllProjectionsInfo().then(projectionsInfo => {
                         _.each(projectionsInfo.projections, projection => {
-                            assert.equal(projection.status.toLowerCase().indexOf('stopped') > -1, true);
+                            assert.equal(projection.status.toLowerCase().includes('stopped'), true);
                         });
                         done();
                     }).catch(done);

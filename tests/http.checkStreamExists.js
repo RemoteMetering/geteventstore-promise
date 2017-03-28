@@ -36,7 +36,7 @@ describe('Http Client - Check Stream Exist', () => {
             callback('Should not have returned successful promise');
         }).catch(err => {
             assert(err, 'No error received');
-            assert(err.message.indexOf('ECONNREFUSED') > -1, 'Connection refused error expected');
+            assert(err.message.includes('ECONNREFUSED'), 'Connection refused error expected');
             callback();
         });
     });
@@ -52,7 +52,7 @@ describe('Http Client - Check Stream Exist', () => {
         }).then(() => client.checkStreamExists(testStream).then(() => {
             callback('Expected to fail');
         })).catch(err => {
-            if (err.message.indexOf('TIMEDOUT') > -1)
+            if (err.message.includes('TIMEDOUT'))
                 callback();
             else
                 callback('Time out error expected');

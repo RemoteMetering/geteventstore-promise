@@ -42,7 +42,7 @@ describe('Http Client - Delete stream', () => {
         }).then(() => client.deleteStream(testStream, true).then(() => client.checkStreamExists(testStream).then(() => {
             callback('Should not have returned resolved promise');
         }).catch(err => {
-            assert(err.message.indexOf('410') > -1, 'Expected http 410');
+            assert(err.message.includes('410'), 'Expected http 410');
             callback();
         })).catch(callback)).catch(callback);
     });
