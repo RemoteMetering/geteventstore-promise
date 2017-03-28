@@ -12,7 +12,7 @@ var createPersistentSubscriptionRequest = (name, streamName, options, config) =>
     var uri = url.format(urlObj);
 
     return {
-        uri: uri,
+        uri,
         method: 'PUT',
         json: true,
         headers: {

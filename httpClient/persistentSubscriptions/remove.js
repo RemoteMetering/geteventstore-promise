@@ -13,7 +13,7 @@ var createRemoveRequest = (name, streamName, config) => {
     var uri = url.format(urlObj);
 
     var request = {
-        uri: uri,
+        uri,
         method: 'DELETE',
         json: true
     };

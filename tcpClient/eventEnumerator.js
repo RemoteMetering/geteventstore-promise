@@ -38,7 +38,7 @@ var esDirectionWorkaroundHandler = direction => {
     }
 
     return {
-        direction: direction,
+        direction,
         swopResult(state, length, result) {
             if (wasSwopped) {
                 state.nextEventNumber += length + 1;

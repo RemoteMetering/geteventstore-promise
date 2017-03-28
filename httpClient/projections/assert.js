@@ -33,13 +33,13 @@ var buildCreateOptions = (
     var uri = url.format(urlObj);
 
     var options = {
-        uri: uri,
+        uri,
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         qs: {
-            name: name,
+            name,
             enabled: enabled ? 'yes' : 'no',
             emit: emitEnabled ? 'yes' : 'no',
             checkpoints: checkpointsEnabled ? 'yes' : 'no',
@@ -56,7 +56,7 @@ var buildUpdateOptions = (config, name, projectionContent, emitEnabled) => {
     var uri = url.format(urlObj);
 
     var options = {
-        uri: uri,
+        uri,
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',

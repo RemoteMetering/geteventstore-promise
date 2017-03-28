@@ -13,7 +13,7 @@ var createRequest = (name, streamName, count, embed, config) => {
 
     var uri = url.format(urlObj);
     var request = {
-        uri: uri,
+        uri,
         method: 'GET',
         json: true,
         headers: {
@@ -25,7 +25,7 @@ var createRequest = (name, streamName, count, embed, config) => {
 
 var postUrl = uri => () => {
     var postRequest = {
-        uri: uri,
+        uri,
         method: 'POST',
         json: true,
         headers: {

@@ -8,8 +8,8 @@ module.exports = {
 
         var event = {
             eventId: eventId || uuid.v4(),
-            eventType: eventType,
-            data: data
+            eventType,
+            data
         };
 
         if (metadata !== undefined) event.metadata = metadata;

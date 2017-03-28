@@ -28,7 +28,7 @@ module.exports = config => {
             },
             method: 'GET',
             json: true,
-            qs: qs
+            qs
         };
 
         debug('', 'Options: %j', options);
