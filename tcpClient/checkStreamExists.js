@@ -1,4 +1,7 @@
-const connectionManager = require('./connectionManager'), esClient = require('eventstore-node'), Promise = require('bluebird'), assert = require('assert');
+const connectionManager = require('./connectionManager'),
+    esClient = require('eventstore-node'),
+    Promise = require('bluebird'),
+    assert = require('assert');
 
 const baseErr = 'Check stream exits - ';
 

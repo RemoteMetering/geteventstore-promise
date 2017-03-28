@@ -85,7 +85,7 @@ const getConnections = () => Promise.resolve().then(() => {
 });
 
 module.exports = {
-	create,
-	closeAll,
-	getConnections
+    create,
+    closeAll,
+    getConnections
 };

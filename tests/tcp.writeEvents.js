@@ -36,16 +36,16 @@ describe('TCP Client - Write Events', () => {
         }));
     });
 
-     it('Should not fail promise if no events provided', () => {
+    it('Should not fail promise if no events provided', () => {
         const client = eventstore.tcp(tcpConfig);
 
-        const events =[];
+        const events = [];
 
         const testStream = `TestStream-${uuid.v4()}`;
         return client.writeEvents(testStream, events);
     });
 
-     it('Should fail promise if non array provided', () => {
+    it('Should fail promise if non array provided', () => {
         const client = eventstore.tcp(tcpConfig);
 
         const events = {

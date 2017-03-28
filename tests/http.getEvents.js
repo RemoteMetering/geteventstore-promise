@@ -7,7 +7,6 @@ const uuid = require('uuid');
 const _ = require('lodash');
 
 describe('Http Client - Get Events', () => {
-
     const testStream = `TestStream-${uuid.v4()}`;
     const numberOfEvents = 10;
 

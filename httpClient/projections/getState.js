@@ -1,4 +1,9 @@
-const debug = require('debug')('geteventstore:getProjectionState'), req = require('request-promise'), Promise = require('bluebird'), assert = require('assert'), _ = require('lodash'), url = require('url');
+const debug = require('debug')('geteventstore:getProjectionState'),
+    req = require('request-promise'),
+    Promise = require('bluebird'),
+    assert = require('assert'),
+    _ = require('lodash'),
+    url = require('url');
 
 const baseErr = 'Get Projection State - ';
 

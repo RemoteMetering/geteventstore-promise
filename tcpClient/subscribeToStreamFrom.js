@@ -1,4 +1,8 @@
-const debug = require('debug')('geteventstore:subscribeToStreamFrom'), EventStoreClient = require('event-store-client'), createConnection = require('./createConnection'), Promise = require('bluebird'), assert = require('assert');
+const debug = require('debug')('geteventstore:subscribeToStreamFrom'),
+    EventStoreClient = require('event-store-client'),
+    createConnection = require('./createConnection'),
+    Promise = require('bluebird'),
+    assert = require('assert');
 
 const baseErr = 'Subscribe to Stream From - ';
 

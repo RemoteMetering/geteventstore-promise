@@ -21,11 +21,10 @@ describe('TCP Client - Write Event', () => {
         const client = eventstore.tcp(tcpConfig);
 
         const testStream = `TestStream-${uuid.v4()}`;
-        return client.writeEvent(testStream, 'TestEventType'
-            ).then(() => {
+        return client.writeEvent(testStream, 'TestEventType').then(() => {
             assert.fail('write should not have succeeded');
         }).catch(err => {
-            assert(err,'error should have been returned');
+            assert(err, 'error should have been returned');
         });
     });
 });

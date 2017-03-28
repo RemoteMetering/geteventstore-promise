@@ -1,4 +1,6 @@
-const debug = require('debug')('geteventstore:sendShutdownCommand'), req = require('request-promise'), url = require('url');
+const debug = require('debug')('geteventstore:sendShutdownCommand'),
+    req = require('request-promise'),
+    url = require('url');
 
 module.exports = config => {
     const buildUrl = () => {

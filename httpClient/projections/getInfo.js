@@ -1,4 +1,7 @@
-const debug = require('debug')('geteventstore:getProjectionInfo'), Promise = require('bluebird'), assert = require('assert'), _ = require('lodash');
+const debug = require('debug')('geteventstore:getProjectionInfo'),
+    Promise = require('bluebird'),
+    assert = require('assert'),
+    _ = require('lodash');
 
 const baseErr = 'Get Projection Info - ';
 

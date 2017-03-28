@@ -1,4 +1,9 @@
-const debug = require('debug')('geteventstore:getevents'), connectionManager = require('./connectionManager'), mapEvents = require('./utilities/mapEvents'), Promise = require('bluebird'), assert = require('assert'), _ = require('lodash');
+const debug = require('debug')('geteventstore:getevents'),
+    connectionManager = require('./connectionManager'),
+    mapEvents = require('./utilities/mapEvents'),
+    Promise = require('bluebird'),
+    assert = require('assert'),
+    _ = require('lodash');
 
 const baseErr = 'Get Events - ';
 

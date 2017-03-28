@@ -1,4 +1,8 @@
-const debug = require('debug')('geteventstore:writeEvents'), req = require('request-promise'), Promise = require('bluebird'), assert = require('assert'), url = require('url');
+const debug = require('debug')('geteventstore:writeEvents'),
+    req = require('request-promise'),
+    Promise = require('bluebird'),
+    assert = require('assert'),
+    url = require('url');
 
 const baseErr = 'Write Events - ';
 

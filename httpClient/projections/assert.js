@@ -1,4 +1,9 @@
-const debug = require('debug')('geteventstore:assertProjection'), req = require('request-promise'), Promise = require('bluebird'), assert = require('assert'), _ = require('lodash'), url = require('url');
+const debug = require('debug')('geteventstore:assertProjection'),
+    req = require('request-promise'),
+    Promise = require('bluebird'),
+    assert = require('assert'),
+    _ = require('lodash'),
+    url = require('url');
 
 const baseErr = 'Assert Projection - ';
 
@@ -6,10 +11,7 @@ const doesProjectionExist = (config, name) => Promise.resolve().then(() => {
     const getAllProjectionsInfo = require('./getAllProjectionsInfo')(config);
     return getAllProjectionsInfo().then(projectionsInfo => {
         const projection = _.find(projectionsInfo.projections, projection => projection.name === name);
-
-        if (projection)
-            return true;
-
+        if (projection) return true;
         return false;
     });
 });

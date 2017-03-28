@@ -48,7 +48,7 @@ describe('TCP Client - Test Connection', () => {
         });
     });
 
-     it('Should close all streams', function() {
+    it('Should close all streams', function() {
         this.timeout(60 * 1000);
         const config = JSON.parse(JSON.stringify(tcpConfig));
         const client = eventstore.tcp(config);
@@ -58,7 +58,7 @@ describe('TCP Client - Test Connection', () => {
             something: '123'
         }).then(() => client.closeConnections().then(() => client.getConnections().then(connections => {
             assert(connections);
-            assert.equal(0,connections.length);
+            assert.equal(0, connections.length);
         })));
     });
 });
