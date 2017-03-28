@@ -1,5 +1,5 @@
-var assert = require('assert');
-var baseErr = 'geteventstore-promise - TCP client - ';
+const assert = require('assert');
+const baseErr = 'geteventstore-promise - TCP client - ';
 
 module.exports = config => {
 	//Assert configuration

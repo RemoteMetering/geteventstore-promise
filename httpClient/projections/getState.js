@@ -1,15 +1,10 @@
-var debug = require('debug')('geteventstore:getProjectionState'),
-    req = require('request-promise'),
-    Promise = require('bluebird'),
-    assert = require('assert'),
-    _ = require('lodash'),
-    url = require('url');
+const debug = require('debug')('geteventstore:getProjectionState'), req = require('request-promise'), Promise = require('bluebird'), assert = require('assert'), _ = require('lodash'), url = require('url');
 
-var baseErr = 'Get Projection State - ';
+const baseErr = 'Get Projection State - ';
 
 module.exports = config => {
-    var buildUrl = name => {
-        var urlObj = JSON.parse(JSON.stringify(config));
+    const buildUrl = name => {
+        const urlObj = JSON.parse(JSON.stringify(config));
         urlObj.pathname = `/projection/${name}/state`;
         return url.format(urlObj);
     };
@@ -17,11 +12,11 @@ module.exports = config => {
     return (name, options) => Promise.resolve().then(() => {
         assert(name, `${baseErr}Name not provided`);
 
-        var qs = {};
+        const qs = {};
         options = options || {};
 
         if (!_.isEmpty(options.partition)) qs.partition = options.partition;
-        var urlOptions = {
+        const urlOptions = {
             uri: buildUrl(name),
             headers: {
                 "Content-Type": "application/vnd.eventstore.events+json"

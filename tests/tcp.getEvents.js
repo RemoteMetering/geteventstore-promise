@@ -1,20 +1,20 @@
 require('./_globalHooks');
 
-var tcpConfig = require('./support/tcpConfig');
-var eventstore = require('../index.js');
-var assert = require('assert');
-var uuid = require('uuid');
+const tcpConfig = require('./support/tcpConfig');
+const eventstore = require('../index.js');
+const assert = require('assert');
+const uuid = require('uuid');
 
 describe('TCP Client - Get Events', () => {
-    var testStream = `TestStream-${uuid.v4()}`;
-    var numberOfEvents = 10;
+    const testStream = `TestStream-${uuid.v4()}`;
+    const numberOfEvents = 10;
 
     before(() => {
-        var client = eventstore.tcp(tcpConfig);
+        const client = eventstore.tcp(tcpConfig);
 
-        var events = [];
+        const events = [];
 
-        for (var i = 1; i <= numberOfEvents; i++) {
+        for (let i = 1; i <= numberOfEvents; i++) {
             events.push(eventstore.eventFactory.NewEvent('TestEventType', {
                 something: i
             }));
@@ -24,7 +24,7 @@ describe('TCP Client - Get Events', () => {
     });
 
     it('Should get events reading forward', () => {
-        var client = eventstore.tcp(tcpConfig);
+        const client = eventstore.tcp(tcpConfig);
 
         return client.getEvents(testStream, undefined, undefined, 'forward').then(events => {
             assert.equal(events.length, 10);
@@ -37,7 +37,7 @@ describe('TCP Client - Get Events', () => {
     });
 
     it('Should get events reading backward', () => {
-        var client = eventstore.tcp(tcpConfig);
+        const client = eventstore.tcp(tcpConfig);
 
         return client.getEvents(testStream, undefined, undefined, 'backward').then(events => {
             assert.equal(events.length, 10);
@@ -46,7 +46,7 @@ describe('TCP Client - Get Events', () => {
     });
 
     it('Should get last event reading backward with larger size than events', () => {
-        var client = eventstore.tcp(tcpConfig);
+        const client = eventstore.tcp(tcpConfig);
 
         return client.getEvents(testStream, 0, 250, 'backward').then(events => {
             assert.equal(events.length, 1);
@@ -55,7 +55,7 @@ describe('TCP Client - Get Events', () => {
     });
 
     it('Should not get any events when start event is greater than the stream length', () => {
-        var client = eventstore.tcp(tcpConfig);
+        const client = eventstore.tcp(tcpConfig);
 
         return client.getEvents(testStream, 11).then(events => {
             assert.equal(events.length, 0);
@@ -63,7 +63,7 @@ describe('TCP Client - Get Events', () => {
     });
 
     it('Should get events reading backward from a start position', () => {
-        var client = eventstore.tcp(tcpConfig);
+        const client = eventstore.tcp(tcpConfig);
 
         return client.getEvents(testStream, 2, undefined, 'backward').then(events => {
             assert.equal(events.length, 3);
@@ -72,7 +72,7 @@ describe('TCP Client - Get Events', () => {
     });
 
     it('Should get events reading backward with a length greater than the stream length', () => {
-        var client = eventstore.tcp(tcpConfig);
+        const client = eventstore.tcp(tcpConfig);
 
         return client.getEvents(testStream, undefined, 10000, 'backward').then(events => {
             assert.equal(events.length, 10);
@@ -82,13 +82,13 @@ describe('TCP Client - Get Events', () => {
 
     it('Should get events reading forward with a length greater than the stream length return a maximum of 4096', function() {
         this.timeout(40000);
-        var client = eventstore.tcp(tcpConfig);
+        const client = eventstore.tcp(tcpConfig);
 
-        var testStream = `TestStream-${uuid.v4()}`;
-        var numberOfEvents = 5000;
-        var events = [];
+        const testStream = `TestStream-${uuid.v4()}`;
+        const numberOfEvents = 5000;
+        const events = [];
 
-        for (var i = 1; i <= numberOfEvents; i++) {
+        for (let i = 1; i <= numberOfEvents; i++) {
             events.push(eventstore.eventFactory.NewEvent('TestEventType', {
                 something: i
             }));
@@ -102,7 +102,7 @@ describe('TCP Client - Get Events', () => {
     });
 
     it('Should get linked to events and map correctly', () => {
-        var client = eventstore.tcp(tcpConfig);
+        const client = eventstore.tcp(tcpConfig);
 
         return client.getEvents('$ce-TestStream', 0, 1, 'forward').then(events => {
             assert.equal(events.length, 1);

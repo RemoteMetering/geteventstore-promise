@@ -1,14 +1,14 @@
 require('./_globalHooks');
 
-var tcpConfig = require('./support/tcpConfig');
-var assert = require('assert');
-var eventstore = require('../index.js');
-var uuid = require('uuid');
+const tcpConfig = require('./support/tcpConfig');
+const assert = require('assert');
+const eventstore = require('../index.js');
+const uuid = require('uuid');
 
 describe('TCP Client - Test Connection', () => {
     it('Should connect and write event on correct connection properties', () => {
-        var client = eventstore.tcp(tcpConfig);
-        var testStream = `TestStream-${uuid.v4()}`;
+        const client = eventstore.tcp(tcpConfig);
+        const testStream = `TestStream-${uuid.v4()}`;
         return client.writeEvent(testStream, 'TestEventType', {
             something: '123'
         });
@@ -16,12 +16,12 @@ describe('TCP Client - Test Connection', () => {
 
     it('Should not connect on incorrect hostname', function() {
         this.timeout(60 * 1000);
-        var config = JSON.parse(JSON.stringify(tcpConfig));
+        const config = JSON.parse(JSON.stringify(tcpConfig));
         config.hostname = 'MadeToFailHostName';
 
-        var client = eventstore.tcp(config);
+        const client = eventstore.tcp(config);
 
-        var testStream = `TestStream-${uuid.v4()}`;
+        const testStream = `TestStream-${uuid.v4()}`;
         return client.writeEvent(testStream, 'TestEventType', {
             something: '123'
         }).then(() => {
@@ -33,12 +33,12 @@ describe('TCP Client - Test Connection', () => {
 
     it('Should not connect on incorrect port', function() {
         this.timeout(60 * 1000);
-        var config = JSON.parse(JSON.stringify(tcpConfig));
+        const config = JSON.parse(JSON.stringify(tcpConfig));
         config.port = 9999;
 
-        var client = eventstore.tcp(config);
+        const client = eventstore.tcp(config);
 
-        var testStream = `TestStream-${uuid.v4()}`;
+        const testStream = `TestStream-${uuid.v4()}`;
         return client.writeEvent(testStream, 'TestEventType', {
             something: '123'
         }).then(() => {
@@ -50,10 +50,10 @@ describe('TCP Client - Test Connection', () => {
 
      it('Should close all streams', function() {
         this.timeout(60 * 1000);
-        var config = JSON.parse(JSON.stringify(tcpConfig));
-        var client = eventstore.tcp(config);
+        const config = JSON.parse(JSON.stringify(tcpConfig));
+        const client = eventstore.tcp(config);
 
-        var testStream = `TestStream-${uuid.v4()}`;
+        const testStream = `TestStream-${uuid.v4()}`;
         return client.writeEvent(testStream, 'TestEventType', {
             something: '123'
         }).then(() => client.closeConnections().then(() => client.getConnections().then(connections => {

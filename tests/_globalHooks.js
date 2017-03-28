@@ -1,8 +1,8 @@
-var esConfig = require('./support/inMemEventStoreConfig');
-var spawn = require('child_process').spawn;
-var Promise = require('bluebird');
+const esConfig = require('./support/inMemEventStoreConfig');
+const spawn = require('child_process').spawn;
+const Promise = require('bluebird');
 
-var eventstore;
+let eventstore;
 
 before(function() {
 	this.timeout(10 * 1000);
@@ -10,10 +10,10 @@ before(function() {
 	if (eventstore === undefined) {
 		console.log('Starting in-mem ES...');
 
-		var intTcpPort = `--int-tcp-port=${esConfig.options.intTcpPort}`;
-		var extTcpPort = `--ext-tcp-port=${esConfig.options.extTcpPort}`;
-		var intHttpPort = `--int-http-port=${esConfig.options.intHttpPort}`;
-		var extHttpPort = `--ext-http-port=${esConfig.options.extHttpPort}`;
+		const intTcpPort = `--int-tcp-port=${esConfig.options.intTcpPort}`;
+		const extTcpPort = `--ext-tcp-port=${esConfig.options.extTcpPort}`;
+		const intHttpPort = `--int-http-port=${esConfig.options.intHttpPort}`;
+		const extHttpPort = `--ext-http-port=${esConfig.options.extHttpPort}`;
 
 		eventstore = spawn(esConfig.cluster, ['--mem-db=True', intTcpPort, extTcpPort, intHttpPort, extHttpPort, '--run-projections=ALL', '--start-standard-projections=True'], {
 			cwd: undefined,

@@ -1,16 +1,11 @@
-var debug = require('debug')('geteventstore:assertProjection'),
-    req = require('request-promise'),
-    Promise = require('bluebird'),
-    assert = require('assert'),
-    _ = require('lodash'),
-    url = require('url');
+const debug = require('debug')('geteventstore:assertProjection'), req = require('request-promise'), Promise = require('bluebird'), assert = require('assert'), _ = require('lodash'), url = require('url');
 
-var baseErr = 'Assert Projection - ';
+const baseErr = 'Assert Projection - ';
 
-var doesProjectionExist = (config, name) => Promise.resolve().then(() => {
-    var getAllProjectionsInfo = require('./getAllProjectionsInfo')(config);
+const doesProjectionExist = (config, name) => Promise.resolve().then(() => {
+    const getAllProjectionsInfo = require('./getAllProjectionsInfo')(config);
     return getAllProjectionsInfo().then(projectionsInfo => {
-        var projection = _.find(projectionsInfo.projections, projection => projection.name === name);
+        const projection = _.find(projectionsInfo.projections, projection => projection.name === name);
 
         if (projection)
             return true;
@@ -19,7 +14,7 @@ var doesProjectionExist = (config, name) => Promise.resolve().then(() => {
     });
 });
 
-var buildCreateOptions = (
+const buildCreateOptions = (
     config,
     name,
     projectionContent,
@@ -28,11 +23,11 @@ var buildCreateOptions = (
     emitEnabled,
     checkpointsEnabled
 ) => {
-    var urlObj = JSON.parse(JSON.stringify(config));
+    const urlObj = JSON.parse(JSON.stringify(config));
     urlObj.pathname = `/projections/${mode}`;
-    var uri = url.format(urlObj);
+    const uri = url.format(urlObj);
 
-    var options = {
+    const options = {
         uri,
         method: 'POST',
         headers: {
@@ -50,12 +45,12 @@ var buildCreateOptions = (
     return options;
 };
 
-var buildUpdateOptions = (config, name, projectionContent, emitEnabled) => {
-    var urlObj = JSON.parse(JSON.stringify(config));
+const buildUpdateOptions = (config, name, projectionContent, emitEnabled) => {
+    const urlObj = JSON.parse(JSON.stringify(config));
     urlObj.pathname = `/projection/${name}/query`;
-    var uri = url.format(urlObj);
+    const uri = url.format(urlObj);
 
-    var options = {
+    const options = {
         uri,
         method: 'PUT',
         headers: {
@@ -81,7 +76,7 @@ module.exports = config => (name, projectionContent, mode, enabled, checkpointsE
 
     return doesProjectionExist(config, name).then(projectionExists => {
         debug('', 'Projection Exists: %j', projectionExists);
-        var options = {};
+        let options = {};
 
         if (!projectionExists)
             options = buildCreateOptions(config, name, projectionContent, mode, enabled, emitEnabled, checkpointsEnabled);

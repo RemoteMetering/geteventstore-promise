@@ -1,14 +1,14 @@
-var debug = require('debug')('geteventstore:getSubscriptionInfo');
-var req = require('request-promise');
-var Promise = require('bluebird');
-var assert = require('assert');
-var url = require('url');
+const debug = require('debug')('geteventstore:getSubscriptionInfo');
+const req = require('request-promise');
+const Promise = require('bluebird');
+const assert = require('assert');
+const url = require('url');
 
-var baseError = 'Get Stream Subscriptions Info - ';
+const baseError = 'Get Stream Subscriptions Info - ';
 
 module.exports = config => {
-    var buildUrl = (name, stream) => {
-        var urlObj = JSON.parse(JSON.stringify(config));
+    const buildUrl = (name, stream) => {
+        const urlObj = JSON.parse(JSON.stringify(config));
         urlObj.pathname = `/subscriptions/${stream}/${name}/info`;
         return url.format(urlObj);
     };
@@ -17,7 +17,7 @@ module.exports = config => {
         assert(name, `${baseError}Persistant Subscription Name not provided`);
         assert(stream, `${baseError}Stream not provided`);
 
-        var options = {
+        const options = {
             uri: buildUrl(name, stream),
             method: 'GET',
             json: true,

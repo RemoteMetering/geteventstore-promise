@@ -1,12 +1,12 @@
-var assert = require('assert');
-var uuid = require('uuid');
+const assert = require('assert');
+const uuid = require('uuid');
 
 module.exports = {
     NewEvent(eventType, data, metadata, eventId) {
         assert(eventType);
         assert(data);
 
-        var event = {
+        const event = {
             eventId: eventId || uuid.v4(),
             eventType,
             data

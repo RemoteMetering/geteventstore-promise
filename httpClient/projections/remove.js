@@ -1,14 +1,10 @@
-var debug = require('debug')('geteventstore:removeProjection'),
-    req = require('request-promise'),
-    Promise = require('bluebird'),
-    assert = require('assert'),
-    url = require('url');
+const debug = require('debug')('geteventstore:removeProjection'), req = require('request-promise'), Promise = require('bluebird'), assert = require('assert'), url = require('url');
 
-var baseErr = 'Remove Projection - ';
+const baseErr = 'Remove Projection - ';
 
 module.exports = config => {
-    var buildUrl = name => {
-        var urlObj = JSON.parse(JSON.stringify(config));
+    const buildUrl = name => {
+        const urlObj = JSON.parse(JSON.stringify(config));
         urlObj.pathname = `/projection/${name}`;
         return url.format(urlObj);
     };
@@ -19,7 +15,7 @@ module.exports = config => {
         deleteCheckpointStream = deleteCheckpointStream || false;
         deleteStateStream = deleteStateStream || false;
 
-        var options = {
+        const options = {
             uri: buildUrl(name),
             method: 'DELETE',
             qs: {

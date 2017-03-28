@@ -1,14 +1,10 @@
-var debug = require('debug')('geteventstore:getevents'),
-    req = require('request-promise'),
-    Promise = require('bluebird'),
-    assert = require('assert'),
-    url = require('url');
+const debug = require('debug')('geteventstore:getevents'), req = require('request-promise'), Promise = require('bluebird'), assert = require('assert'), url = require('url');
 
-var baseErr = 'Get Events - ';
+const baseErr = 'Get Events - ';
 
 module.exports = config => {
-    var buildUrl = (stream, startPosition, length, direction) => {
-        var urlObj = JSON.parse(JSON.stringify(config));
+    const buildUrl = (stream, startPosition, length, direction) => {
+        const urlObj = JSON.parse(JSON.stringify(config));
         urlObj.pathname = `/streams/${stream}/${startPosition}/${direction}/${length}`;
         return url.format(urlObj);
     };
@@ -27,7 +23,7 @@ module.exports = config => {
         startPosition = startPosition === undefined && direction === 'backward' ? 'head' : startPosition || 0;
         resolveLinkTos = resolveLinkTos === undefined ? true : resolveLinkTos;
 
-        var options = {
+        const options = {
             uri: buildUrl(streamName, startPosition, length, direction),
             method: 'GET',
             headers: {

@@ -1,11 +1,6 @@
-var debug = require('debug')('geteventstore:getevents'),
-    connectionManager = require('./connectionManager'),
-    mapEvents = require('./utilities/mapEvents'),
-    Promise = require('bluebird'),
-    assert = require('assert'),
-    _ = require('lodash');
+const debug = require('debug')('geteventstore:getevents'), connectionManager = require('./connectionManager'), mapEvents = require('./utilities/mapEvents'), Promise = require('bluebird'), assert = require('assert'), _ = require('lodash');
 
-var baseErr = 'Get Events - ';
+const baseErr = 'Get Events - ';
 
 module.exports = config => (streamName, startPosition, length, direction, resolveLinkTos) => Promise.resolve().then(() => {
     assert(streamName, `${baseErr}Stream Name not provided`);

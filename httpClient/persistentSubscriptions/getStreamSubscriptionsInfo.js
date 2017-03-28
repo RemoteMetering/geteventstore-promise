@@ -1,21 +1,21 @@
-var debug = require('debug')('geteventstore:getStreamSubscriptionsInfo');
-var req = require('request-promise');
-var Promise = require('bluebird');
-var assert = require('assert');
-var url = require('url');
+const debug = require('debug')('geteventstore:getStreamSubscriptionsInfo');
+const req = require('request-promise');
+const Promise = require('bluebird');
+const assert = require('assert');
+const url = require('url');
 
-var baseError = 'Get Stream Subscriptions Info - ';
+const baseError = 'Get Stream Subscriptions Info - ';
 
 module.exports = config => {
-    var buildUrl = stream => {
-        var urlObj = JSON.parse(JSON.stringify(config));
+    const buildUrl = stream => {
+        const urlObj = JSON.parse(JSON.stringify(config));
         urlObj.pathname = `/subscriptions/${stream}`;
         return url.format(urlObj);
     };
 
     return stream => Promise.resolve().then(() => {
         assert(stream, `${baseError}Stream not provided`);
-        var options = {
+        const options = {
             uri: buildUrl(stream),
             method: 'GET',
             json: true,

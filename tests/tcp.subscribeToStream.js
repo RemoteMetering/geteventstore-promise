@@ -1,18 +1,18 @@
 require('./_globalHooks');
 
-var tcpConfig = require('./support/tcpConfig');
-var eventstore = require('../index.js');
-var Promise = require('bluebird');
-var assert = require('assert');
-var uuid = require('uuid');
+const tcpConfig = require('./support/tcpConfig');
+const eventstore = require('../index.js');
+const Promise = require('bluebird');
+const assert = require('assert');
+const uuid = require('uuid');
 
 describe('TCP Client - Subscribe To Stream', () => {
     it('Should get all events written to a subscription stream after subscription is started', function(done) {
         this.timeout(9 * 1000);
-        var client = eventstore.tcp(tcpConfig);
-        var testStream = `TestStream-${uuid.v4()}`;
-        var processedEventCount = 0;
-        var confirmCalled = false;
+        const client = eventstore.tcp(tcpConfig);
+        const testStream = `TestStream-${uuid.v4()}`;
+        let processedEventCount = 0;
+        let confirmCalled = false;
 
         function onEventAppeared() {
             processedEventCount++;
@@ -26,9 +26,9 @@ describe('TCP Client - Subscribe To Stream', () => {
             done('should not drop');
         }
 
-        var initialEvents = [];
+        const initialEvents = [];
 
-        for (var k = 0; k < 10; k++) {
+        for (let k = 0; k < 10; k++) {
             initialEvents.push(eventstore.eventFactory.NewEvent('TestEventType', {
                 id: k
             }));
@@ -42,8 +42,8 @@ describe('TCP Client - Subscribe To Stream', () => {
                 connection.close();
                 done();
             }));
-            var events = [];
-            for (var k = 0; k < 10; k++) {
+            const events = [];
+            for (let k = 0; k < 10; k++) {
                 events.push(eventstore.eventFactory.NewEvent('TestEventType', {
                     id: k
                 }));

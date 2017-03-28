@@ -1,13 +1,13 @@
-var debug = require('debug')('geteventstore:connectionManager');
-var esClient = require('eventstore-node');
-var Promise = require('bluebird');
-var assert = require('assert');
+const debug = require('debug')('geteventstore:connectionManager');
+const esClient = require('eventstore-node');
+const Promise = require('bluebird');
+const assert = require('assert');
 
-var waitDelay = 50;
-var connection;
-var isConnecting = false;
+const waitDelay = 50;
+let connection;
+let isConnecting = false;
 
-var create = config => Promise.resolve().then(() => {
+const create = config => Promise.resolve().then(() => {
     assert(config.hostname, 'Hostname not provided');
     assert(config.port, 'Port not provided');
 
@@ -17,7 +17,7 @@ var create = config => Promise.resolve().then(() => {
     }
 
     isConnecting = true;
-    var esConnection = esClient.EventStoreConnection.create(config, `tcp://${config.hostname}:${config.port}`);
+    const esConnection = esClient.EventStoreConnection.create(config, `tcp://${config.hostname}:${config.port}`);
     esConnection.on('disconnected', () => {
         debug('', 'Connection Disconnected');
     });
@@ -53,7 +53,7 @@ var create = config => Promise.resolve().then(() => {
     });
 });
 
-var closeAll = () => new Promise((resolve, reject) => {
+const closeAll = () => new Promise((resolve, reject) => {
     if (!connection) return resolve();
 
     let tempConnection = connection;
@@ -79,7 +79,7 @@ var closeAll = () => new Promise((resolve, reject) => {
     connection.close();
 });
 
-var getConnections = () => Promise.resolve().then(() => {
+const getConnections = () => Promise.resolve().then(() => {
     if (!connection) return [];
     return [connection];
 });

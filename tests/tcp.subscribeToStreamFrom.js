@@ -1,17 +1,17 @@
 require('./_globalHooks');
 
-var tcpConfig = require('./support/tcpConfig');
-var eventstore = require('../index.js');
-var Promise = require('bluebird');
-var assert = require('assert');
-var uuid = require('uuid');
+const tcpConfig = require('./support/tcpConfig');
+const eventstore = require('../index.js');
+const Promise = require('bluebird');
+const assert = require('assert');
+const uuid = require('uuid');
 
 describe('TCP Client - Subscribe To Stream', () => {
     it('Should get all events written to a subscription stream', function(done) {
         this.timeout(9 * 1000);
-        var client = eventstore.tcp(tcpConfig);
-        var testStream = `TestStream-${uuid.v4()}`;
-        var processedEventCount = 0;
+        const client = eventstore.tcp(tcpConfig);
+        const testStream = `TestStream-${uuid.v4()}`;
+        let processedEventCount = 0;
 
         function onEventAppeared() {
             processedEventCount++;
@@ -21,8 +21,8 @@ describe('TCP Client - Subscribe To Stream', () => {
             done('should not drop');
         }
 
-        var events = [];
-        for (var k = 0; k < 10; k++) {
+        const events = [];
+        for (let k = 0; k < 10; k++) {
             events.push(eventstore.eventFactory.NewEvent('TestEventType', {
                 id: k
             }));
@@ -39,10 +39,10 @@ describe('TCP Client - Subscribe To Stream', () => {
     it('Should get all resolved events read from a linked stream', function(done) {
         this.timeout(9 * 1000);
 
-        var client = eventstore.tcp(tcpConfig);
-        var testStream = `TestStream-${uuid.v4()}`;
-        var connection;
-        var doDone = true;
+        const client = eventstore.tcp(tcpConfig);
+        const testStream = `TestStream-${uuid.v4()}`;
+        let connection;
+        let doDone = true;
 
         function onEventAppeared(ev) {
             assert(ev.link, 'link object expected');
@@ -57,15 +57,15 @@ describe('TCP Client - Subscribe To Stream', () => {
             done('should not drop during test');
         }
 
-        var events = [];
-        for (var k = 0; k < 10; k++) {
+        const events = [];
+        for (let k = 0; k < 10; k++) {
             events.push(eventstore.eventFactory.NewEvent('TestEventType', {
                 id: k
             }));
         }
 
         return client.writeEvents(testStream, events).then(() => {
-            var settings = {
+            const settings = {
                 resolveLinkTos: true
             };
             return client.subscribeToStreamFrom('$ce-TestStream', 5, onEventAppeared, undefined, onDropped, settings).then(subscriptionConnection => {

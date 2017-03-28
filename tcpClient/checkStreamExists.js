@@ -1,9 +1,6 @@
-var connectionManager = require('./connectionManager'),
-	esClient = require('eventstore-node'),
-	Promise = require('bluebird'),
-	assert = require('assert');
+const connectionManager = require('./connectionManager'), esClient = require('eventstore-node'), Promise = require('bluebird'), assert = require('assert');
 
-var baseErr = 'Check stream exits - ';
+const baseErr = 'Check stream exits - ';
 
 module.exports = config => streamName => Promise.resolve().then(() => {
     assert(streamName, `${baseErr}Stream Name not provided`);

@@ -1,8 +1,8 @@
-var _ = require('lodash');
+const _ = require('lodash');
 
 module.exports = events => _.map(events, ev => {
-    var event = ev.event;
-    var link = ev.link;
+    const event = ev.event;
+    const link = ev.link;
 
     let mappedEvent = {
         data: JSON.parse(event.data.toString()),

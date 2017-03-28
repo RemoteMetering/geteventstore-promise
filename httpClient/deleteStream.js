@@ -1,16 +1,12 @@
-var debug = require('debug')('geteventstore:deleteStream'),
-    req = require('request-promise'),
-    Promise = require('bluebird'),
-    assert = require('assert'),
-    url = require('url');
+const debug = require('debug')('geteventstore:deleteStream'), req = require('request-promise'), Promise = require('bluebird'), assert = require('assert'), url = require('url');
 
-var baseErr = 'Delete Stream - ';
+const baseErr = 'Delete Stream - ';
 
 module.exports = config => {
-    var checkStreamExists = require('./checkStreamExists')(config);
+    const checkStreamExists = require('./checkStreamExists')(config);
 
-    var buildUrl = streamName => {
-        var urlObj = JSON.parse(JSON.stringify(config));
+    const buildUrl = streamName => {
+        const urlObj = JSON.parse(JSON.stringify(config));
         urlObj.pathname = `/streams/${streamName}`;
         return url.format(urlObj);
     };
@@ -21,7 +17,7 @@ module.exports = config => {
         return checkStreamExists(streamName).then(exists => {
             if (!exists) return reject(new Error('Stream does not exist'));
 
-            var options = {
+            let options = {
                 uri: buildUrl(streamName),
                 method: 'DELETE',
                 resolveWithFullResponse: true,

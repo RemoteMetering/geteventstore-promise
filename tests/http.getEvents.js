@@ -1,22 +1,22 @@
 require('./_globalHooks');
 
-var httpConfig = require('./support/httpConfig');
-var eventstore = require('../index.js');
-var assert = require('assert');
-var uuid = require('uuid');
-var _ = require('lodash');
+const httpConfig = require('./support/httpConfig');
+const eventstore = require('../index.js');
+const assert = require('assert');
+const uuid = require('uuid');
+const _ = require('lodash');
 
 describe('Http Client - Get Events', () => {
 
-    var testStream = `TestStream-${uuid.v4()}`;
-    var numberOfEvents = 10;
+    const testStream = `TestStream-${uuid.v4()}`;
+    const numberOfEvents = 10;
 
     before(() => {
-        var client = eventstore.http(httpConfig);
+        const client = eventstore.http(httpConfig);
 
-        var events = [];
+        const events = [];
 
-        for (var i = 1; i <= numberOfEvents; i++) {
+        for (let i = 1; i <= numberOfEvents; i++) {
             events.push(eventstore.eventFactory.NewEvent('TestEventType', {
                 something: i
             }));
@@ -26,7 +26,7 @@ describe('Http Client - Get Events', () => {
     });
 
     it('Should get events reading forward', () => {
-        var client = eventstore.http(httpConfig);
+        const client = eventstore.http(httpConfig);
 
         return client.getEvents(testStream, undefined, undefined, 'forward').then(events => {
             assert.equal(events.length, 10);
@@ -35,7 +35,7 @@ describe('Http Client - Get Events', () => {
     });
 
     it('Should get events reading backward', () => {
-        var client = eventstore.http(httpConfig);
+        const client = eventstore.http(httpConfig);
 
         return client.getEvents(testStream, 'head', undefined, 'backward').then(events => {
             assert.equal(events.length, 10);
@@ -44,7 +44,7 @@ describe('Http Client - Get Events', () => {
     });
 
     it('Should get last event reading backward with larger size than events', () => {
-        var client = eventstore.http(httpConfig);
+        const client = eventstore.http(httpConfig);
 
         return client.getEvents(testStream, 0, 250, 'backward').then(events => {
             assert.equal(events.length, 1);
@@ -53,7 +53,7 @@ describe('Http Client - Get Events', () => {
     });
 
     it('Should not get any events when start event is greater than the stream length', () => {
-        var client = eventstore.http(httpConfig);
+        const client = eventstore.http(httpConfig);
 
         return client.getEvents(testStream, 11).then(events => {
             assert.equal(events.length, 0);
@@ -61,7 +61,7 @@ describe('Http Client - Get Events', () => {
     });
 
     it('Should get events reading backward from a start position', () => {
-        var client = eventstore.http(httpConfig);
+        const client = eventstore.http(httpConfig);
 
         return client.getEvents(testStream, 2, undefined, 'backward').then(events => {
             assert.equal(events.length, 3);
@@ -70,7 +70,7 @@ describe('Http Client - Get Events', () => {
     });
 
     it('Should get events reading backward with a length greater than the stream length', () => {
-        var client = eventstore.http(httpConfig);
+        const client = eventstore.http(httpConfig);
 
         return client.getEvents(testStream, undefined, 10000, 'backward').then(events => {
             assert.equal(events.length, 10);
@@ -80,13 +80,13 @@ describe('Http Client - Get Events', () => {
 
     it('Should get events reading forward with a length greater than the stream length return a maximum of 4096', function() {
         this.timeout(10000);
-        var client = eventstore.http(httpConfig);
+        const client = eventstore.http(httpConfig);
 
-        var testStream = `TestStream-${uuid.v4()}`;
-        var numberOfEvents = 5000;
-        var events = [];
+        const testStream = `TestStream-${uuid.v4()}`;
+        const numberOfEvents = 5000;
+        const events = [];
 
-        for (var i = 1; i <= numberOfEvents; i++) {
+        for (let i = 1; i <= numberOfEvents; i++) {
             events.push(eventstore.eventFactory.NewEvent('TestEventType', {
                 something: i
             }));
@@ -100,7 +100,7 @@ describe('Http Client - Get Events', () => {
     });
 
     it('Should get linked to events and map correctly', () => {
-        var client = eventstore.http(httpConfig);
+        const client = eventstore.http(httpConfig);
 
         return client.getEvents('$ce-TestStream', 0, 1, 'forward').then(events => {
             assert.equal(events.length, 1);
@@ -112,10 +112,10 @@ describe('Http Client - Get Events', () => {
 });
 
 describe('Http Client - Get Events Failure', () => {
-    var testStream = `TestStream-${uuid.v4()}`;
+    const testStream = `TestStream-${uuid.v4()}`;
 
     it('Should return 404 when stream does not exist', () => {
-        var client = eventstore.http(httpConfig);
+        const client = eventstore.http(httpConfig);
 
         return client.getEvents(testStream, undefined, undefined, 'forward').then(() => {
             throw new Error('Should not have received events');
@@ -125,10 +125,10 @@ describe('Http Client - Get Events Failure', () => {
     });
 
     it('Should not return 404 when stream does not exist if ignore 404 is set on config', () => {
-        var httpConfigWithIgnore = _.cloneDeep(httpConfig);
+        const httpConfigWithIgnore = _.cloneDeep(httpConfig);
         httpConfigWithIgnore.ignore = [404];
 
-        var client = eventstore.http(httpConfigWithIgnore);
+        const client = eventstore.http(httpConfigWithIgnore);
 
         return client.getEvents(testStream, undefined, undefined, 'forward').then(() => {
             throw new Error('Should not have received events');

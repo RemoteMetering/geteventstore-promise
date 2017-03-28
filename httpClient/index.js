@@ -1,7 +1,7 @@
-var assert = require('assert');
-var _ = require('lodash');
+const assert = require('assert');
+const _ = require('lodash');
 
-var baseErr = 'geteventstore-promise - HTTP client - ';
+const baseErr = 'geteventstore-promise - HTTP client - ';
 
 module.exports = config => {
 	//Assert configuration

@@ -1,10 +1,6 @@
-var debug = require('debug')('geteventstore:subscribeToStreamFrom'),
-    EventStoreClient = require('event-store-client'),
-    createConnection = require('./createConnection'),
-    Promise = require('bluebird'),
-    assert = require('assert');
+const debug = require('debug')('geteventstore:subscribeToStreamFrom'), EventStoreClient = require('event-store-client'), createConnection = require('./createConnection'), Promise = require('bluebird'), assert = require('assert');
 
-var baseErr = 'Subscribe to Stream From - ';
+const baseErr = 'Subscribe to Stream From - ';
 
 module.exports = config => (
     streamName,
@@ -19,15 +15,15 @@ module.exports = config => (
         assert(streamName, `${baseErr}Stream Name not provided`);
         if (fromEventNumber === 0) fromEventNumber = undefined;
 
-        var catchUpSettings = new EventStoreClient.CatchUpSubscription.Settings();
+        const catchUpSettings = new EventStoreClient.CatchUpSubscription.Settings();
 
         if (settings.resolveLinkTos) catchUpSettings.resolveLinkTos = settings.resolveLinkTos;
         if (settings.maxLiveQueueSize) catchUpSettings.maxLiveQueueSize = settings.maxLiveQueueSize;
         if (settings.readBatchSize) catchUpSettings.readBatchSize = settings.readBatchSize;
         if (settings.debug) catchUpSettings.debug = settings.debug;
 
-        var connection = createConnection(config, reject);
-        var subscription = connection.subscribeToStreamFrom(streamName, fromEventNumber, config.credentials, onEventAppeared, onLiveProcessingStarted, onDropped, catchUpSettings);
+        const connection = createConnection(config, reject);
+        const subscription = connection.subscribeToStreamFrom(streamName, fromEventNumber, config.credentials, onEventAppeared, onLiveProcessingStarted, onDropped, catchUpSettings);
         debug('', 'Subscription: %j', subscription);
         resolve(connection);
     });

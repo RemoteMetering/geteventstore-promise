@@ -1,8 +1,8 @@
-var Promise = require('bluebird');
+const Promise = require('bluebird');
 
 module.exports = config => {
-    var getAllProjectionsInfo = require('./getAllProjectionsInfo')(config);
-    var startProjection = require('./start')(config);
+    const getAllProjectionsInfo = require('./getAllProjectionsInfo')(config);
+    const startProjection = require('./start')(config);
 
     return () => getAllProjectionsInfo().then(projectionsInfo => Promise.map(projectionsInfo.projections, projection => startProjection(projection.name)));
 };

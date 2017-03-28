@@ -1,15 +1,15 @@
-var debug = require('debug')('geteventstore:assertPersistentSubscription');
-var req = require('request-promise');
-var Promise = require('bluebird');
-var assert = require('assert');
-var url = require('url');
+const debug = require('debug')('geteventstore:assertPersistentSubscription');
+const req = require('request-promise');
+const Promise = require('bluebird');
+const assert = require('assert');
+const url = require('url');
 
-var baseErr = 'Assert persistent subscriptions - ';
+const baseErr = 'Assert persistent subscriptions - ';
 
-var createPersistentSubscriptionRequest = (name, streamName, options, config) => {
-    var urlObj = JSON.parse(JSON.stringify(config));
+const createPersistentSubscriptionRequest = (name, streamName, options, config) => {
+    const urlObj = JSON.parse(JSON.stringify(config));
     urlObj.pathname = `/subscriptions/${streamName}/${name}`;
-    var uri = url.format(urlObj);
+    const uri = url.format(urlObj);
 
     return {
         uri,
@@ -22,7 +22,7 @@ var createPersistentSubscriptionRequest = (name, streamName, options, config) =>
     };
 };
 
-var createPersistentSubscriptionOptions = options => {
+const createPersistentSubscriptionOptions = options => {
     options = options || {};
 
     return {
@@ -46,8 +46,8 @@ module.exports = config => (name, streamName, options) => Promise.resolve().then
     assert(name, `${baseErr}Persistent Subscription Name not provided`);
     assert(streamName, `${baseErr}Stream Name not provided`);
 
-    var persistentSubscriptionOptions = createPersistentSubscriptionOptions(options);
-    var createRequest = createPersistentSubscriptionRequest(name, streamName, persistentSubscriptionOptions, config);
+    const persistentSubscriptionOptions = createPersistentSubscriptionOptions(options);
+    const createRequest = createPersistentSubscriptionRequest(name, streamName, persistentSubscriptionOptions, config);
     debug('', 'Options: %j', createRequest);
     return req(createRequest).then(response => {
         debug('', 'Response: %j', response);
@@ -55,7 +55,7 @@ module.exports = config => (name, streamName, options) => Promise.resolve().then
     }).catch(err => {
         if (err.statusCode !== 409) throw err;
 
-        var updateRequest = createPersistentSubscriptionRequest(name, streamName, persistentSubscriptionOptions, config);
+        const updateRequest = createPersistentSubscriptionRequest(name, streamName, persistentSubscriptionOptions, config);
         updateRequest.method = 'POST';
 
         debug('', 'Update Options: %j', updateRequest);

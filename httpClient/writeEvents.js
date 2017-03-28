@@ -1,14 +1,10 @@
-var debug = require('debug')('geteventstore:writeEvents'),
-    req = require('request-promise'),
-    Promise = require('bluebird'),
-    assert = require('assert'),
-    url = require('url');
+const debug = require('debug')('geteventstore:writeEvents'), req = require('request-promise'), Promise = require('bluebird'), assert = require('assert'), url = require('url');
 
-var baseErr = 'Write Events - ';
+const baseErr = 'Write Events - ';
 
 module.exports = config => {
-    var buildUrl = streamName => {
-        var urlObj = JSON.parse(JSON.stringify(config));
+    const buildUrl = streamName => {
+        const urlObj = JSON.parse(JSON.stringify(config));
         urlObj.pathname = `/streams/${streamName}`;
         return url.format(urlObj);
     };
@@ -24,7 +20,7 @@ module.exports = config => {
         options = options || {};
         options.expectedVersion = options.expectedVersion || -2;
 
-        var reqOptions = {
+        const reqOptions = {
             uri: buildUrl(streamName),
             headers: {
                 "Content-Type": "application/vnd.eventstore.events+json",

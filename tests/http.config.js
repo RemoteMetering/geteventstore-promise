@@ -1,8 +1,8 @@
 require('./_globalHooks');
 
-var httpConfig = require('./support/httpConfig');
-var eventstore = require('../index.js');
-var assert = require('assert');
+const httpConfig = require('./support/httpConfig');
+const eventstore = require('../index.js');
+const assert = require('assert');
 
 describe('Http Client - Config', () => {
     it('Should return assertion error when config is undefined', done => {
@@ -18,7 +18,7 @@ describe('Http Client - Config', () => {
 
     it('Should return assertion error when hostname is undefined', done => {
         try {
-            var config = {
+            const config = {
                 port: 2113,
                 credentials: {
                     username: 'admin',
@@ -36,7 +36,7 @@ describe('Http Client - Config', () => {
 
     it('Should return assertion error when credentials are undefined', done => {
         try {
-            var config = {
+            const config = {
                 hostname: 'localhost',
                 port: 2113
             };
@@ -51,7 +51,7 @@ describe('Http Client - Config', () => {
 
     it('Should return http client when config is complete', done => {
         try {
-            var client = eventstore.http(httpConfig);
+            const client = eventstore.http(httpConfig);
             assert.equal(client !== undefined, true);
             done();
         } catch (err) {

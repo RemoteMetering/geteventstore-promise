@@ -1,15 +1,15 @@
 require('./_globalHooks');
 
-var httpConfig = require('./support/httpConfig');
-var eventstore = require('../index.js');
-var assert = require('assert');
-var uuid = require('uuid');
+const httpConfig = require('./support/httpConfig');
+const eventstore = require('../index.js');
+const assert = require('assert');
+const uuid = require('uuid');
 
 describe('Http Client - Write Event', () => {
     it('Write to a new stream and read the event', () => {
-        var client = eventstore.http(httpConfig);
+        const client = eventstore.http(httpConfig);
 
-        var testStream = `TestStream-${uuid.v4()}`;
+        const testStream = `TestStream-${uuid.v4()}`;
         return client.writeEvent(testStream, 'TestEventType', {
             something: '123'
         }).then(() => client.getEvents(testStream).then(events => {
@@ -18,9 +18,9 @@ describe('Http Client - Write Event', () => {
     });
 
     it('Should fail promise if no event data provided', () => {
-        var client = eventstore.http(httpConfig);
+        const client = eventstore.http(httpConfig);
 
-        var testStream = `TestStream-${uuid.v4()}`;
+        const testStream = `TestStream-${uuid.v4()}`;
         return client.writeEvent(testStream, 'TestEventType'
             ).then(() => {
             assert.fail('write should not have succeeded');

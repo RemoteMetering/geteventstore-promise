@@ -1,20 +1,15 @@
-var debug = require('debug')('geteventstore:getAllStreamEvents'),
-	req = require('request-promise'),
-	Promise = require('bluebird'),
-	assert = require('assert'),
-	_ = require('lodash'),
-	url = require('url');
+const debug = require('debug')('geteventstore:getAllStreamEvents'), req = require('request-promise'), Promise = require('bluebird'), assert = require('assert'), _ = require('lodash'), url = require('url');
 
-var baseErr = 'Get All Stream Events - ';
+const baseErr = 'Get All Stream Events - ';
 
 module.exports = config => {
-	var buildUrl = (stream, startPosition, chunkSize) => {
-		var urlObj = JSON.parse(JSON.stringify(config));
+	const buildUrl = (stream, startPosition, chunkSize) => {
+		const urlObj = JSON.parse(JSON.stringify(config));
 		urlObj.pathname = `/streams/${stream}/${startPosition}/forward/${chunkSize}`;
 		return url.format(urlObj);
 	};
 
-	var buildOptions = (streamName, startPosition, chunkSize, resolveLinkTos) => ({
+	const buildOptions = (streamName, startPosition, chunkSize, resolveLinkTos) => ({
         uri: buildUrl(streamName, startPosition, chunkSize),
         method: 'GET',
 
@@ -43,10 +38,10 @@ module.exports = config => {
             chunkSize = 4096;
         }
 
-        var events = [];
+        let events = [];
 
         function getNextChunk() {
-            var options = buildOptions(streamName, startPosition, chunkSize, resolveLinkTos);
+            const options = buildOptions(streamName, startPosition, chunkSize, resolveLinkTos);
 
             return req(options).then(response => {
                 debug('', 'Result: %j', response);

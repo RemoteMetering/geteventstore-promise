@@ -1,4 +1,4 @@
-var eventFactory = require('./eventFactory');
+const eventFactory = require('./eventFactory');
 
 module.exports = {
 	eventFactory,

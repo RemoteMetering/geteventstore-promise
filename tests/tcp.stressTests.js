@@ -1,22 +1,22 @@
 require('./_globalHooks');
 
-var tcpConfig = require('./support/tcpConfig');
-var eventstore = require('../index.js');
-var Promise = require('bluebird');
-var assert = require('assert');
-var uuid = require('uuid');
-var _ = require('lodash');
+const tcpConfig = require('./support/tcpConfig');
+const eventstore = require('../index.js');
+const Promise = require('bluebird');
+const assert = require('assert');
+const uuid = require('uuid');
+const _ = require('lodash');
 
 describe('TCP Client - Stress Tests', () => {
     it('Should handle parallel writes', function() {
         this.timeout(20000);
-        var client = eventstore.tcp(tcpConfig);
+        const client = eventstore.tcp(tcpConfig);
 
-        var testStream = `TestStream-${uuid.v4()}`;
-        var numberOfEvents = 5000;
-        var events = [];
+        const testStream = `TestStream-${uuid.v4()}`;
+        const numberOfEvents = 5000;
+        const events = [];
 
-        for (var i = 1; i <= numberOfEvents; i++) {
+        for (let i = 1; i <= numberOfEvents; i++) {
             events.push(eventstore.eventFactory.NewEvent('TestEventType', {
                 something: i
             }));
@@ -29,21 +29,21 @@ describe('TCP Client - Stress Tests', () => {
 
     it('Should handle parallel reads and writes', function(callback) {
         this.timeout(60000);
-        var client = eventstore.tcp(tcpConfig);
+        const client = eventstore.tcp(tcpConfig);
 
-        var testStream = `TestStream-${uuid.v4()}`;
-        var numberOfEvents = 5000;
-        var events = [];
-        var writeCount = 0;
-        var readCount = 0;
+        const testStream = `TestStream-${uuid.v4()}`;
+        const numberOfEvents = 5000;
+        const events = [];
+        let writeCount = 0;
+        let readCount = 0;
 
-        for (var i = 1; i <= numberOfEvents; i++) {
+        for (let i = 1; i <= numberOfEvents; i++) {
             events.push(eventstore.eventFactory.NewEvent('TestEventType', {
                 something: i
             }));
         }
 
-        var checkCounts = () => {
+        const checkCounts = () => {
             if (readCount === numberOfEvents && writeCount === numberOfEvents && writeCount === readCount) callback();
         };
 

@@ -1,12 +1,8 @@
-var debug = require('debug')('geteventstore:eventEnumerator'),
-    connectionManager = require('./connectionManager'),
-    mapEvents = require('./utilities/mapEvents'),
-    Promise = require('bluebird'),
-    assert = require('assert');
+const debug = require('debug')('geteventstore:eventEnumerator'), connectionManager = require('./connectionManager'), mapEvents = require('./utilities/mapEvents'), Promise = require('bluebird'), assert = require('assert');
 
-var baseErr = 'Event Enumerator - ';
+const baseErr = 'Event Enumerator - ';
 
-var getNextBatch = (config, streamName, state, length, direction, resolveLinkTos) => {
+const getNextBatch = (config, streamName, state, length, direction, resolveLinkTos) => {
     state.isFirstEnumeration = false;
     return Promise.resolve().then(() => {
         assert(streamName, `${baseErr}Stream Name not provided`);
@@ -29,8 +25,8 @@ var getNextBatch = (config, streamName, state, length, direction, resolveLinkTos
     });
 };
 
-var esDirectionWorkaroundHandler = direction => {
-    var wasSwopped = false;
+const esDirectionWorkaroundHandler = direction => {
+    let wasSwopped = false;
 
     if (direction === 'forward') {
         wasSwopped = true;
@@ -49,8 +45,8 @@ var esDirectionWorkaroundHandler = direction => {
     };
 };
 
-var stateHandler = direction => {
-    var Handler = function() {
+const stateHandler = direction => {
+    const Handler = function() {
         this.isFirstEnumeration = true;
         this.setToFirst();
     };
@@ -72,7 +68,7 @@ var stateHandler = direction => {
         if (direction === 'backward')
             return length;
 
-        var adjustment = length;
+        let adjustment = length;
         if (this.nextEventNumber < -1) {
             adjustment -= Math.abs(this.nextEventNumber);
             this.nextEventNumber = 0;
@@ -91,7 +87,7 @@ var stateHandler = direction => {
 module.exports = config => (streamName, direction, resolveLinkTos) => {
     direction = direction || 'forward';
     resolveLinkTos = resolveLinkTos === undefined ? true : resolveLinkTos;
-    var state = stateHandler(direction);
+    const state = stateHandler(direction);
 
     return {
         first(length) {
@@ -101,7 +97,7 @@ module.exports = config => (streamName, direction, resolveLinkTos) => {
         last(length) {
             state.setToLast(length);
 
-            var handler = esDirectionWorkaroundHandler(direction);
+            const handler = esDirectionWorkaroundHandler(direction);
             return getNextBatch(config, streamName, state, length, handler.direction, resolveLinkTos).then(result => handler.swopResult(state, length, result));
         },
         previous(length) {

@@ -1,26 +1,26 @@
 require('./_globalHooks');
 
-var httpConfig = require('./support/httpConfig');
-var eventstore = require('../index.js');
-var Promise = require('bluebird');
-var assert = require('assert');
-var uuid = require('uuid');
-var _ = require('lodash');
+const httpConfig = require('./support/httpConfig');
+const eventstore = require('../index.js');
+const Promise = require('bluebird');
+const assert = require('assert');
+const uuid = require('uuid');
+const _ = require('lodash');
 
 describe('HTTP Client - Persistent Subscription', () => {
     it('Should get and ack first batch of events written to a stream', function() {
         this.timeout(9 * 1000);
-        var client = eventstore.http(httpConfig);
-        var testStream = `TestStream-${uuid.v4()}`;
+        const client = eventstore.http(httpConfig);
+        const testStream = `TestStream-${uuid.v4()}`;
 
-        var events = [];
-        for (var k = 0; k < 10; k++) {
+        const events = [];
+        for (let k = 0; k < 10; k++) {
             events.push(eventstore.eventFactory.NewEvent('TestEventType', {
                 id: k
             }));
         }
 
-        var testSubscriptionName = testStream;
+        const testSubscriptionName = testStream;
 
         return client.writeEvents(testStream, events).then(() => client.persistentSubscriptions.assert(testSubscriptionName, testStream).then(() => client.persistentSubscriptions.getEvents(testSubscriptionName, testStream, 10).then(result => {
             assert.equal(10, result.entries.length);
@@ -32,21 +32,21 @@ describe('HTTP Client - Persistent Subscription', () => {
 
     it('Should ack and nack messages individually', function() {
         this.timeout(9 * 1000);
-        var client = eventstore.http(httpConfig);
-        var testStream = `TestStream-${uuid.v4()}`;
+        const client = eventstore.http(httpConfig);
+        const testStream = `TestStream-${uuid.v4()}`;
 
-        var events = [];
-        for (var k = 0; k < 12; k++) {
+        const events = [];
+        for (let k = 0; k < 12; k++) {
             events.push(eventstore.eventFactory.NewEvent('TestEventType', {
                 id: k
             }));
         }
 
-        var testSubscriptionName = testStream;
+        const testSubscriptionName = testStream;
 
         return client.writeEvents(testStream, events).then(() => client.persistentSubscriptions.assert(testSubscriptionName, testStream).then(() => client.persistentSubscriptions.getEvents(testSubscriptionName, testStream, 100).then(result => {
             assert.equal(12, result.entries.length);
-            var chunks = _.chunk(result.entries, 4);
+            const chunks = _.chunk(result.entries, 4);
             return Promise.map(chunks[0], entry => entry.nack()).then(() => Promise.map(chunks[1], entry => entry.ack()).then(() => Promise.map(chunks[2], entry => entry.nack()).then(() => client.persistentSubscriptions.getEvents(testSubscriptionName, testStream, 10).then(result => {
                 assert.equal(8, result.entries.length);
                 assert.equal(0, result.entries[7].event.data.id);
@@ -63,20 +63,20 @@ describe('HTTP Client - Persistent Subscription', () => {
 
     it('Should update persistent subscription ', function() {
         this.timeout(9 * 1000);
-        var client = eventstore.http(httpConfig);
-        var testStream = `TestStream-${uuid.v4()}`;
+        const client = eventstore.http(httpConfig);
+        const testStream = `TestStream-${uuid.v4()}`;
 
-        var events = [];
-        for (var k = 0; k < 12; k++) {
+        const events = [];
+        for (let k = 0; k < 12; k++) {
             events.push(eventstore.eventFactory.NewEvent('TestEventType', {
                 id: k
             }));
         }
 
-        var testSubscriptionName = testStream;
+        const testSubscriptionName = testStream;
 
         return client.writeEvents(testStream, events).then(() => client.persistentSubscriptions.assert(testSubscriptionName, testStream).then(() => {
-            var options = {
+            const options = {
                 readBatchSize: 121,
             };
             return client.persistentSubscriptions.assert(testSubscriptionName, testStream, options).then(() => client.persistentSubscriptions.getSubscriptionInfo(testSubscriptionName, testStream).then(result => {
@@ -87,17 +87,17 @@ describe('HTTP Client - Persistent Subscription', () => {
 
     it('Should delete persistent subscription', function(done) {
         this.timeout(9 * 1000);
-        var client = eventstore.http(httpConfig);
-        var testStream = `TestStream-${uuid.v4()}`;
+        const client = eventstore.http(httpConfig);
+        const testStream = `TestStream-${uuid.v4()}`;
 
-        var events = [];
-        for (var k = 0; k < 12; k++) {
+        const events = [];
+        for (let k = 0; k < 12; k++) {
             events.push(eventstore.eventFactory.NewEvent('TestEventType', {
                 id: k
             }));
         }
 
-        var testSubscriptionName = testStream;
+        const testSubscriptionName = testStream;
 
         return client.writeEvents(testStream, events).then(() => client.persistentSubscriptions.assert(testSubscriptionName, testStream).then(() => client.persistentSubscriptions.remove(testSubscriptionName, testStream).then(() => client.persistentSubscriptions.getEvents(testSubscriptionName, testStream, 10).then(() => {
             done('Should have not gotten events');
@@ -113,17 +113,17 @@ describe('HTTP Client - Persistent Subscription', () => {
 
     it('Should return persistent subscription info', function() {
         this.timeout(9 * 1000);
-        var client = eventstore.http(httpConfig);
-        var testStream = `TestStream-${uuid.v4()}`;
+        const client = eventstore.http(httpConfig);
+        const testStream = `TestStream-${uuid.v4()}`;
 
-        var events = [];
-        for (var k = 0; k < 10; k++) {
+        const events = [];
+        for (let k = 0; k < 10; k++) {
             events.push(eventstore.eventFactory.NewEvent('TestEventType', {
                 id: k
             }));
         }
 
-        var testSubscriptionName = testStream;
+        const testSubscriptionName = testStream;
 
         return client.writeEvents(testStream, events).then(() => client.persistentSubscriptions.assert(testSubscriptionName, testStream).then(() => client.persistentSubscriptions.getSubscriptionInfo(testSubscriptionName, testStream).then(result => {
             assert.equal(testSubscriptionName, result.groupName);
@@ -133,17 +133,17 @@ describe('HTTP Client - Persistent Subscription', () => {
 
     it('Should return persistent subscriptions info for a stream', function() {
         this.timeout(9 * 1000);
-        var client = eventstore.http(httpConfig);
-        var testStream = `TestStream-${uuid.v4()}`;
+        const client = eventstore.http(httpConfig);
+        const testStream = `TestStream-${uuid.v4()}`;
 
-        var events = [];
-        for (var k = 0; k < 10; k++) {
+        const events = [];
+        for (let k = 0; k < 10; k++) {
             events.push(eventstore.eventFactory.NewEvent('TestEventType', {
                 id: k
             }));
         }
 
-        var testSubscriptionName = testStream;
+        const testSubscriptionName = testStream;
 
         return client.writeEvents(testStream, events).then(() => client.persistentSubscriptions.assert(testSubscriptionName, testStream).then(() => client.persistentSubscriptions.getStreamSubscriptionsInfo(testStream).then(results => {
             assert.equal(1, results.length);
@@ -152,17 +152,17 @@ describe('HTTP Client - Persistent Subscription', () => {
 
     it('Should return persistent subscriptions info for all', function() {
         this.timeout(9 * 1000);
-        var client = eventstore.http(httpConfig);
-        var testStream = `TestStream-${uuid.v4()}`;
+        const client = eventstore.http(httpConfig);
+        const testStream = `TestStream-${uuid.v4()}`;
 
-        var events = [];
-        for (var k = 0; k < 10; k++) {
+        const events = [];
+        for (let k = 0; k < 10; k++) {
             events.push(eventstore.eventFactory.NewEvent('TestEventType', {
                 id: k
             }));
         }
 
-        var testSubscriptionName = testStream;
+        const testSubscriptionName = testStream;
 
         return client.writeEvents(testStream, events).then(() => client.persistentSubscriptions.assert(testSubscriptionName, testStream).then(() => client.persistentSubscriptions.getAllSubscriptionsInfo().then(results => {
             assert.equal(6, results.length);

@@ -1,11 +1,6 @@
-var debug = require('debug')('geteventstore:getAllStreamEvents'),
-    connectionManager = require('./connectionManager'),
-    mapEvents = require('./utilities/mapEvents'),
-    Promise = require('bluebird'),
-    assert = require('assert'),
-    _ = require('lodash');
+const debug = require('debug')('geteventstore:getAllStreamEvents'), connectionManager = require('./connectionManager'), mapEvents = require('./utilities/mapEvents'), Promise = require('bluebird'), assert = require('assert'), _ = require('lodash');
 
-var baseErr = 'Get All Stream Events - ';
+const baseErr = 'Get All Stream Events - ';
 
 module.exports = config => (streamName, chunkSize, startPosition, resolveLinkTos) => Promise.resolve().then(() => {
     assert(streamName, `${baseErr}Stream Name not provided`);
@@ -18,7 +13,7 @@ module.exports = config => (streamName, chunkSize, startPosition, resolveLinkTos
     resolveLinkTos = resolveLinkTos === undefined ? true : resolveLinkTos;
 
     return connectionManager.create(config).then(connection => {
-        var events = [];
+        let events = [];
 
         function getNextChunk(startPosition) {
             return connection.readStreamEventsForward(streamName, startPosition, chunkSize, resolveLinkTos, config.credentials).then(result => {

@@ -1,14 +1,10 @@
-var debug = require('debug')('geteventstore:resetProjection'),
-    req = require('request-promise'),
-    Promise = require('bluebird'),
-    assert = require('assert'),
-    url = require('url');
+const debug = require('debug')('geteventstore:resetProjection'), req = require('request-promise'), Promise = require('bluebird'), assert = require('assert'), url = require('url');
 
-var baseErr = 'Reset Projection - ';
+const baseErr = 'Reset Projection - ';
 
 module.exports = config => {
-    var buildUrl = name => {
-        var urlObj = JSON.parse(JSON.stringify(config));
+    const buildUrl = name => {
+        const urlObj = JSON.parse(JSON.stringify(config));
         urlObj.pathname = `/projection/${name}/command/reset`;
         return url.format(urlObj);
     };
@@ -16,7 +12,7 @@ module.exports = config => {
     return name => Promise.resolve().then(() => {
         assert(name, `${baseErr}Name not provided`);
 
-        var options = {
+        const options = {
             uri: buildUrl(name),
             method: 'POST'
         };

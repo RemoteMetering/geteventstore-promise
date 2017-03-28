@@ -1,25 +1,25 @@
 require('./_globalHooks');
 
-var tcpConfig = require('./support/tcpConfig');
-var eventstore = require('../index.js');
-var assert = require('assert');
-var uuid = require('uuid');
+const tcpConfig = require('./support/tcpConfig');
+const eventstore = require('../index.js');
+const assert = require('assert');
+const uuid = require('uuid');
 
 describe('TCP Client - Event Enumerator', () => {
     describe('Forward: Reading events', () => {
         it('Read next events', () => {
-            var client = eventstore.tcp(tcpConfig);
+            const client = eventstore.tcp(tcpConfig);
 
-            var events = [];
-            for (var k = 0; k < 100; k++) {
+            const events = [];
+            for (let k = 0; k < 100; k++) {
                 events.push(eventstore.eventFactory.NewEvent('TestEventType', {
                     id: k
                 }));
             }
 
-            var testStream = `TestStream-${uuid.v4()}`;
+            const testStream = `TestStream-${uuid.v4()}`;
             return client.writeEvents(testStream, events).then(() => {
-                var enumerator = client.eventEnumerator(testStream);
+                const enumerator = client.eventEnumerator(testStream);
                 return enumerator.next(20).then(result => {
                     assert.equal(result.events.length, 20);
                     assert.equal(result.events[0].data.id, 0);
@@ -35,18 +35,18 @@ describe('TCP Client - Event Enumerator', () => {
         });
 
         it('Read first 10 events, next 20 events, previous 30 events', () => {
-            var client = eventstore.tcp(tcpConfig);
+            const client = eventstore.tcp(tcpConfig);
 
-            var events = [];
-            for (var k = 0; k < 100; k++) {
+            const events = [];
+            for (let k = 0; k < 100; k++) {
                 events.push(eventstore.eventFactory.NewEvent('TestEventType', {
                     id: k
                 }));
             }
 
-            var testStream = `TestStream-${uuid.v4()}`;
+            const testStream = `TestStream-${uuid.v4()}`;
             return client.writeEvents(testStream, events).then(() => {
-                var enumerator = client.eventEnumerator(testStream);
+                const enumerator = client.eventEnumerator(testStream);
                 return enumerator.first(10).then(result => {
                     assert.equal(result.events.length, 10);
                     assert.equal(result.events[0].data.id, 0);
@@ -68,18 +68,18 @@ describe('TCP Client - Event Enumerator', () => {
         });
 
         it('Read last 10 events, previous 30 events, next 30 events', () => {
-            var client = eventstore.tcp(tcpConfig);
+            const client = eventstore.tcp(tcpConfig);
 
-            var events = [];
-            for (var k = 0; k < 100; k++) {
+            const events = [];
+            for (let k = 0; k < 100; k++) {
                 events.push(eventstore.eventFactory.NewEvent('TestEventType', {
                     id: k
                 }));
             }
 
-            var testStream = `TestStream-${uuid.v4()}`;
+            const testStream = `TestStream-${uuid.v4()}`;
             return client.writeEvents(testStream, events).then(() => {
-                var enumerator = client.eventEnumerator(testStream);
+                const enumerator = client.eventEnumerator(testStream);
                 return enumerator.last(10).then(result => {
                     assert.equal(result.events.length, 10);
                     assert.equal(result.events[0].data.id, 90);
@@ -101,18 +101,18 @@ describe('TCP Client - Event Enumerator', () => {
         });
 
         it('Read first and last batch', () => {
-            var client = eventstore.tcp(tcpConfig);
+            const client = eventstore.tcp(tcpConfig);
 
-            var events = [];
-            for (var k = 0; k < 100; k++) {
+            const events = [];
+            for (let k = 0; k < 100; k++) {
                 events.push(eventstore.eventFactory.NewEvent('TestEventType', {
                     id: k
                 }));
             }
 
-            var testStream = `TestStream-${uuid.v4()}`;
+            const testStream = `TestStream-${uuid.v4()}`;
             return client.writeEvents(testStream, events).then(() => {
-                var enumerator = client.eventEnumerator(testStream);
+                const enumerator = client.eventEnumerator(testStream);
                 return enumerator.first(20).then(result => {
                     assert.equal(result.events.length, 20);
                     assert.equal(result.events[0].data.id, 0);
@@ -128,18 +128,18 @@ describe('TCP Client - Event Enumerator', () => {
         });
 
         it('Handle out of bounds Enumeration Request ', () => {
-            var client = eventstore.tcp(tcpConfig);
+            const client = eventstore.tcp(tcpConfig);
 
-            var events = [];
-            for (var k = 0; k < 100; k++) {
+            const events = [];
+            for (let k = 0; k < 100; k++) {
                 events.push(eventstore.eventFactory.NewEvent('TestEventType', {
                     id: k
                 }));
             }
 
-            var testStream = `TestStream-${uuid.v4()}`;
+            const testStream = `TestStream-${uuid.v4()}`;
             return client.writeEvents(testStream, events).then(() => {
-                var enumerator = client.eventEnumerator(testStream);
+                const enumerator = client.eventEnumerator(testStream);
                 return enumerator.first(95).then(result => {
                     assert.equal(result.events.length, 95);
                     assert.equal(result.events[0].data.id, 0);
@@ -169,18 +169,18 @@ describe('TCP Client - Event Enumerator', () => {
 
     describe('Backward: Reading events', () => {
         it('Read next events', () => {
-            var client = eventstore.tcp(tcpConfig);
+            const client = eventstore.tcp(tcpConfig);
 
-            var events = [];
-            for (var k = 0; k < 100; k++) {
+            const events = [];
+            for (let k = 0; k < 100; k++) {
                 events.push(eventstore.eventFactory.NewEvent('TestEventType', {
                     id: k
                 }));
             }
 
-            var testStream = `TestStream-${uuid.v4()}`;
+            const testStream = `TestStream-${uuid.v4()}`;
             return client.writeEvents(testStream, events).then(() => {
-                var enumerator = client.eventEnumerator(testStream, 'backward');
+                const enumerator = client.eventEnumerator(testStream, 'backward');
                 return enumerator.next(20).then(result => {
                     assert.equal(result.events.length, 20);
                     assert.equal(result.events[0].data.id, 99);
@@ -196,18 +196,18 @@ describe('TCP Client - Event Enumerator', () => {
         });
 
         it('Read first 10 events, next 20 events, previous 30 events', () => {
-            var client = eventstore.tcp(tcpConfig);
+            const client = eventstore.tcp(tcpConfig);
 
-            var events = [];
-            for (var k = 0; k < 100; k++) {
+            const events = [];
+            for (let k = 0; k < 100; k++) {
                 events.push(eventstore.eventFactory.NewEvent('TestEventType', {
                     id: k
                 }));
             }
 
-            var testStream = `TestStream-${uuid.v4()}`;
+            const testStream = `TestStream-${uuid.v4()}`;
             return client.writeEvents(testStream, events).then(() => {
-                var enumerator = client.eventEnumerator(testStream, 'backward');
+                const enumerator = client.eventEnumerator(testStream, 'backward');
                 return enumerator.first(10).then(result => {
                     assert.equal(result.events.length, 10);
                     assert.equal(result.events[0].data.id, 99);
@@ -229,18 +229,18 @@ describe('TCP Client - Event Enumerator', () => {
         });
 
         it('Read last 10 events, previous 20 events, next 30 events', () => {
-            var client = eventstore.tcp(tcpConfig);
+            const client = eventstore.tcp(tcpConfig);
 
-            var events = [];
-            for (var k = 0; k < 100; k++) {
+            const events = [];
+            for (let k = 0; k < 100; k++) {
                 events.push(eventstore.eventFactory.NewEvent('TestEventType', {
                     id: k
                 }));
             }
 
-            var testStream = `TestStream-${uuid.v4()}`;
+            const testStream = `TestStream-${uuid.v4()}`;
             return client.writeEvents(testStream, events).then(() => {
-                var enumerator = client.eventEnumerator(testStream, 'backward');
+                const enumerator = client.eventEnumerator(testStream, 'backward');
                 return enumerator.last(10).then(result => {
                     assert.equal(result.events.length, 10);
                     assert.equal(result.events[0].data.id, 9);
@@ -262,18 +262,18 @@ describe('TCP Client - Event Enumerator', () => {
         });
 
         it('Read first and last batch', () => {
-            var client = eventstore.tcp(tcpConfig);
+            const client = eventstore.tcp(tcpConfig);
 
-            var events = [];
-            for (var k = 0; k < 100; k++) {
+            const events = [];
+            for (let k = 0; k < 100; k++) {
                 events.push(eventstore.eventFactory.NewEvent('TestEventType', {
                     id: k
                 }));
             }
 
-            var testStream = `TestStream-${uuid.v4()}`;
+            const testStream = `TestStream-${uuid.v4()}`;
             return client.writeEvents(testStream, events).then(() => {
-                var enumerator = client.eventEnumerator(testStream, 'backward');
+                const enumerator = client.eventEnumerator(testStream, 'backward');
                 return enumerator.first(20).then(result => {
                     assert.equal(result.events.length, 20);
                     assert.equal(result.events[0].data.id, 99);
@@ -289,18 +289,18 @@ describe('TCP Client - Event Enumerator', () => {
         });
 
         it('Handle out of bounds Enumeration Request ', () => {
-            var client = eventstore.tcp(tcpConfig);
+            const client = eventstore.tcp(tcpConfig);
 
-            var events = [];
-            for (var k = 0; k < 100; k++) {
+            const events = [];
+            for (let k = 0; k < 100; k++) {
                 events.push(eventstore.eventFactory.NewEvent('TestEventType', {
                     id: k
                 }));
             }
 
-            var testStream = `TestStream-${uuid.v4()}`;
+            const testStream = `TestStream-${uuid.v4()}`;
             return client.writeEvents(testStream, events).then(() => {
-                var enumerator = client.eventEnumerator(testStream, 'backward');
+                const enumerator = client.eventEnumerator(testStream, 'backward');
                 return enumerator.first(95).then(result => {
                     assert.equal(result.events.length, 95);
                     assert.equal(result.events[0].data.id, 99);

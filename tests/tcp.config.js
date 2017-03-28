@@ -1,8 +1,8 @@
 require('./_globalHooks');
 
-var tcpConfig = require('./support/tcpConfig');
-var eventstore = require('../index.js');
-var assert = require('assert');
+const tcpConfig = require('./support/tcpConfig');
+const eventstore = require('../index.js');
+const assert = require('assert');
 
 describe('TCP Client - Config', () => {
     it('Should return assertion error when config is undefined', done => {
@@ -18,7 +18,7 @@ describe('TCP Client - Config', () => {
 
     it('Should return assertion error when hostname is undefined', done => {
         try {
-            var config = {
+            const config = {
                 port: 1113,
                 credentials: {
                     username: 'admin',
@@ -36,7 +36,7 @@ describe('TCP Client - Config', () => {
 
     it('Should return assertion error when credentials are undefined', done => {
         try {
-            var config = {
+            const config = {
                 hostname: 'localhost',
                 port: 1113
             };
@@ -51,7 +51,7 @@ describe('TCP Client - Config', () => {
 
     it('Should return tcp client when config is complete', done => {
         try {
-            var client = eventstore.tcp(tcpConfig);
+            const client = eventstore.tcp(tcpConfig);
             assert.equal(client !== undefined, true);
             done();
         } catch (err) {

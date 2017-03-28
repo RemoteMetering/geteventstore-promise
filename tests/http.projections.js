@@ -1,22 +1,22 @@
 require('./_globalHooks');
 
-var httpConfig = require('./support/httpConfig');
-var eventstore = require('../index.js');
-var assert = require('assert');
-var uuid = require('uuid');
-var fs = require('fs');
-var _ = require('lodash');
+const httpConfig = require('./support/httpConfig');
+const eventstore = require('../index.js');
+const assert = require('assert');
+const uuid = require('uuid');
+const fs = require('fs');
+const _ = require('lodash');
 
 describe('Projections', () => {
     describe('Default Settings', () => {
-        var assertionProjection = uuid.v4();
-        var assertionProjectionContent = fs.readFileSync(`${__dirname}/support/testProjection.js`, {
+        const assertionProjection = uuid.v4();
+        const assertionProjectionContent = fs.readFileSync(`${__dirname}/support/testProjection.js`, {
             encoding: 'utf8'
         });
 
         it('Should create continous projection', function() {
             this.timeout(10 * 1000);
-            var client = eventstore.http(httpConfig);
+            const client = eventstore.http(httpConfig);
 
             return client.projections.assert(assertionProjection, assertionProjectionContent).then(response => {
                 assert.equal(response.name, assertionProjection);
@@ -25,7 +25,7 @@ describe('Projections', () => {
 
         it('Should update existing projection', function() {
             this.timeout(10 * 1000);
-            var client = eventstore.http(httpConfig);
+            const client = eventstore.http(httpConfig);
 
             return client.projections.assert(assertionProjection, assertionProjectionContent).then(response => {
                 assert.equal(response.name, assertionProjection);
@@ -34,7 +34,7 @@ describe('Projections', () => {
 
         it('Should stop projection', function() {
             this.timeout(10 * 1000);
-            var client = eventstore.http(httpConfig);
+            const client = eventstore.http(httpConfig);
 
             return client.projections.stop(assertionProjection).then(response => {
                 assert.equal(response.name, assertionProjection);
@@ -46,7 +46,7 @@ describe('Projections', () => {
 
         it('Should start projection', function() {
             this.timeout(10 * 1000);
-            var client = eventstore.http(httpConfig);
+            const client = eventstore.http(httpConfig);
 
             return client.projections.start(assertionProjection).then(response => {
                 assert.equal(response.name, assertionProjection);
@@ -58,7 +58,7 @@ describe('Projections', () => {
 
         it('Should reset projection', function() {
             this.timeout(10 * 1000);
-            var client = eventstore.http(httpConfig);
+            const client = eventstore.http(httpConfig);
 
             return client.projections.reset(assertionProjection).then(response => {
                 assert.equal(response.name, assertionProjection);
@@ -70,7 +70,7 @@ describe('Projections', () => {
 
         it('Should remove continous projection', function() {
             this.timeout(10 * 1000);
-            var client = eventstore.http(httpConfig);
+            const client = eventstore.http(httpConfig);
 
             return client.projections.stop(assertionProjection).then(stopResponse => {
                 setTimeout(() => {
@@ -84,14 +84,14 @@ describe('Projections', () => {
     });
 
     describe('Custom Settings', () => {
-        var assertionProjection = uuid.v4();
-        var assertionProjectionContent = fs.readFileSync(`${__dirname}/support/testProjection.js`, {
+        const assertionProjection = uuid.v4();
+        const assertionProjectionContent = fs.readFileSync(`${__dirname}/support/testProjection.js`, {
             encoding: 'utf8'
         });
 
         it('Should create one-time projection with all settings enabled', function(done) {
             this.timeout(10 * 1000);
-            var client = eventstore.http(httpConfig);
+            const client = eventstore.http(httpConfig);
 
             client.projections.assert(assertionProjection, assertionProjectionContent, 'onetime', true, true, true).then(response => {
                 setTimeout(() => {
@@ -103,7 +103,7 @@ describe('Projections', () => {
 
         it('Should remove one-time projection', function() {
             this.timeout(10 * 1000);
-            var client = eventstore.http(httpConfig);
+            const client = eventstore.http(httpConfig);
 
             return client.projections.stop(assertionProjection).then(stopResponse => {
                 assert.equal(stopResponse.name, assertionProjection);
@@ -117,7 +117,7 @@ describe('Projections', () => {
     describe('Global Projections Operations', () => {
         it('Should enable all projections', function(done) {
             this.timeout(10 * 1000);
-            var client = eventstore.http(httpConfig);
+            const client = eventstore.http(httpConfig);
 
             client.projections.enableAll().then(() => {
                 setTimeout(() => {
@@ -133,7 +133,7 @@ describe('Projections', () => {
 
         it('Should disable all projections', function(done) {
             this.timeout(1000 * 10);
-            var client = eventstore.http(httpConfig);
+            const client = eventstore.http(httpConfig);
 
             client.projections.disableAll().then(() => {
                 setTimeout(() => {
@@ -151,7 +151,7 @@ describe('Projections', () => {
     describe('General', () => {
         it('Should return content with all eventstore projections information', function() {
             this.timeout(10 * 1000);
-            var client = eventstore.http(httpConfig);
+            const client = eventstore.http(httpConfig);
 
             return client.projections.getAllProjectionsInfo().then(projectionsInfo => {
                 assert.notEqual(projectionsInfo, undefined);
@@ -161,16 +161,16 @@ describe('Projections', () => {
 
         it('Should return content for test projection state', function(done) {
             this.timeout(10 * 1000);
-            var client = eventstore.http(httpConfig);
+            const client = eventstore.http(httpConfig);
 
-            var projectionName = 'TestProjection';
-            var projectionContent = fs.readFileSync(`${__dirname}/support/testProjection.js`, {
+            const projectionName = 'TestProjection';
+            const projectionContent = fs.readFileSync(`${__dirname}/support/testProjection.js`, {
                 encoding: 'utf8'
             });
 
             client.projections.assert(projectionName, projectionContent).then(() => {
                 setTimeout(() => {
-                    var testStream = `TestProjectionStream-${uuid.v4()}`;
+                    const testStream = `TestProjectionStream-${uuid.v4()}`;
                     client.writeEvent(testStream, 'TestProjectionEventType', {
                         something: '123'
                     }).then(() => {
@@ -194,21 +194,21 @@ describe('Projections', () => {
 
         it('Should return content for test partioned projection', function(done) {
             this.timeout(1000 * 10);
-            var client = eventstore.http(httpConfig);
+            const client = eventstore.http(httpConfig);
 
-            var projectionName = `TestProjection${uuid.v4()}`;
-            var projectionContent = fs.readFileSync(`${__dirname}/support/testPartionedProjection.js`, {
+            const projectionName = `TestProjection${uuid.v4()}`;
+            const projectionContent = fs.readFileSync(`${__dirname}/support/testPartionedProjection.js`, {
                 encoding: 'utf8'
             });
 
             client.projections.assert(projectionName, projectionContent).then(() => {
                 setTimeout(() => {
-                    var testStream = `TestProjectionStream-${uuid.v4()}`;
+                    const testStream = `TestProjectionStream-${uuid.v4()}`;
                     client.writeEvent(testStream, 'TestProjectionEventType', {
                         something: '123'
                     }).then(() => {
                         setTimeout(() => {
-                            var options = {
+                            const options = {
                                 partition: testStream
                             };
 
@@ -231,7 +231,7 @@ describe('Projections', () => {
 
         it('Should return rejected promise for non-existant projection state', function() {
             this.timeout(10 * 1000);
-            var client = eventstore.http(httpConfig);
+            const client = eventstore.http(httpConfig);
 
             return client.projections.getState('SomeProjectionNameThatDoesNotExist').catch(err => {
                 assert(err.statusCode, 404);

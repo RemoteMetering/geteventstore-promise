@@ -1,14 +1,10 @@
-var debug = require('debug')('geteventstore:checkStreamExists'),
-    req = require('request-promise'),
-    Promise = require('bluebird'),
-    assert = require('assert'),
-    url = require('url');
+const debug = require('debug')('geteventstore:checkStreamExists'), req = require('request-promise'), Promise = require('bluebird'), assert = require('assert'), url = require('url');
 
-var baseErr = 'Check Stream Exists - ';
+const baseErr = 'Check Stream Exists - ';
 
 module.exports = config => {
-    var buildUrl = streamName => {
-        var urlObj = JSON.parse(JSON.stringify(config));
+    const buildUrl = streamName => {
+        const urlObj = JSON.parse(JSON.stringify(config));
         urlObj.pathname = `/streams/${streamName}/head/backward/1`;
         return url.format(urlObj);
     };
@@ -16,7 +12,7 @@ module.exports = config => {
     return streamName => Promise.resolve().then(() => {
         assert(streamName, `${baseErr}Stream Name not provided`);
 
-        var options = {
+        const options = {
             uri: buildUrl(streamName),
             method: 'GET',
             json: true,
