@@ -46,40 +46,42 @@ const esDirectionWorkaroundHandler = direction => {
 };
 
 const stateHandler = direction => {
-    const Handler = function() {
-        this.isFirstEnumeration = true;
-        this.setToFirst();
-    };
-
-    Handler.prototype.setToFirst = function() {
-        this.nextEventNumber = direction === 'forward' ? 0 : -1;
-    };
-
-    Handler.prototype.setToLast = function(length) {
-        this.nextEventNumber = direction === 'forward' ? -1 : length - 1;
-    };
-
-    Handler.prototype.setToPrevious = function(length) {
-        if (!this.isFirstEnumeration)
-            this.adjustByLength(length);
-    };
-
-    Handler.prototype.keepInBoundsAdjustment = function(length) {
-        if (direction === 'backward')
-            return length;
-
-        let adjustment = length;
-        if (this.nextEventNumber < -1) {
-            adjustment -= Math.abs(this.nextEventNumber);
-            this.nextEventNumber = 0;
+    class Handler {
+        constructor() {
+            this.isFirstEnumeration = true;
+            this.setToFirst();
         }
 
-        return adjustment;
-    };
+        setToFirst() {
+            this.nextEventNumber = direction === 'forward' ? 0 : -1;
+        }
 
-    Handler.prototype.adjustByLength = function(length) {
-        this.nextEventNumber += direction === 'forward' ? length * -1 : length;
-    };
+        setToLast(length) {
+            this.nextEventNumber = direction === 'forward' ? -1 : length - 1;
+        }
+
+        setToPrevious(length) {
+            if (!this.isFirstEnumeration)
+                this.adjustByLength(length);
+        }
+
+        keepInBoundsAdjustment(length) {
+            if (direction === 'backward')
+                return length;
+
+            let adjustment = length;
+            if (this.nextEventNumber < -1) {
+                adjustment -= Math.abs(this.nextEventNumber);
+                this.nextEventNumber = 0;
+            }
+
+            return adjustment;
+        }
+
+        adjustByLength(length) {
+            this.nextEventNumber += direction === 'forward' ? length * -1 : length;
+        }
+    }
 
     return new Handler();
 };
