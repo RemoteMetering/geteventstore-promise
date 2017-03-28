@@ -7,90 +7,82 @@ var waitDelay = 50;
 var connection;
 var isConnecting = false;
 
-var create = function(config) {
-	return Promise.resolve().then(function() {
-		assert(config.hostname, 'Hostname not provided');
-		assert(config.port, 'Port not provided');
+var create = config => Promise.resolve().then(() => {
+    assert(config.hostname, 'Hostname not provided');
+    assert(config.port, 'Port not provided');
 
-		if (connection && !isConnecting) return connection;
-		else if (isConnecting) {
-			return Promise.delay(waitDelay).then(function() {
-				return create(config);
-			});
-		}
+    if (connection && !isConnecting) return connection;
+    else if (isConnecting) {
+        return Promise.delay(waitDelay).then(() => create(config));
+    }
 
-		isConnecting = true;
-		var esConnection = esClient.EventStoreConnection.create(config, `tcp://${config.hostname}:${config.port}`);
-		esConnection.on('disconnected', function() {
-			debug('', 'Connection Disconnected');
-		});
-		esConnection.on('reconnecting', function() {
-			debug('', 'Connection Reconnecting...');
-		});
-		esConnection.on('closed', function(reason) {
-			debug('', 'Connection Closed:', reason);
-			if (esConnection === connection) {
-				isConnecting = false;
-				connection = undefined;
-			}
-		});
-		esConnection.on('error', function(err) {
-			console.error(err);
-			if (esConnection === connection) connection = undefined;
-			try {
-				isConnecting = false;
-				esConnection.close();
-			} catch (ex) {}
-		});
-		esConnection.on('connected', function() {
-			debug('', 'Connection Connected');
-		});
-		return esConnection.connect().then(function() {
-			connection = esConnection;
-			isConnecting = false;
-			return esConnection;
-		}).catch(function(err) {
-			connection = undefined;
-			isConnecting = false;
-			throw err;
-		});
-	});
-};
+    isConnecting = true;
+    var esConnection = esClient.EventStoreConnection.create(config, `tcp://${config.hostname}:${config.port}`);
+    esConnection.on('disconnected', () => {
+        debug('', 'Connection Disconnected');
+    });
+    esConnection.on('reconnecting', () => {
+        debug('', 'Connection Reconnecting...');
+    });
+    esConnection.on('closed', reason => {
+        debug('', 'Connection Closed:', reason);
+        if (esConnection === connection) {
+            isConnecting = false;
+            connection = undefined;
+        }
+    });
+    esConnection.on('error', err => {
+        console.error(err);
+        if (esConnection === connection) connection = undefined;
+        try {
+            isConnecting = false;
+            esConnection.close();
+        } catch (ex) {}
+    });
+    esConnection.on('connected', () => {
+        debug('', 'Connection Connected');
+    });
+    return esConnection.connect().then(() => {
+        connection = esConnection;
+        isConnecting = false;
+        return esConnection;
+    }).catch(err => {
+        connection = undefined;
+        isConnecting = false;
+        throw err;
+    });
+});
 
-var closeAll = function() {
-	return new Promise(function(resolve, reject) {
-		if (!connection) return resolve();
+var closeAll = () => new Promise((resolve, reject) => {
+    if (!connection) return resolve();
 
-		let tempConnection = connection;
-		connection.on('closed', function(reason) {
-			debug('', 'Connection Closed:', reason);
-			if (tempConnection && tempConnection === connection) {
-				connection = undefined;
-			}
-			resolve();
-		});
-		connection.on('error', function(err) {
-			if (tempConnection && tempConnection === connection) {
-				connection = undefined;
-			}
-			try {
-				tempConnection.close();
-			} catch (ex) {}
-			reject(err);
-		});
-		connection.on('connected', function() {
-			debug('', 'Connection Connected:');
-		});
-		connection.close();
-	});
-};
+    let tempConnection = connection;
+    connection.on('closed', reason => {
+        debug('', 'Connection Closed:', reason);
+        if (tempConnection && tempConnection === connection) {
+            connection = undefined;
+        }
+        resolve();
+    });
+    connection.on('error', err => {
+        if (tempConnection && tempConnection === connection) {
+            connection = undefined;
+        }
+        try {
+            tempConnection.close();
+        } catch (ex) {}
+        reject(err);
+    });
+    connection.on('connected', () => {
+        debug('', 'Connection Connected:');
+    });
+    connection.close();
+});
 
-var getConnections = function() {
-	return Promise.resolve().then(function() {
-		if (!connection) return [];
-		return [connection];
-	});
-};
+var getConnections = () => Promise.resolve().then(() => {
+    if (!connection) return [];
+    return [connection];
+});
 
 module.exports = {
 	create: create,

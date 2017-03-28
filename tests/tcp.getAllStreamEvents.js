@@ -5,8 +5,8 @@ var eventstore = require('../index.js');
 var assert = require('assert');
 var uuid = require('uuid');
 
-describe('TCP Client - Get All Stream Events', function() {
-    it('Should write events and read back all stream events', function() {
+describe('TCP Client - Get All Stream Events', () => {
+    it('Should write events and read back all stream events', () => {
         var client = eventstore.tcp(tcpConfig);
 
         var events = [];
@@ -17,16 +17,14 @@ describe('TCP Client - Get All Stream Events', function() {
         }
 
         var testStream = `TestStream-${uuid.v4()}`;
-        return client.writeEvents(testStream, events).then(function() {
-            return client.getAllStreamEvents(testStream).then(function(events) {
-                assert.equal(events.length, 1000);
-                assert.equal(events[0].data.id, 0);
-                assert.equal(events[999].data.id, 999);
-            });
-        });
+        return client.writeEvents(testStream, events).then(() => client.getAllStreamEvents(testStream).then(events => {
+            assert.equal(events.length, 1000);
+            assert.equal(events[0].data.id, 0);
+            assert.equal(events[999].data.id, 999);
+        }));
     });
 
-    it('Should write events and read back all events from start event', function() {
+    it('Should write events and read back all events from start event', () => {
         var client = eventstore.tcp(tcpConfig);
 
         var events = [];
@@ -37,12 +35,10 @@ describe('TCP Client - Get All Stream Events', function() {
         }
 
         var testStream = `TestStream-${uuid.v4()}`;
-        return client.writeEvents(testStream, events).then(function() {
-            return client.getAllStreamEvents(testStream, 250, 500).then(function(events) {
-                assert.equal(events.length, 500);
-                assert.equal(events[0].data.id, 500);
-                assert.equal(events[499].data.id, 999);
-            });
-        });
+        return client.writeEvents(testStream, events).then(() => client.getAllStreamEvents(testStream, 250, 500).then(events => {
+            assert.equal(events.length, 500);
+            assert.equal(events[0].data.id, 500);
+            assert.equal(events[499].data.id, 999);
+        }));
     });
 });

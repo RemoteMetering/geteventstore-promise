@@ -6,7 +6,7 @@ var Promise = require('bluebird');
 var assert = require('assert');
 var uuid = require('uuid');
 
-describe('TCP Client - Subscribe To Stream', function() {
+describe('TCP Client - Subscribe To Stream', () => {
     it('Should get all events written to a subscription stream', function(done) {
         this.timeout(9 * 1000);
         var client = eventstore.tcp(tcpConfig);
@@ -28,16 +28,12 @@ describe('TCP Client - Subscribe To Stream', function() {
             }));
         }
 
-        return client.writeEvents(testStream, events).then(function() {
-            return client.subscribeToStreamFrom(testStream, 0, onEventAppeared, undefined, onDropped).then(function(connection) {
-                return Promise.delay(3000).then(function() {
-                    assert.equal(10, processedEventCount);
-                    assert(connection, 'Connection Expected');
-                    connection.close();
-                    done();
-                });
-            });
-        });
+        return client.writeEvents(testStream, events).then(() => client.subscribeToStreamFrom(testStream, 0, onEventAppeared, undefined, onDropped).then(connection => Promise.delay(3000).then(() => {
+            assert.equal(10, processedEventCount);
+            assert(connection, 'Connection Expected');
+            connection.close();
+            done();
+        })));
     });
 
     it('Should get all resolved events read from a linked stream', function(done) {
@@ -68,11 +64,11 @@ describe('TCP Client - Subscribe To Stream', function() {
             }));
         }
 
-        return client.writeEvents(testStream, events).then(function() {
+        return client.writeEvents(testStream, events).then(() => {
             var settings = {
                 resolveLinkTos: true
             };
-            return client.subscribeToStreamFrom('$ce-TestStream', 5, onEventAppeared, undefined, onDropped, settings).then(function(subscriptionConnection) {
+            return client.subscribeToStreamFrom('$ce-TestStream', 5, onEventAppeared, undefined, onDropped, settings).then(subscriptionConnection => {
                 connection = subscriptionConnection;
             });
         });

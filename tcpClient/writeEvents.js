@@ -7,39 +7,27 @@ var debug = require('debug')('geteventstore:writeEvents'),
 
 var baseErr = 'Write Events - ';
 
-module.exports = function(config) {
-    return function(streamName, events, options) {
-        return Promise.resolve().then(function() {
-            assert(streamName, `${baseErr}Stream Name not provided`);
-            assert(events, `${baseErr}Events not provided`);
-            assert.equal(true, events.constructor === Array, `${baseErr}Events should be an array`);
+module.exports = config => (streamName, events, options) => Promise.resolve().then(() => {
+    assert(streamName, `${baseErr}Stream Name not provided`);
+    assert(events, `${baseErr}Events not provided`);
+    assert.equal(true, events.constructor === Array, `${baseErr}Events should be an array`);
 
-            if (events.length === 0) return;
+    if (events.length === 0) return;
 
-            options = options || {};
-            options.transactionWriteSize = options.transactionWriteSize || 50;
-            options.expectedVersion = options.expectedVersion || -2;
+    options = options || {};
+    options.transactionWriteSize = options.transactionWriteSize || 50;
+    options.expectedVersion = options.expectedVersion || -2;
 
-            var eventsToWrite = _.map(events, function(ev) {
-                return client.createJsonEventData(ev.eventId, ev.data, ev.metadata, ev.eventType);
-            });
+    var eventsToWrite = _.map(events, ev => client.createJsonEventData(ev.eventId, ev.data, ev.metadata, ev.eventType));
 
-            return connectionManager.create(config).then(function(connection) {
-                return connection.startTransaction(streamName, options.expectedVersion, config.credentials).then(function(transaction) {
-                    var eventChunks = _.chunk(eventsToWrite, options.transactionWriteSize);
-                    return Promise.each(eventChunks, function(events) {
-                        return transaction.write(events);
-                    }).then(function() {
-                        return transaction.commit().then(function(result) {
-                            debug('', 'Result: %j', result);
-                            return result;
-                        });
-                    }).catch(function(err) {
-                        transaction.rollback();
-                        throw err;
-                    });
-                });
-            });
+    return connectionManager.create(config).then(connection => connection.startTransaction(streamName, options.expectedVersion, config.credentials).then(transaction => {
+        var eventChunks = _.chunk(eventsToWrite, options.transactionWriteSize);
+        return Promise.each(eventChunks, events => transaction.write(events)).then(() => transaction.commit().then(result => {
+            debug('', 'Result: %j', result);
+            return result;
+        })).catch(err => {
+            transaction.rollback();
+            throw err;
         });
-    };
-};
+    }));
+});

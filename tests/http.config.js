@@ -4,8 +4,8 @@ var httpConfig = require('./support/httpConfig');
 var eventstore = require('../index.js');
 var assert = require('assert');
 
-describe('Http Client - Config', function() {
-    it('Should return assertion error when config is undefined', function(done) {
+describe('Http Client - Config', () => {
+    it('Should return assertion error when config is undefined', done => {
         try {
             eventstore.http();
             done('Config should not pass assertion');
@@ -16,7 +16,7 @@ describe('Http Client - Config', function() {
         }
     });
 
-    it('Should return assertion error when hostname is undefined', function(done) {
+    it('Should return assertion error when hostname is undefined', done => {
         try {
             var config = {
                 port: 2113,
@@ -34,7 +34,7 @@ describe('Http Client - Config', function() {
         }
     });
 
-    it('Should return assertion error when credentials are undefined', function(done) {
+    it('Should return assertion error when credentials are undefined', done => {
         try {
             var config = {
                 hostname: 'localhost',
@@ -49,7 +49,7 @@ describe('Http Client - Config', function() {
         }
     });
 
-    it('Should return http client when config is complete', function(done) {
+    it('Should return http client when config is complete', done => {
         try {
             var client = eventstore.http(httpConfig);
             assert.equal(client !== undefined, true);

@@ -6,7 +6,7 @@ var Promise = require('bluebird');
 var assert = require('assert');
 var uuid = require('uuid');
 
-describe('TCP Client - Subscribe To Stream', function() {
+describe('TCP Client - Subscribe To Stream', () => {
     it('Should get all events written to a subscription stream after subscription is started', function(done) {
         this.timeout(9 * 1000);
         var client = eventstore.tcp(tcpConfig);
@@ -34,25 +34,21 @@ describe('TCP Client - Subscribe To Stream', function() {
             }));
         }
 
-        return client.writeEvents(testStream, initialEvents).then(function() {
-            client.subscribeToStream(testStream, onEventAppeared, onConfirmed, onDropped, false).then(function(connection) {
-                return Promise.delay(3000).then(function() {
-                    assert.equal(true, confirmCalled, 'expected confirmed subscription to be called');
-                    assert.equal(10, processedEventCount, 'expect proccessed eventst to be 10');
-                    assert(connection, 'Connection Expected');
-                    connection.close();
-                    done();
-                });
-            });
+        return client.writeEvents(testStream, initialEvents).then(() => {
+            client.subscribeToStream(testStream, onEventAppeared, onConfirmed, onDropped, false).then(connection => Promise.delay(3000).then(() => {
+                assert.equal(true, confirmCalled, 'expected confirmed subscription to be called');
+                assert.equal(10, processedEventCount, 'expect proccessed eventst to be 10');
+                assert(connection, 'Connection Expected');
+                connection.close();
+                done();
+            }));
             var events = [];
             for (var k = 0; k < 10; k++) {
                 events.push(eventstore.eventFactory.NewEvent('TestEventType', {
                     id: k
                 }));
             }
-            return Promise.delay(100).then(function() {
-                return client.writeEvents(testStream, events);
-            });
+            return Promise.delay(100).then(() => client.writeEvents(testStream, events));
         });
     });
 });

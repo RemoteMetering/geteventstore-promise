@@ -4,8 +4,8 @@ var tcpConfig = require('./support/tcpConfig');
 var eventstore = require('../index.js');
 var assert = require('assert');
 
-describe('TCP Client - Config', function() {
-    it('Should return assertion error when config is undefined', function(done) {
+describe('TCP Client - Config', () => {
+    it('Should return assertion error when config is undefined', done => {
         try {
             eventstore.tcp();
             done('Config should not pass assertion');
@@ -16,7 +16,7 @@ describe('TCP Client - Config', function() {
         }
     });
 
-    it('Should return assertion error when hostname is undefined', function(done) {
+    it('Should return assertion error when hostname is undefined', done => {
         try {
             var config = {
                 port: 1113,
@@ -34,7 +34,7 @@ describe('TCP Client - Config', function() {
         }
     });
 
-    it('Should return assertion error when credentials are undefined', function(done) {
+    it('Should return assertion error when credentials are undefined', done => {
         try {
             var config = {
                 hostname: 'localhost',
@@ -49,7 +49,7 @@ describe('TCP Client - Config', function() {
         }
     });
 
-    it('Should return tcp client when config is complete', function(done) {
+    it('Should return tcp client when config is complete', done => {
         try {
             var client = eventstore.tcp(tcpConfig);
             assert.equal(client !== undefined, true);

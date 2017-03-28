@@ -3,7 +3,7 @@ var _ = require('lodash');
 
 var baseErr = 'geteventstore-promise - HTTP client - ';
 
-module.exports = function(config) {
+module.exports = config => {
 	//Assert configuration
 	assert(config, `${baseErr}config not provided`);
 	assert(config.hostname, `${baseErr}hostname property not provided`);

@@ -5,16 +5,10 @@ var connectionManager = require('./connectionManager'),
 
 var baseErr = 'Check stream exits - ';
 
-module.exports = function(config) {
-	return function(streamName) {
-		return Promise.resolve().then(function() {
-			assert(streamName, `${baseErr}Stream Name not provided`);
-			return connectionManager.create(config).then(function(connection) {
-				return connection.readStreamEventsForward(streamName, 0, 1, true, config.credentials).then(slice => {
-					if (slice.status === esClient.sliceReadStatus.StreamNotFound) return false;
-					return true;
-				});
-			});
-		});
-	};
-};
+module.exports = config => streamName => Promise.resolve().then(() => {
+    assert(streamName, `${baseErr}Stream Name not provided`);
+    return connectionManager.create(config).then(connection => connection.readStreamEventsForward(streamName, 0, 1, true, config.credentials).then(slice => {
+        if (slice.status === esClient.sliceReadStatus.StreamNotFound) return false;
+        return true;
+    }));
+});

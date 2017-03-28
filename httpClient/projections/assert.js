@@ -7,23 +7,27 @@ var debug = require('debug')('geteventstore:assertProjection'),
 
 var baseErr = 'Assert Projection - ';
 
-var doesProjectionExist = function(config, name) {
-    return Promise.resolve().then(function() {
-        var getAllProjectionsInfo = require('./getAllProjectionsInfo')(config);
-        return getAllProjectionsInfo().then(function(projectionsInfo) {
-            var projection = _.find(projectionsInfo.projections, function(projection) {
-                return projection.name === name;
-            });
+var doesProjectionExist = (config, name) => Promise.resolve().then(() => {
+    var getAllProjectionsInfo = require('./getAllProjectionsInfo')(config);
+    return getAllProjectionsInfo().then(projectionsInfo => {
+        var projection = _.find(projectionsInfo.projections, projection => projection.name === name);
 
-            if (projection)
-                return true;
+        if (projection)
+            return true;
 
-            return false;
-        });
+        return false;
     });
-};
+});
 
-var buildCreateOptions = function(config, name, projectionContent, mode, enabled, emitEnabled, checkpointsEnabled) {
+var buildCreateOptions = (
+    config,
+    name,
+    projectionContent,
+    mode,
+    enabled,
+    emitEnabled,
+    checkpointsEnabled
+) => {
     var urlObj = JSON.parse(JSON.stringify(config));
     urlObj.pathname = `/projections/${mode}`;
     var uri = url.format(urlObj);
@@ -46,7 +50,7 @@ var buildCreateOptions = function(config, name, projectionContent, mode, enabled
     return options;
 };
 
-var buildUpdateOptions = function(config, name, projectionContent, emitEnabled) {
+var buildUpdateOptions = (config, name, projectionContent, emitEnabled) => {
     var urlObj = JSON.parse(JSON.stringify(config));
     urlObj.pathname = `/projection/${name}/query`;
     var uri = url.format(urlObj);
@@ -66,32 +70,28 @@ var buildUpdateOptions = function(config, name, projectionContent, emitEnabled) 
     return options;
 };
 
-module.exports = function(config) {
-    return function(name, projectionContent, mode, enabled, checkpointsEnabled, emitEnabled) {
-        return Promise.resolve().then(function() {
-            assert(name, `${baseErr}Name not provided`);
-            assert(projectionContent, `${baseErr}Projecion Contnet not provided`);
+module.exports = config => (name, projectionContent, mode, enabled, checkpointsEnabled, emitEnabled) => Promise.resolve().then(() => {
+    assert(name, `${baseErr}Name not provided`);
+    assert(projectionContent, `${baseErr}Projecion Contnet not provided`);
 
-            mode = mode || 'continuous';
-            enabled = enabled || true;
-            checkpointsEnabled = mode === 'continuous' ? true : checkpointsEnabled || false;
-            emitEnabled = emitEnabled || false;
+    mode = mode || 'continuous';
+    enabled = enabled || true;
+    checkpointsEnabled = mode === 'continuous' ? true : checkpointsEnabled || false;
+    emitEnabled = emitEnabled || false;
 
-            return doesProjectionExist(config, name).then(function(projectionExists) {
-                debug('', 'Projection Exists: %j', projectionExists);
-                var options = {};
+    return doesProjectionExist(config, name).then(projectionExists => {
+        debug('', 'Projection Exists: %j', projectionExists);
+        var options = {};
 
-                if (!projectionExists)
-                    options = buildCreateOptions(config, name, projectionContent, mode, enabled, emitEnabled, checkpointsEnabled);
-                else
-                    options = buildUpdateOptions(config, name, projectionContent, emitEnabled);
+        if (!projectionExists)
+            options = buildCreateOptions(config, name, projectionContent, mode, enabled, emitEnabled, checkpointsEnabled);
+        else
+            options = buildUpdateOptions(config, name, projectionContent, emitEnabled);
 
-                debug('', 'Options: %j', options);
-                return req(options).then(function(response) {
-                    debug('', 'Response: %j', response);
-                    return JSON.parse(response);
-                });
-            });
+        debug('', 'Options: %j', options);
+        return req(options).then(response => {
+            debug('', 'Response: %j', response);
+            return JSON.parse(response);
         });
-    };
-};
+    });
+});

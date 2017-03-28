@@ -7,7 +7,7 @@ var assert = require('assert');
 var uuid = require('uuid');
 var _ = require('lodash');
 
-describe('TCP Client - Stress Tests', function() {
+describe('TCP Client - Stress Tests', () => {
     it('Should handle parallel writes', function() {
         this.timeout(20000);
         var client = eventstore.tcp(tcpConfig);
@@ -22,14 +22,9 @@ describe('TCP Client - Stress Tests', function() {
             }));
         }
 
-        return Promise.map(events, function(ev) {
-            return client.writeEvent(testStream, ev.eventType, ev.data);
-
-        }).then(function() {
-            return client.getEvents(testStream, undefined, 5000).then(function(events) {
-                assert.equal(events.length, 4096);
-            });
-        });
+        return Promise.map(events, ev => client.writeEvent(testStream, ev.eventType, ev.data)).then(() => client.getEvents(testStream, undefined, 5000).then(events => {
+            assert.equal(events.length, 4096);
+        }));
     });
 
     it('Should handle parallel reads and writes', function(callback) {
@@ -48,18 +43,18 @@ describe('TCP Client - Stress Tests', function() {
             }));
         }
 
-        var checkCounts = function() {
+        var checkCounts = () => {
             if (readCount === numberOfEvents && writeCount === numberOfEvents && writeCount === readCount) callback();
         };
 
-        _.each(events, function(ev) {
-            client.writeEvent(testStream, ev.eventType, ev.data).then(function() {
+        _.each(events, ev => {
+            client.writeEvent(testStream, ev.eventType, ev.data).then(() => {
                 writeCount++;
                 checkCounts();
             });
         });
-        _.each(events, function() {
-            client.getEvents(testStream, undefined, 10).then(function() {
+        _.each(events, () => {
+            client.getEvents(testStream, undefined, 10).then(() => {
                 readCount++;
                 checkCounts();
             });

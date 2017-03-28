@@ -6,27 +6,25 @@ var debug = require('debug')('geteventstore:resetProjection'),
 
 var baseErr = 'Reset Projection - ';
 
-module.exports = function(config) {
-    var buildUrl = function(name) {
+module.exports = config => {
+    var buildUrl = name => {
         var urlObj = JSON.parse(JSON.stringify(config));
         urlObj.pathname = `/projection/${name}/command/reset`;
         return url.format(urlObj);
     };
 
-    return function(name) {
-        return Promise.resolve().then(function() {
-            assert(name, `${baseErr}Name not provided`);
+    return name => Promise.resolve().then(() => {
+        assert(name, `${baseErr}Name not provided`);
 
-            var options = {
-                uri: buildUrl(name),
-                method: 'POST'
-            };
+        var options = {
+            uri: buildUrl(name),
+            method: 'POST'
+        };
 
-            debug('', 'Options: %j', options);
-            return req(options).then(function(response) {
-                debug('', 'Response: %j', response);
-                return JSON.parse(response);
-            });
+        debug('', 'Options: %j', options);
+        return req(options).then(response => {
+            debug('', 'Response: %j', response);
+            return JSON.parse(response);
         });
-    };
+    });
 };

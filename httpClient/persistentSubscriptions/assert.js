@@ -6,7 +6,7 @@ var url = require('url');
 
 var baseErr = 'Assert persistent subscriptions - ';
 
-var createPersistentSubscriptionRequest = function(name, streamName, options, config) {
+var createPersistentSubscriptionRequest = (name, streamName, options, config) => {
     var urlObj = JSON.parse(JSON.stringify(config));
     urlObj.pathname = `/subscriptions/${streamName}/${name}`;
     var uri = url.format(urlObj);
@@ -22,7 +22,7 @@ var createPersistentSubscriptionRequest = function(name, streamName, options, co
     };
 };
 
-var createPersistentSubscriptionOptions = function(options) {
+var createPersistentSubscriptionOptions = options => {
     options = options || {};
 
     return {
@@ -42,30 +42,26 @@ var createPersistentSubscriptionOptions = function(options) {
     };
 };
 
-module.exports = function(config) {
-    return function(name, streamName, options) {
-        return Promise.resolve().then(function() {
-            assert(name, `${baseErr}Persistent Subscription Name not provided`);
-            assert(streamName, `${baseErr}Stream Name not provided`);
+module.exports = config => (name, streamName, options) => Promise.resolve().then(() => {
+    assert(name, `${baseErr}Persistent Subscription Name not provided`);
+    assert(streamName, `${baseErr}Stream Name not provided`);
 
-            var persistentSubscriptionOptions = createPersistentSubscriptionOptions(options);
-            var createRequest = createPersistentSubscriptionRequest(name, streamName, persistentSubscriptionOptions, config);
-            debug('', 'Options: %j', createRequest);
-            return req(createRequest).then(function(response) {
-                debug('', 'Response: %j', response);
-                return response;
-            }).catch(function(err) {
-                if (err.statusCode !== 409) throw err;
+    var persistentSubscriptionOptions = createPersistentSubscriptionOptions(options);
+    var createRequest = createPersistentSubscriptionRequest(name, streamName, persistentSubscriptionOptions, config);
+    debug('', 'Options: %j', createRequest);
+    return req(createRequest).then(response => {
+        debug('', 'Response: %j', response);
+        return response;
+    }).catch(err => {
+        if (err.statusCode !== 409) throw err;
 
-                var updateRequest = createPersistentSubscriptionRequest(name, streamName, persistentSubscriptionOptions, config);
-                updateRequest.method = 'POST';
+        var updateRequest = createPersistentSubscriptionRequest(name, streamName, persistentSubscriptionOptions, config);
+        updateRequest.method = 'POST';
 
-                debug('', 'Update Options: %j', updateRequest);
-                return req(updateRequest).then(function(response) {
-                    debug('', 'Response: %j', response);
-                    return response;
-                });
-            });
+        debug('', 'Update Options: %j', updateRequest);
+        return req(updateRequest).then(response => {
+            debug('', 'Response: %j', response);
+            return response;
         });
-    };
-};
+    });
+});

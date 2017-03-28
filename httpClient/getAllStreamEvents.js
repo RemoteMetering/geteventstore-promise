@@ -7,67 +7,66 @@ var debug = require('debug')('geteventstore:getAllStreamEvents'),
 
 var baseErr = 'Get All Stream Events - ';
 
-module.exports = function(config) {
-	var buildUrl = function(stream, startPosition, chunkSize) {
+module.exports = config => {
+	var buildUrl = (stream, startPosition, chunkSize) => {
 		var urlObj = JSON.parse(JSON.stringify(config));
 		urlObj.pathname = `/streams/${stream}/${startPosition}/forward/${chunkSize}`;
 		return url.format(urlObj);
 	};
 
-	var buildOptions = function(streamName, startPosition, chunkSize, resolveLinkTos) {
-		return {
-			uri: buildUrl(streamName, startPosition, chunkSize),
-			method: 'GET',
-			headers: {
-				"Content-Type": "application/vnd.eventstore.events+json",
-				"ES-ResolveLinkTos": resolveLinkTos.toString()
-			},
-			qs: {
-				embed: 'body'
-			},
-			json: true,
-			timeout: config.timeout
-		};
-	};
+	var buildOptions = (streamName, startPosition, chunkSize, resolveLinkTos) => ({
+        uri: buildUrl(streamName, startPosition, chunkSize),
+        method: 'GET',
 
-	return function(streamName, chunkSize, startPosition, resolveLinkTos) {
-		return new Promise(function(resolve, reject) {
-			assert(streamName, `${baseErr}Stream Name not provided`);
+        headers: {
+            "Content-Type": "application/vnd.eventstore.events+json",
+            "ES-ResolveLinkTos": resolveLinkTos.toString()
+        },
 
-			startPosition = startPosition || 0;
-			chunkSize = chunkSize || 1000;
-			resolveLinkTos = resolveLinkTos === undefined ? true : resolveLinkTos;
+        qs: {
+            embed: 'body'
+        },
 
-			if (chunkSize > 4096) {
-				console.warn('WARNING: Max event chunk size exceeded. Using the max of 4096');
-				chunkSize = 4096;
-			}
+        json: true,
+        timeout: config.timeout
+    });
 
-			var events = [];
+	return (streamName, chunkSize, startPosition, resolveLinkTos) => new Promise((resolve, reject) => {
+        assert(streamName, `${baseErr}Stream Name not provided`);
 
-			function getNextChunk() {
-				var options = buildOptions(streamName, startPosition, chunkSize, resolveLinkTos);
+        startPosition = startPosition || 0;
+        chunkSize = chunkSize || 1000;
+        resolveLinkTos = resolveLinkTos === undefined ? true : resolveLinkTos;
 
-				return req(options).then(function(response) {
-					debug('', 'Result: %j', response);
+        if (chunkSize > 4096) {
+            console.warn('WARNING: Max event chunk size exceeded. Using the max of 4096');
+            chunkSize = 4096;
+        }
 
-					response.entries.forEach(function(entry) {
-						if (entry.data) entry.data = JSON.parse(entry.data);
-					});
+        var events = [];
 
-					events.push(response.entries.reverse());
+        function getNextChunk() {
+            var options = buildOptions(streamName, startPosition, chunkSize, resolveLinkTos);
 
-					if (response.headOfStream === true) {
-						events = _.flatten(events);
-						return resolve(events);
-					}
+            return req(options).then(response => {
+                debug('', 'Result: %j', response);
 
-					startPosition += chunkSize;
-					return getNextChunk();
-				}).catch(reject);
-			}
+                response.entries.forEach(entry => {
+                    if (entry.data) entry.data = JSON.parse(entry.data);
+                });
 
-			getNextChunk();
-		});
-	};
+                events.push(response.entries.reverse());
+
+                if (response.headOfStream === true) {
+                    events = _.flatten(events);
+                    return resolve(events);
+                }
+
+                startPosition += chunkSize;
+                return getNextChunk();
+            }).catch(reject);
+        }
+
+        getNextChunk();
+    });
 };

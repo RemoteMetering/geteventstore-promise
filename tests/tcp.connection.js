@@ -5,8 +5,8 @@ var assert = require('assert');
 var eventstore = require('../index.js');
 var uuid = require('uuid');
 
-describe('TCP Client - Test Connection', function() {
-    it('Should connect and write event on correct connection properties', function() {
+describe('TCP Client - Test Connection', () => {
+    it('Should connect and write event on correct connection properties', () => {
         var client = eventstore.tcp(tcpConfig);
         var testStream = `TestStream-${uuid.v4()}`;
         return client.writeEvent(testStream, 'TestEventType', {
@@ -24,9 +24,9 @@ describe('TCP Client - Test Connection', function() {
         var testStream = `TestStream-${uuid.v4()}`;
         return client.writeEvent(testStream, 'TestEventType', {
             something: '123'
-        }).then(function() {
+        }).then(() => {
             assert.fail('Should not have written event successfully');
-        }).catch(function(err) {
+        }).catch(err => {
             assert(err.message);
         });
     });
@@ -41,9 +41,9 @@ describe('TCP Client - Test Connection', function() {
         var testStream = `TestStream-${uuid.v4()}`;
         return client.writeEvent(testStream, 'TestEventType', {
             something: '123'
-        }).then(function() {
+        }).then(() => {
             assert.fail('Should not have written event successfully');
-        }).catch(function(err) {
+        }).catch(err => {
             assert(err.message);
         });
     });
@@ -56,13 +56,9 @@ describe('TCP Client - Test Connection', function() {
         var testStream = `TestStream-${uuid.v4()}`;
         return client.writeEvent(testStream, 'TestEventType', {
             something: '123'
-        }).then(function() {
-            return client.closeConnections().then(function(){
-                return client.getConnections().then(function(connections){
-                    assert(connections);
-                    assert.equal(0,connections.length);
-                });
-            });
-        });
+        }).then(() => client.closeConnections().then(() => client.getConnections().then(connections => {
+            assert(connections);
+            assert.equal(0,connections.length);
+        })));
     });
 });

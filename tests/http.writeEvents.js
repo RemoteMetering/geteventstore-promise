@@ -5,8 +5,8 @@ var eventstore = require('../index.js');
 var assert = require('assert');
 var uuid = require('uuid');
 
-describe('Http Client - Write Events', function() {
-    it('Write to a new stream and read the events', function() {
+describe('Http Client - Write Events', () => {
+    it('Write to a new stream and read the events', () => {
         var client = eventstore.http(httpConfig);
 
         var events = [eventstore.eventFactory.NewEvent('TestEventType', {
@@ -14,14 +14,12 @@ describe('Http Client - Write Events', function() {
         })];
 
         var testStream = `TestStream-${uuid.v4()}`;
-        return client.writeEvents(testStream, events).then(function() {
-            return client.getEvents(testStream).then(function(events) {
-                assert.equal(events[0].data.something, '456');
-            });
-        });
+        return client.writeEvents(testStream, events).then(() => client.getEvents(testStream).then(events => {
+            assert.equal(events[0].data.something, '456');
+        }));
     });
 
-    it('Should not fail promise if no events provided', function() {
+    it('Should not fail promise if no events provided', () => {
         var client = eventstore.http(httpConfig);
 
         var events = [];
@@ -30,7 +28,7 @@ describe('Http Client - Write Events', function() {
         return client.writeEvents(testStream, events);
     });
 
-    it('Should fail promise if non array provided', function() {
+    it('Should fail promise if non array provided', () => {
         var client = eventstore.http(httpConfig);
 
         var events = {
@@ -38,9 +36,9 @@ describe('Http Client - Write Events', function() {
         };
 
         var testStream = `TestStream-${uuid.v4()}`;
-        return client.writeEvents(testStream, events).then(function() {
+        return client.writeEvents(testStream, events).then(() => {
             assert.fail('should not have succeeded');
-        }).catch(function(err) {
+        }).catch(err => {
             assert(err, 'error expected');
         });
     });

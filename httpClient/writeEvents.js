@@ -6,38 +6,36 @@ var debug = require('debug')('geteventstore:writeEvents'),
 
 var baseErr = 'Write Events - ';
 
-module.exports = function(config) {
-    var buildUrl = function(streamName) {
+module.exports = config => {
+    var buildUrl = streamName => {
         var urlObj = JSON.parse(JSON.stringify(config));
         urlObj.pathname = `/streams/${streamName}`;
         return url.format(urlObj);
     };
 
-    return function(streamName, events, options) {
-        return Promise.resolve().then(function() {
-            assert(streamName, `${baseErr}Stream Name not provided`);
-            assert(events, `${baseErr}Events not provided`);
-            assert.equal(true, events.constructor === Array, `${baseErr}Events should be an array`);
+    return (streamName, events, options) => Promise.resolve().then(() => {
+        assert(streamName, `${baseErr}Stream Name not provided`);
+        assert(events, `${baseErr}Events not provided`);
+        assert.equal(true, events.constructor === Array, `${baseErr}Events should be an array`);
 
-            if (events.length === 0)
-                return;
+        if (events.length === 0)
+            return;
 
-            options = options || {};
-            options.expectedVersion = options.expectedVersion || -2;
+        options = options || {};
+        options.expectedVersion = options.expectedVersion || -2;
 
-            var reqOptions = {
-                uri: buildUrl(streamName),
-                headers: {
-                    "Content-Type": "application/vnd.eventstore.events+json",
-                    "ES-ExpectedVersion": options.expectedVersion
-                },
-                method: 'POST',
-                body: events,
-                json: true,
-                timeout: config.timeout
-            };
-            debug('', 'Write events: %j', reqOptions);
-            return req(reqOptions);
-        });
-    };
+        var reqOptions = {
+            uri: buildUrl(streamName),
+            headers: {
+                "Content-Type": "application/vnd.eventstore.events+json",
+                "ES-ExpectedVersion": options.expectedVersion
+            },
+            method: 'POST',
+            body: events,
+            json: true,
+            timeout: config.timeout
+        };
+        debug('', 'Write events: %j', reqOptions);
+        return req(reqOptions);
+    });
 };

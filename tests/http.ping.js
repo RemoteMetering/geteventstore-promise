@@ -4,11 +4,11 @@ var httpConfig = require('./support/httpConfig');
 var eventstore = require('../index.js');
 var assert = require('assert');
 
-describe('Http Client - Ping', function() {
-    it('Should return successful when OK', function() {
+describe('Http Client - Ping', () => {
+    it('Should return successful when OK', () => {
         var client = eventstore.http(httpConfig);
 
-        return client.ping().catch(function(err) {
+        return client.ping().catch(err => {
             assert.fail(err.message);
         });
     });
@@ -20,9 +20,9 @@ describe('Http Client - Ping', function() {
 
         var client = eventstore.http(config);
 
-        return client.ping().then(function() {
+        return client.ping().then(() => {
             assert.fail('Should not succeed');
-        }).catch(function(err) {
+        }).catch(err => {
             assert(err.message);
         });
     });

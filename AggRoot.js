@@ -8,7 +8,7 @@ var AggRoot = function(when) {
 		debug('', 'Handling Events: %j', events);
 		var self = this;
 		if (events.length > 0) {
-			_.each(events, function(ev) {
+			_.each(events, ev => {
 				if (eventhandlers[ev.eventType] !== undefined) {
 					eventhandlers[ev.eventType].call(self, ev);
 					if (ev.eventNumber !== undefined) {

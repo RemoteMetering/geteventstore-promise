@@ -1,7 +1,7 @@
 var assert = require('assert');
 var baseErr = 'geteventstore-promise - TCP client - ';
 
-module.exports = function(config) {
+module.exports = config => {
 	//Assert configuration
 	assert(config, `${baseErr}config not provided`);
 	assert(config.hostname, `${baseErr}hostname property not provided`);

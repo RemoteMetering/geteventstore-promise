@@ -20,7 +20,7 @@ before(function() {
 			stdio: ['ignore', 'ignore', process.stderr]
 		});
 
-		eventstore.on('exit', function() {
+		eventstore.on('exit', () => {
 			eventstore = undefined;
 		});
 
@@ -31,7 +31,7 @@ before(function() {
 	return Promise.resolve();
 });
 
-after(function(done) {
+after(done => {
 	console.log('Killing in-mem ES...');
 	if (eventstore) eventstore.kill();
 	eventstore = undefined;

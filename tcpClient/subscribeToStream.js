@@ -5,17 +5,13 @@ var debug = require('debug')('geteventstore:subscribeToStream'),
 
 var baseErr = 'Subscribe to Stream - ';
 
-module.exports = function(config) {
-    return function(streamName, onEventAppeared, onConfirmed, onDropped, resolveLinkTos) {
-        return new Promise(function(resolve, reject) {
-            assert(streamName, `${baseErr}Stream Name not provided`);
+module.exports = config => (streamName, onEventAppeared, onConfirmed, onDropped, resolveLinkTos) => new Promise((resolve, reject) => {
+    assert(streamName, `${baseErr}Stream Name not provided`);
 
-            resolveLinkTos = resolveLinkTos || false;
+    resolveLinkTos = resolveLinkTos || false;
 
-            var connection = createConnection(config, reject);
-            var subscription = connection.subscribeToStream(streamName, resolveLinkTos, onEventAppeared, onConfirmed, onDropped, config.credentials);
-            debug('', 'Subscription: %j', subscription);
-            resolve(connection);
-        });
-    };
-};
+    var connection = createConnection(config, reject);
+    var subscription = connection.subscribeToStream(streamName, resolveLinkTos, onEventAppeared, onConfirmed, onDropped, config.credentials);
+    debug('', 'Subscription: %j', subscription);
+    resolve(connection);
+});

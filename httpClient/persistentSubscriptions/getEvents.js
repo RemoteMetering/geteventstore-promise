@@ -7,7 +7,7 @@ var url = require('url');
 
 var baseErr = 'Get persistent subscriptions events - ';
 
-var createRequest = function(name, streamName, count, embed, config) {
+var createRequest = (name, streamName, count, embed, config) => {
     var urlObj = JSON.parse(JSON.stringify(config));
     urlObj.pathname = `/subscriptions/${streamName}/${name}/${count}?embed=${embed}`;
 
@@ -23,27 +23,25 @@ var createRequest = function(name, streamName, count, embed, config) {
     return request;
 };
 
-var postUrl = function(uri) {
-    return function() {
-        var postRequest = {
-            uri: uri,
-            method: 'POST',
-            json: true,
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        };
-        return req(postRequest);
+var postUrl = uri => () => {
+    var postRequest = {
+        uri: uri,
+        method: 'POST',
+        json: true,
+        headers: {
+            'Content-Type': 'application/json',
+        }
     };
+    return req(postRequest);
 };
 
-var appendLinkFunctions = function(resultObject, links) {
-    _.each(links, function(link) {
+var appendLinkFunctions = (resultObject, links) => {
+    _.each(links, link => {
         resultObject[link.relation] = postUrl(link.uri);
     });
 };
 
-var buildResultObject = function(response) {
+var buildResultObject = response => {
     debug('', 'Response: %j', response);
     var result = {
         entries: []
@@ -51,7 +49,7 @@ var buildResultObject = function(response) {
 
     appendLinkFunctions(result, response.links);
 
-    result.entries = _.map(response.entries, function(entry) {
+    result.entries = _.map(response.entries, entry => {
         if (entry.data) entry.data = JSON.parse(entry.data);
 
         var formattedEntry = {
@@ -65,18 +63,14 @@ var buildResultObject = function(response) {
     return result;
 };
 
-module.exports = function(config) {
-    return function(name, streamName, count, embed) {
-        return Promise.resolve().then(function() {
-            assert(name, `${baseErr}Persistent Subscription Name not provided`);
-            assert(streamName, `${baseErr}Stream Name not provided`);
+module.exports = config => (name, streamName, count, embed) => Promise.resolve().then(() => {
+    assert(name, `${baseErr}Persistent Subscription Name not provided`);
+    assert(streamName, `${baseErr}Stream Name not provided`);
 
-            count = count === undefined ? 1 : count;
-            embed = embed || 'Body';
+    count = count === undefined ? 1 : count;
+    embed = embed || 'Body';
 
-            var options = createRequest(name, streamName, count, embed, config);
-            debug('', 'Options: %j', options);
-            return req(options).then(buildResultObject);
-        });
-    };
-};
+    var options = createRequest(name, streamName, count, embed, config);
+    debug('', 'Options: %j', options);
+    return req(options).then(buildResultObject);
+});

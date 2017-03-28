@@ -6,24 +6,29 @@ var debug = require('debug')('geteventstore:subscribeToStreamFrom'),
 
 var baseErr = 'Subscribe to Stream From - ';
 
-module.exports = function(config) {
-    return function(streamName, fromEventNumber, onEventAppeared, onLiveProcessingStarted, onDropped, settings) {
-        settings = settings || {};
-        return new Promise(function(resolve, reject) {
-            assert(streamName, `${baseErr}Stream Name not provided`);
-            if (fromEventNumber === 0) fromEventNumber = undefined;
+module.exports = config => (
+    streamName,
+    fromEventNumber,
+    onEventAppeared,
+    onLiveProcessingStarted,
+    onDropped,
+    settings
+) => {
+    settings = settings || {};
+    return new Promise((resolve, reject) => {
+        assert(streamName, `${baseErr}Stream Name not provided`);
+        if (fromEventNumber === 0) fromEventNumber = undefined;
 
-            var catchUpSettings = new EventStoreClient.CatchUpSubscription.Settings();
+        var catchUpSettings = new EventStoreClient.CatchUpSubscription.Settings();
 
-            if (settings.resolveLinkTos) catchUpSettings.resolveLinkTos = settings.resolveLinkTos;
-            if (settings.maxLiveQueueSize) catchUpSettings.maxLiveQueueSize = settings.maxLiveQueueSize;
-            if (settings.readBatchSize) catchUpSettings.readBatchSize = settings.readBatchSize;
-            if (settings.debug) catchUpSettings.debug = settings.debug;
+        if (settings.resolveLinkTos) catchUpSettings.resolveLinkTos = settings.resolveLinkTos;
+        if (settings.maxLiveQueueSize) catchUpSettings.maxLiveQueueSize = settings.maxLiveQueueSize;
+        if (settings.readBatchSize) catchUpSettings.readBatchSize = settings.readBatchSize;
+        if (settings.debug) catchUpSettings.debug = settings.debug;
 
-            var connection = createConnection(config, reject);
-            var subscription = connection.subscribeToStreamFrom(streamName, fromEventNumber, config.credentials, onEventAppeared, onLiveProcessingStarted, onDropped, catchUpSettings);
-            debug('', 'Subscription: %j', subscription);
-            resolve(connection);
-        });
-    };
+        var connection = createConnection(config, reject);
+        var subscription = connection.subscribeToStreamFrom(streamName, fromEventNumber, config.credentials, onEventAppeared, onLiveProcessingStarted, onDropped, catchUpSettings);
+        debug('', 'Subscription: %j', subscription);
+        resolve(connection);
+    });
 };

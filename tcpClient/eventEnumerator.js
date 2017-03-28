@@ -6,12 +6,12 @@ var debug = require('debug')('geteventstore:eventEnumerator'),
 
 var baseErr = 'Event Enumerator - ';
 
-var getNextBatch = function(config, streamName, state, length, direction, resolveLinkTos) {
+var getNextBatch = (config, streamName, state, length, direction, resolveLinkTos) => {
     state.isFirstEnumeration = false;
-    return Promise.resolve().then(function() {
+    return Promise.resolve().then(() => {
         assert(streamName, `${baseErr}Stream Name not provided`);
 
-        return connectionManager.create(config).then(function(connection) {
+        return connectionManager.create(config).then(connection => {
             function handleResult(result) {
                 debug('', 'Result: %j', result);
 
@@ -29,7 +29,7 @@ var getNextBatch = function(config, streamName, state, length, direction, resolv
     });
 };
 
-var esDirectionWorkaroundHandler = function(direction) {
+var esDirectionWorkaroundHandler = direction => {
     var wasSwopped = false;
 
     if (direction === 'forward') {
@@ -49,7 +49,7 @@ var esDirectionWorkaroundHandler = function(direction) {
     };
 };
 
-var stateHandler = function(direction) {
+var stateHandler = direction => {
     var Handler = function() {
         this.isFirstEnumeration = true;
         this.setToFirst();
@@ -88,37 +88,33 @@ var stateHandler = function(direction) {
     return new Handler();
 };
 
-module.exports = function(config) {
-    return function(streamName, direction, resolveLinkTos) {
-        direction = direction || 'forward';
-        resolveLinkTos = resolveLinkTos === undefined ? true : resolveLinkTos;
-        var state = stateHandler(direction);
+module.exports = config => (streamName, direction, resolveLinkTos) => {
+    direction = direction || 'forward';
+    resolveLinkTos = resolveLinkTos === undefined ? true : resolveLinkTos;
+    var state = stateHandler(direction);
 
-        return {
-            first: function(length) {
-                state.setToFirst();
-                return getNextBatch(config, streamName, state, length, direction, resolveLinkTos);
-            },
-            last: function(length) {
-                state.setToLast(length);
+    return {
+        first: function(length) {
+            state.setToFirst();
+            return getNextBatch(config, streamName, state, length, direction, resolveLinkTos);
+        },
+        last: function(length) {
+            state.setToLast(length);
 
-                var handler = esDirectionWorkaroundHandler(direction);
-                return getNextBatch(config, streamName, state, length, handler.direction, resolveLinkTos).then(function(result) {
-                    return handler.swopResult(state, length, result);
-                });
-            },
-            previous: function(length) {
-                state.setToPrevious(length);
-                length = state.keepInBoundsAdjustment(length);
+            var handler = esDirectionWorkaroundHandler(direction);
+            return getNextBatch(config, streamName, state, length, handler.direction, resolveLinkTos).then(result => handler.swopResult(state, length, result));
+        },
+        previous: function(length) {
+            state.setToPrevious(length);
+            length = state.keepInBoundsAdjustment(length);
 
-                return getNextBatch(config, streamName, state, length, direction, resolveLinkTos).then(function(result) {
-                    state.adjustByLength(length);
-                    return result;
-                });
-            },
-            next: function(length) {
-                return getNextBatch(config, streamName, state, length, direction, resolveLinkTos);
-            }
-        };
+            return getNextBatch(config, streamName, state, length, direction, resolveLinkTos).then(result => {
+                state.adjustByLength(length);
+                return result;
+            });
+        },
+        next: function(length) {
+            return getNextBatch(config, streamName, state, length, direction, resolveLinkTos);
+        }
     };
 };
