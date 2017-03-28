@@ -24,7 +24,7 @@ module.exports = function(config) {
 
             return connectionManager.create(config).then(function(connection) {
                 function handleResult(result) {
-                    debug('', 'Result: ' + JSON.stringify(result));
+                    debug('', 'Result: %j', result);
                     if (!_.isEmpty(result.error)) throw new Error(result.error);
                     return mapEvents(result.events);
                 }

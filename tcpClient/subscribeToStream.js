@@ -14,7 +14,7 @@ module.exports = function(config) {
 
             var connection = createConnection(config, reject);
             var subscription = connection.subscribeToStream(streamName, resolveLinkTos, onEventAppeared, onConfirmed, onDropped, config.credentials);
-            debug('', 'Subscription:', subscription);
+            debug('', 'Subscription: %j', subscription);
             resolve(connection);
         });
     };

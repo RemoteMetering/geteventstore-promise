@@ -50,9 +50,9 @@ module.exports = function(config) {
 
             var persistentSubscriptionOptions = createPersistentSubscriptionOptions(options);
             var createRequest = createPersistentSubscriptionRequest(name, streamName, persistentSubscriptionOptions, config);
-            debug('', 'Options: ' + JSON.stringify(createRequest));
+            debug('', 'Options: %j', createRequest);
             return req(createRequest).then(function(response) {
-                debug('', 'Response: ' + JSON.stringify(response));
+                debug('', 'Response: %j', response);
                 return response;
             }).catch(function(err) {
                 if (err.statusCode !== 409) throw err;
@@ -60,9 +60,9 @@ module.exports = function(config) {
                 var updateRequest = createPersistentSubscriptionRequest(name, streamName, persistentSubscriptionOptions, config);
                 updateRequest.method = 'POST';
 
-                debug('', 'Update Options: ' + JSON.stringify(updateRequest));
+                debug('', 'Update Options: %j', updateRequest);
                 return req(updateRequest).then(function(response) {
-                    debug('', 'Response: ' + JSON.stringify(response));
+                    debug('', 'Response: %j', response);
                     return response;
                 });
             });

@@ -44,7 +44,7 @@ var appendLinkFunctions = function(resultObject, links) {
 };
 
 var buildResultObject = function(response) {
-    debug('', 'Response: ' + JSON.stringify(response));
+    debug('', 'Response: %j', response);
     var result = {
         entries: []
     };
@@ -61,7 +61,7 @@ var buildResultObject = function(response) {
         return formattedEntry;
     });
 
-    debug('', 'Result: ' + JSON.stringify(result));
+    debug('', 'Result: %j', result);
     return result;
 };
 
@@ -75,7 +75,7 @@ module.exports = function(config) {
             embed = embed || 'Body';
 
             var options = createRequest(name, streamName, count, embed, config);
-            debug('', 'Options: ' + JSON.stringify(options));
+            debug('', 'Options: %j', options);
             return req(options).then(buildResultObject);
         });
     };

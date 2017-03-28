@@ -16,7 +16,7 @@ module.exports = function(config) {
                 var projectionInfo = _.find(projectionsInfo.projections, function(projection) {
                     return projection.name === name;
                 });
-                debug('', 'Projection Info: ' + JSON.stringify(projectionInfo));
+                debug('', 'Projection Info: %j', projectionInfo);
                 return projectionInfo;
             });
         });

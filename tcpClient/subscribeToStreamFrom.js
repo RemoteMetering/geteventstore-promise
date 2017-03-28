@@ -22,7 +22,7 @@ module.exports = function(config) {
 
             var connection = createConnection(config, reject);
             var subscription = connection.subscribeToStreamFrom(streamName, fromEventNumber, config.credentials, onEventAppeared, onLiveProcessingStarted, onDropped, catchUpSettings);
-            debug('', 'Subscription:', subscription);
+            debug('', 'Subscription: %j', subscription);
             resolve(connection);
         });
     };

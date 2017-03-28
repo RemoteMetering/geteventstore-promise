@@ -16,7 +16,7 @@ module.exports = function(config) {
         };
 
         return req(options).then(function(response) {
-            debug('', 'Response: ' + JSON.stringify(response));
+            debug('', 'Response: %j', response);
             return JSON.parse(response);
         });
     };

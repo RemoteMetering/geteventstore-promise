@@ -31,7 +31,7 @@ module.exports = function(config) {
                         return transaction.write(events);
                     }).then(function() {
                         return transaction.commit().then(function(result) {
-                            debug('', 'Result:', JSON.stringify(result));
+                            debug('', 'Result: %j', result);
                             return result;
                         });
                     }).catch(function(err) {

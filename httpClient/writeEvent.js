@@ -36,7 +36,7 @@ module.exports = function(config) {
                 json: true,
                 timeout: config.timeout
             };
-            debug('', 'Write Event: ' + JSON.stringify(reqOptions));
+            debug('', 'Write Event: %j', reqOptions);
             return req(reqOptions);
         });
     };

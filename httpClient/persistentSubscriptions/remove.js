@@ -27,9 +27,9 @@ module.exports = function(config) {
             assert(streamName, baseErr + 'Stream Name not provided');
 
             var options = createRemoveRequest(name, streamName, config);
-            debug('', 'Options: ' + JSON.stringify(options));
+            debug('', 'Options: %j', options);
             return req(options).then(function(response) {
-                debug('', 'Response: ' + JSON.stringify(response));
+                debug('', 'Response: %j', response);
                 return response;
             });
         });

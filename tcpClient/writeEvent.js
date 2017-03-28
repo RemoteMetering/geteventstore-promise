@@ -22,7 +22,7 @@ module.exports = function(config) {
 
             return connectionManager.create(config).then(function(connection) {
               return  connection.appendToStream(streamName, options.expectedVersion, [event], config.credentials).then(function(result) {
-                    debug('', 'Result: ' + JSON.stringify(result));
+                    debug('', 'Result: %j', result);
                     if (!_.isEmpty(result.error))
                          throw new Error(result.error);
 

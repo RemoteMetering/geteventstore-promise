@@ -41,7 +41,7 @@ module.exports = function(config) {
                 json: true,
                 timeout: config.timeout
             };
-            debug('', 'Getting Events: ' + JSON.stringify(options));
+            debug('', 'Options: ', options);
             return req(options).then(function(response) {
                 response.entries.forEach(function(entry) {
                     if (entry.data) entry.data = JSON.parse(entry.data);

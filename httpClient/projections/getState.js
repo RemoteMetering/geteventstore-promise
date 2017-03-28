@@ -32,9 +32,9 @@ module.exports = function(config) {
                 qs: qs
             };
 
-            debug('', 'Options: ' + JSON.stringify(options));
+            debug('', 'Options: %j', options);
             return req(urlOptions).then(function(response) {
-                debug('', 'Response: ' + JSON.stringify(response));
+                debug('', 'Response: %j', response);
                 return response;
             });
         });
