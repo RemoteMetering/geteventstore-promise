@@ -6,7 +6,7 @@ var assert = require('assert');
 var uuid = require('uuid');
 
 describe('TCP Client - Get Events', function() {
-    var testStream = 'TestStream-' + uuid.v4();
+    var testStream = `TestStream-${uuid.v4()}`;
     var numberOfEvents = 10;
 
     before(function() {
@@ -84,7 +84,7 @@ describe('TCP Client - Get Events', function() {
         this.timeout(40000);
         var client = eventstore.tcp(tcpConfig);
 
-        var testStream = 'TestStream-' + uuid.v4();
+        var testStream = `TestStream-${uuid.v4()}`;
         var numberOfEvents = 5000;
         var events = [];
 

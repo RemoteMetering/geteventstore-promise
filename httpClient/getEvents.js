@@ -9,13 +9,13 @@ var baseErr = 'Get Events - ';
 module.exports = function(config) {
     var buildUrl = function(stream, startPosition, length, direction) {
         var urlObj = JSON.parse(JSON.stringify(config));
-        urlObj.pathname = '/streams/' + stream + '/' + startPosition + '/' + direction + '/' + length;
+        urlObj.pathname = `/streams/${stream}/${startPosition}/${direction}/${length}`;
         return url.format(urlObj);
     };
 
     return function(streamName, startPosition, length, direction, resolveLinkTos) {
         return Promise.resolve().then(function() {
-            assert(streamName, baseErr + 'Stream Name not provided');
+            assert(streamName, `${baseErr}Stream Name not provided`);
 
             length = length || 1000;
 

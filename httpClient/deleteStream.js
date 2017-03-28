@@ -11,13 +11,13 @@ module.exports = function(config) {
 
     var buildUrl = function(streamName) {
         var urlObj = JSON.parse(JSON.stringify(config));
-        urlObj.pathname = '/streams/' + streamName;
+        urlObj.pathname = `/streams/${streamName}`;
         return url.format(urlObj);
     };
 
     return function(streamName, hardDelete) {
         return new Promise(function(resolve, reject) {
-            assert(streamName, baseErr + 'Stream Name not provided');
+            assert(streamName, `${baseErr}Stream Name not provided`);
 
             return checkStreamExists(streamName).then(function(exists) {
                 if (!exists) return reject(new Error('Stream does not exist'));

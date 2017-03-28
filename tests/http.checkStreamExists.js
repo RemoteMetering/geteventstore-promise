@@ -11,7 +11,7 @@ describe('Http Client - Check Stream Exist', function() {
        this.timeout(10 * 1000);
         var client = eventstore.http(httpConfig);
 
-        var testStream = 'TestStream-' + uuid.v4();
+        var testStream = `TestStream-${uuid.v4()}`;
         return client.writeEvent(testStream, 'TestEventType', {
             something: '123'
         }).then(function() {
@@ -48,7 +48,7 @@ describe('Http Client - Check Stream Exist', function() {
         clonedConfig.timeout = 1;
 
         var client = eventstore.http(clonedConfig);
-        var testStream = 'TestStream-' + uuid.v4();
+        var testStream = `TestStream-${uuid.v4()}`;
         client.writeEvent(testStream, 'TestEventType', {
             something: '123'
         }).then(function() {

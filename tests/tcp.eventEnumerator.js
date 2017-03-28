@@ -17,7 +17,7 @@ describe('TCP Client - Event Enumerator', function() {
                 }));
             }
 
-            var testStream = 'TestStream-' + uuid.v4();
+            var testStream = `TestStream-${uuid.v4()}`;
             return client.writeEvents(testStream, events).then(function() {
                 var enumerator = client.eventEnumerator(testStream);
                 return enumerator.next(20).then(function(result) {
@@ -44,7 +44,7 @@ describe('TCP Client - Event Enumerator', function() {
                 }));
             }
 
-            var testStream = 'TestStream-' + uuid.v4();
+            var testStream = `TestStream-${uuid.v4()}`;
             return client.writeEvents(testStream, events).then(function() {
                 var enumerator = client.eventEnumerator(testStream);
                 return enumerator.first(10).then(function(result) {
@@ -77,7 +77,7 @@ describe('TCP Client - Event Enumerator', function() {
                 }));
             }
 
-            var testStream = 'TestStream-' + uuid.v4();
+            var testStream = `TestStream-${uuid.v4()}`;
             return client.writeEvents(testStream, events).then(function() {
                 var enumerator = client.eventEnumerator(testStream);
                 return enumerator.last(10).then(function(result) {
@@ -110,7 +110,7 @@ describe('TCP Client - Event Enumerator', function() {
                 }));
             }
 
-            var testStream = 'TestStream-' + uuid.v4();
+            var testStream = `TestStream-${uuid.v4()}`;
             return client.writeEvents(testStream, events).then(function() {
                 var enumerator = client.eventEnumerator(testStream);
                 return enumerator.first(20).then(function(result) {
@@ -137,7 +137,7 @@ describe('TCP Client - Event Enumerator', function() {
                 }));
             }
 
-            var testStream = 'TestStream-' + uuid.v4();
+            var testStream = `TestStream-${uuid.v4()}`;
             return client.writeEvents(testStream, events).then(function() {
                 var enumerator = client.eventEnumerator(testStream);
                 return enumerator.first(95).then(function(result) {
@@ -178,7 +178,7 @@ describe('TCP Client - Event Enumerator', function() {
                 }));
             }
 
-            var testStream = 'TestStream-' + uuid.v4();
+            var testStream = `TestStream-${uuid.v4()}`;
             return client.writeEvents(testStream, events).then(function() {
                 var enumerator = client.eventEnumerator(testStream, 'backward');
                 return enumerator.next(20).then(function(result) {
@@ -205,7 +205,7 @@ describe('TCP Client - Event Enumerator', function() {
                 }));
             }
 
-            var testStream = 'TestStream-' + uuid.v4();
+            var testStream = `TestStream-${uuid.v4()}`;
             return client.writeEvents(testStream, events).then(function() {
                 var enumerator = client.eventEnumerator(testStream, 'backward');
                 return enumerator.first(10).then(function(result) {
@@ -238,7 +238,7 @@ describe('TCP Client - Event Enumerator', function() {
                 }));
             }
 
-            var testStream = 'TestStream-' + uuid.v4();
+            var testStream = `TestStream-${uuid.v4()}`;
             return client.writeEvents(testStream, events).then(function() {
                 var enumerator = client.eventEnumerator(testStream, 'backward');
                 return enumerator.last(10).then(function(result) {
@@ -271,7 +271,7 @@ describe('TCP Client - Event Enumerator', function() {
                 }));
             }
 
-            var testStream = 'TestStream-' + uuid.v4();
+            var testStream = `TestStream-${uuid.v4()}`;
             return client.writeEvents(testStream, events).then(function() {
                 var enumerator = client.eventEnumerator(testStream, 'backward');
                 return enumerator.first(20).then(function(result) {
@@ -298,7 +298,7 @@ describe('TCP Client - Event Enumerator', function() {
                 }));
             }
 
-            var testStream = 'TestStream-' + uuid.v4();
+            var testStream = `TestStream-${uuid.v4()}`;
             return client.writeEvents(testStream, events).then(function() {
                 var enumerator = client.eventEnumerator(testStream, 'backward');
                 return enumerator.first(95).then(function(result) {

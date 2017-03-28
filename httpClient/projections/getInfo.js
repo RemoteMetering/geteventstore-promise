@@ -10,7 +10,7 @@ module.exports = function(config) {
 
     return function(name) {
         return Promise.resolve().then(function() {
-            assert(name, baseErr + 'Name not provided');
+            assert(name, `${baseErr}Name not provided`);
 
             return getAllProjectionsInfo().then(function(projectionsInfo) {
                 var projectionInfo = _.find(projectionsInfo.projections, function(projection) {

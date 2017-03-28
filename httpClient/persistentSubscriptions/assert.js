@@ -8,7 +8,7 @@ var baseErr = 'Assert persistent subscriptions - ';
 
 var createPersistentSubscriptionRequest = function(name, streamName, options, config) {
     var urlObj = JSON.parse(JSON.stringify(config));
-    urlObj.pathname = '/subscriptions/' + streamName + '/' + name;
+    urlObj.pathname = `/subscriptions/${streamName}/${name}`;
     var uri = url.format(urlObj);
 
     return {
@@ -45,8 +45,8 @@ var createPersistentSubscriptionOptions = function(options) {
 module.exports = function(config) {
     return function(name, streamName, options) {
         return Promise.resolve().then(function() {
-            assert(name, baseErr + 'Persistent Subscription Name not provided');
-            assert(streamName, baseErr + 'Stream Name not provided');
+            assert(name, `${baseErr}Persistent Subscription Name not provided`);
+            assert(streamName, `${baseErr}Stream Name not provided`);
 
             var persistentSubscriptionOptions = createPersistentSubscriptionOptions(options);
             var createRequest = createPersistentSubscriptionRequest(name, streamName, persistentSubscriptionOptions, config);

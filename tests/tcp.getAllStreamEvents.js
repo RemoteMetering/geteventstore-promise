@@ -16,7 +16,7 @@ describe('TCP Client - Get All Stream Events', function() {
             }));
         }
 
-        var testStream = 'TestStream-' + uuid.v4();
+        var testStream = `TestStream-${uuid.v4()}`;
         return client.writeEvents(testStream, events).then(function() {
             return client.getAllStreamEvents(testStream).then(function(events) {
                 assert.equal(events.length, 1000);
@@ -36,7 +36,7 @@ describe('TCP Client - Get All Stream Events', function() {
             }));
         }
 
-        var testStream = 'TestStream-' + uuid.v4();
+        var testStream = `TestStream-${uuid.v4()}`;
         return client.writeEvents(testStream, events).then(function() {
             return client.getAllStreamEvents(testStream, 250, 500).then(function(events) {
                 assert.equal(events.length, 500);

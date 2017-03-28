@@ -12,7 +12,7 @@ describe('TCP Client - Stress Tests', function() {
         this.timeout(20000);
         var client = eventstore.tcp(tcpConfig);
 
-        var testStream = 'TestStream-' + uuid.v4();
+        var testStream = `TestStream-${uuid.v4()}`;
         var numberOfEvents = 5000;
         var events = [];
 
@@ -36,7 +36,7 @@ describe('TCP Client - Stress Tests', function() {
         this.timeout(60000);
         var client = eventstore.tcp(tcpConfig);
 
-        var testStream = 'TestStream-' + uuid.v4();
+        var testStream = `TestStream-${uuid.v4()}`;
         var numberOfEvents = 5000;
         var events = [];
         var writeCount = 0;

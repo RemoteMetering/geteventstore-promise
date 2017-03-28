@@ -8,7 +8,7 @@ var uuid = require('uuid');
 describe('TCP Client - Test Connection', function() {
     it('Should connect and write event on correct connection properties', function() {
         var client = eventstore.tcp(tcpConfig);
-        var testStream = 'TestStream-' + uuid.v4();
+        var testStream = `TestStream-${uuid.v4()}`;
         return client.writeEvent(testStream, 'TestEventType', {
             something: '123'
         });
@@ -21,7 +21,7 @@ describe('TCP Client - Test Connection', function() {
 
         var client = eventstore.tcp(config);
 
-        var testStream = 'TestStream-' + uuid.v4();
+        var testStream = `TestStream-${uuid.v4()}`;
         return client.writeEvent(testStream, 'TestEventType', {
             something: '123'
         }).then(function() {
@@ -38,7 +38,7 @@ describe('TCP Client - Test Connection', function() {
 
         var client = eventstore.tcp(config);
 
-        var testStream = 'TestStream-' + uuid.v4();
+        var testStream = `TestStream-${uuid.v4()}`;
         return client.writeEvent(testStream, 'TestEventType', {
             something: '123'
         }).then(function() {
@@ -53,7 +53,7 @@ describe('TCP Client - Test Connection', function() {
         var config = JSON.parse(JSON.stringify(tcpConfig));
         var client = eventstore.tcp(config);
 
-        var testStream = 'TestStream-' + uuid.v4();
+        var testStream = `TestStream-${uuid.v4()}`;
         return client.writeEvent(testStream, 'TestEventType', {
             something: '123'
         }).then(function() {

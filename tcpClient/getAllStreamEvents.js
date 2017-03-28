@@ -10,7 +10,7 @@ var baseErr = 'Get All Stream Events - ';
 module.exports = function(config) {
     return function(streamName, chunkSize, startPosition, resolveLinkTos) {
         return Promise.resolve().then(function() {
-            assert(streamName, baseErr + 'Stream Name not provided');
+            assert(streamName, `${baseErr}Stream Name not provided`);
 
             chunkSize = chunkSize || 1000;
             if (chunkSize > 4096) {

@@ -10,7 +10,7 @@ describe('TCP Client - Subscribe To Stream', function() {
     it('Should get all events written to a subscription stream after subscription is started', function(done) {
         this.timeout(9 * 1000);
         var client = eventstore.tcp(tcpConfig);
-        var testStream = 'TestStream-' + uuid.v4();
+        var testStream = `TestStream-${uuid.v4()}`;
         var processedEventCount = 0;
         var confirmCalled = false;
 

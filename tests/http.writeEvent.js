@@ -9,7 +9,7 @@ describe('Http Client - Write Event', function() {
     it('Write to a new stream and read the event', function() {
         var client = eventstore.http(httpConfig);
 
-        var testStream = 'TestStream-' + uuid.v4();
+        var testStream = `TestStream-${uuid.v4()}`;
         return client.writeEvent(testStream, 'TestEventType', {
             something: '123'
         }).then(function() {
@@ -22,7 +22,7 @@ describe('Http Client - Write Event', function() {
     it('Should fail promise if no event data provided', function() {
         var client = eventstore.http(httpConfig);
 
-        var testStream = 'TestStream-' + uuid.v4();
+        var testStream = `TestStream-${uuid.v4()}`;
         return client.writeEvent(testStream, 'TestEventType'
             ).then(function() {
             assert.fail('write should not have succeeded');

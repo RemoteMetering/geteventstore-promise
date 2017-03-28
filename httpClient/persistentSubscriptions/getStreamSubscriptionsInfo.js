@@ -9,13 +9,13 @@ var baseError = 'Get Stream Subscriptions Info - ';
 module.exports = function(config) {
     var buildUrl = function(stream) {
         var urlObj = JSON.parse(JSON.stringify(config));
-        urlObj.pathname = '/subscriptions/' + stream;
+        urlObj.pathname = `/subscriptions/${stream}`;
         return url.format(urlObj);
     };
 
     return function(stream) {
         return Promise.resolve().then(function() {
-            assert(stream, baseError + 'Stream not provided');
+            assert(stream, `${baseError}Stream not provided`);
             var options = {
                 uri: buildUrl(stream),
                 method: 'GET',

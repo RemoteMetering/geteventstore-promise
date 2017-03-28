@@ -13,7 +13,7 @@ describe('Http Client - Write Events', function() {
             something: '456'
         })];
 
-        var testStream = 'TestStream-' + uuid.v4();
+        var testStream = `TestStream-${uuid.v4()}`;
         return client.writeEvents(testStream, events).then(function() {
             return client.getEvents(testStream).then(function(events) {
                 assert.equal(events[0].data.something, '456');
@@ -26,7 +26,7 @@ describe('Http Client - Write Events', function() {
 
         var events = [];
 
-        var testStream = 'TestStream-' + uuid.v4();
+        var testStream = `TestStream-${uuid.v4()}`;
         return client.writeEvents(testStream, events);
     });
 
@@ -37,7 +37,7 @@ describe('Http Client - Write Events', function() {
             something: 'here'
         };
 
-        var testStream = 'TestStream-' + uuid.v4();
+        var testStream = `TestStream-${uuid.v4()}`;
         return client.writeEvents(testStream, events).then(function() {
             assert.fail('should not have succeeded');
         }).catch(function(err) {

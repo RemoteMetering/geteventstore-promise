@@ -10,7 +10,7 @@ describe('TCP Client - Check Stream Exist', function() {
         this.timeout(5000);
         var client = eventstore.tcp(tcpConfig);
 
-        var testStream = 'TestStream-' + uuid.v4();
+        var testStream = `TestStream-${uuid.v4()}`;
         return client.writeEvent(testStream, 'TestEventType', {
             something: '123'
         }).then(function() {

@@ -11,7 +11,7 @@ describe('HTTP Client - Persistent Subscription', function() {
     it('Should get and ack first batch of events written to a stream', function() {
         this.timeout(9 * 1000);
         var client = eventstore.http(httpConfig);
-        var testStream = 'TestStream-' + uuid.v4();
+        var testStream = `TestStream-${uuid.v4()}`;
 
         var events = [];
         for (var k = 0; k < 10; k++) {
@@ -39,7 +39,7 @@ describe('HTTP Client - Persistent Subscription', function() {
     it('Should ack and nack messages individually', function() {
         this.timeout(9 * 1000);
         var client = eventstore.http(httpConfig);
-        var testStream = 'TestStream-' + uuid.v4();
+        var testStream = `TestStream-${uuid.v4()}`;
 
         var events = [];
         for (var k = 0; k < 12; k++) {
@@ -86,7 +86,7 @@ describe('HTTP Client - Persistent Subscription', function() {
     it('Should update persistent subscription ', function() {
         this.timeout(9 * 1000);
         var client = eventstore.http(httpConfig);
-        var testStream = 'TestStream-' + uuid.v4();
+        var testStream = `TestStream-${uuid.v4()}`;
 
         var events = [];
         for (var k = 0; k < 12; k++) {
@@ -114,7 +114,7 @@ describe('HTTP Client - Persistent Subscription', function() {
     it('Should delete persistent subscription', function(done) {
         this.timeout(9 * 1000);
         var client = eventstore.http(httpConfig);
-        var testStream = 'TestStream-' + uuid.v4();
+        var testStream = `TestStream-${uuid.v4()}`;
 
         var events = [];
         for (var k = 0; k < 12; k++) {
@@ -146,7 +146,7 @@ describe('HTTP Client - Persistent Subscription', function() {
     it('Should return persistent subscription info', function() {
         this.timeout(9 * 1000);
         var client = eventstore.http(httpConfig);
-        var testStream = 'TestStream-' + uuid.v4();
+        var testStream = `TestStream-${uuid.v4()}`;
 
         var events = [];
         for (var k = 0; k < 10; k++) {
@@ -170,7 +170,7 @@ describe('HTTP Client - Persistent Subscription', function() {
     it('Should return persistent subscriptions info for a stream', function() {
         this.timeout(9 * 1000);
         var client = eventstore.http(httpConfig);
-        var testStream = 'TestStream-' + uuid.v4();
+        var testStream = `TestStream-${uuid.v4()}`;
 
         var events = [];
         for (var k = 0; k < 10; k++) {
@@ -193,7 +193,7 @@ describe('HTTP Client - Persistent Subscription', function() {
     it('Should return persistent subscriptions info for all', function() {
         this.timeout(9 * 1000);
         var client = eventstore.http(httpConfig);
-        var testStream = 'TestStream-' + uuid.v4();
+        var testStream = `TestStream-${uuid.v4()}`;
 
         var events = [];
         for (var k = 0; k < 10; k++) {

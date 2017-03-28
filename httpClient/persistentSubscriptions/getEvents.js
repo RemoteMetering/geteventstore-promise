@@ -9,7 +9,7 @@ var baseErr = 'Get persistent subscriptions events - ';
 
 var createRequest = function(name, streamName, count, embed, config) {
     var urlObj = JSON.parse(JSON.stringify(config));
-    urlObj.pathname = '/subscriptions/' + streamName + '/' + name + '/' + count + '?embed=' + embed;
+    urlObj.pathname = `/subscriptions/${streamName}/${name}/${count}?embed=${embed}`;
 
     var uri = url.format(urlObj);
     var request = {
@@ -68,8 +68,8 @@ var buildResultObject = function(response) {
 module.exports = function(config) {
     return function(name, streamName, count, embed) {
         return Promise.resolve().then(function() {
-            assert(name, baseErr + 'Persistent Subscription Name not provided');
-            assert(streamName, baseErr + 'Stream Name not provided');
+            assert(name, `${baseErr}Persistent Subscription Name not provided`);
+            assert(streamName, `${baseErr}Stream Name not provided`);
 
             count = count === undefined ? 1 : count;
             embed = embed || 'Body';

@@ -25,7 +25,7 @@ var doesProjectionExist = function(config, name) {
 
 var buildCreateOptions = function(config, name, projectionContent, mode, enabled, emitEnabled, checkpointsEnabled) {
     var urlObj = JSON.parse(JSON.stringify(config));
-    urlObj.pathname = '/projections/' + mode;
+    urlObj.pathname = `/projections/${mode}`;
     var uri = url.format(urlObj);
 
     var options = {
@@ -48,7 +48,7 @@ var buildCreateOptions = function(config, name, projectionContent, mode, enabled
 
 var buildUpdateOptions = function(config, name, projectionContent, emitEnabled) {
     var urlObj = JSON.parse(JSON.stringify(config));
-    urlObj.pathname = '/projection/' + name + '/query';
+    urlObj.pathname = `/projection/${name}/query`;
     var uri = url.format(urlObj);
 
     var options = {
@@ -69,8 +69,8 @@ var buildUpdateOptions = function(config, name, projectionContent, emitEnabled) 
 module.exports = function(config) {
     return function(name, projectionContent, mode, enabled, checkpointsEnabled, emitEnabled) {
         return Promise.resolve().then(function() {
-            assert(name, baseErr + 'Name not provided');
-            assert(projectionContent, baseErr + 'Projecion Contnet not provided');
+            assert(name, `${baseErr}Name not provided`);
+            assert(projectionContent, `${baseErr}Projecion Contnet not provided`);
 
             mode = mode || 'continuous';
             enabled = enabled || true;

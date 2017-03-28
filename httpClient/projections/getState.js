@@ -10,13 +10,13 @@ var baseErr = 'Get Projection State - ';
 module.exports = function(config) {
     var buildUrl = function(name) {
         var urlObj = JSON.parse(JSON.stringify(config));
-        urlObj.pathname = '/projection/' + name + '/state';
+        urlObj.pathname = `/projection/${name}/state`;
         return url.format(urlObj);
     };
 
     return function(name, options) {
         return Promise.resolve().then(function() {
-            assert(name, baseErr + 'Name not provided');
+            assert(name, `${baseErr}Name not provided`);
 
             var qs = {};
             options = options || {};

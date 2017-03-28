@@ -9,13 +9,13 @@ var baseErr = 'Check Stream Exists - ';
 module.exports = function(config) {
     var buildUrl = function(streamName) {
         var urlObj = JSON.parse(JSON.stringify(config));
-        urlObj.pathname = '/streams/' + streamName + '/head/backward/1';
+        urlObj.pathname = `/streams/${streamName}/head/backward/1`;
         return url.format(urlObj);
     };
 
     return function(streamName) {
         return Promise.resolve().then(function() {
-            assert(streamName, baseErr + 'Stream Name not provided');
+            assert(streamName, `${baseErr}Stream Name not provided`);
 
             var options = {
                 uri: buildUrl(streamName),

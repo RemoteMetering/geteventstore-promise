@@ -11,9 +11,9 @@ var baseErr = 'Write Event - ';
 module.exports = function(config) {
     return function(streamName, eventType, data, metaData, options) {
         return Promise.resolve().then(function() {
-            assert(streamName, baseErr + 'Stream Name not provided');
-            assert(eventType, baseErr + 'Event Type not provided');
-            assert(data, baseErr + 'Event Data not provided');
+            assert(streamName, `${baseErr}Stream Name not provided`);
+            assert(eventType, `${baseErr}Event Type not provided`);
+            assert(data, `${baseErr}Event Data not provided`);
 
             options = options || {};
             options.expectedVersion = options.expectedVersion || -2;

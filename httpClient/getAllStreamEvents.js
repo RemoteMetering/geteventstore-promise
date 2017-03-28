@@ -10,7 +10,7 @@ var baseErr = 'Get All Stream Events - ';
 module.exports = function(config) {
 	var buildUrl = function(stream, startPosition, chunkSize) {
 		var urlObj = JSON.parse(JSON.stringify(config));
-		urlObj.pathname = '/streams/' + stream + '/' + startPosition + '/forward/' + chunkSize;
+		urlObj.pathname = `/streams/${stream}/${startPosition}/forward/${chunkSize}`;
 		return url.format(urlObj);
 	};
 
@@ -32,7 +32,7 @@ module.exports = function(config) {
 
 	return function(streamName, chunkSize, startPosition, resolveLinkTos) {
 		return new Promise(function(resolve, reject) {
-			assert(streamName, baseErr + 'Stream Name not provided');
+			assert(streamName, `${baseErr}Stream Name not provided`);
 
 			startPosition = startPosition || 0;
 			chunkSize = chunkSize || 1000;

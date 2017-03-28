@@ -8,7 +8,7 @@ var baseErr = 'Subscribe to Stream - ';
 module.exports = function(config) {
     return function(streamName, onEventAppeared, onConfirmed, onDropped, resolveLinkTos) {
         return new Promise(function(resolve, reject) {
-            assert(streamName, baseErr + 'Stream Name not provided');
+            assert(streamName, `${baseErr}Stream Name not provided`);
 
             resolveLinkTos = resolveLinkTos || false;
 

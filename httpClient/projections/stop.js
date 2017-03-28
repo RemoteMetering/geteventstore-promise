@@ -9,13 +9,13 @@ var baseErr = 'Stop Projection - ';
 module.exports = function(config) {
     var buildUrl = function(name) {
         var urlObj = JSON.parse(JSON.stringify(config));
-        urlObj.pathname = '/projection/' + name + '/command/disable';
+        urlObj.pathname = `/projection/${name}/command/disable`;
         return url.format(urlObj);
     };
 
     return function(name) {
         return Promise.resolve().then(function() {
-            assert(name, baseErr + 'Name not provided');
+            assert(name, `${baseErr}Name not provided`);
 
             var options = {
                 uri: buildUrl(name),

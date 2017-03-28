@@ -9,7 +9,7 @@ describe('Http Client - Delete stream', function() {
     it('Should return successful on stream delete', function() {
         var client = eventstore.http(httpConfig);
 
-        var testStream = 'TestStream-' + uuid.v4();
+        var testStream = `TestStream-${uuid.v4()}`;
         return client.writeEvent(testStream, 'TestEventType', {
             something: '123'
         }).then(function() {
@@ -26,7 +26,7 @@ describe('Http Client - Delete stream', function() {
     it('Should return successful on writing to a stream that has been soft deleted', function() {
         var client = eventstore.http(httpConfig);
 
-        var testStream = 'TestStream-' + uuid.v4();
+        var testStream = `TestStream-${uuid.v4()}`;
 
         return client.writeEvent(testStream, 'TestEventType', {
             something: '123'
@@ -44,7 +44,7 @@ describe('Http Client - Delete stream', function() {
     it('Should return successful on stream delete hard delete', function(callback) {
         var client = eventstore.http(httpConfig);
 
-        var testStream = 'TestStream-' + uuid.v4();
+        var testStream = `TestStream-${uuid.v4()}`;
         client.writeEvent(testStream, 'TestEventType', {
             something: '123'
         }).then(function() {
@@ -62,7 +62,7 @@ describe('Http Client - Delete stream', function() {
     it('Should fail when a stream does not exist', function() {
         var client = eventstore.http(httpConfig);
 
-        var testStream = 'TestStream-' + uuid.v4();
+        var testStream = `TestStream-${uuid.v4()}`;
 
         return client.deleteStream(testStream).then(function() {
             assert.fail('Should have failed because stream does not exist');
@@ -74,7 +74,7 @@ describe('Http Client - Delete stream', function() {
     it('Should return HTTP 410 when a writing to a stream that has been hard deleted', function() {
         var client = eventstore.http(httpConfig);
 
-        var testStream = 'TestStream-' + uuid.v4();
+        var testStream = `TestStream-${uuid.v4()}`;
 
         return client.writeEvent(testStream, 'TestEventType', {
             something: '123'

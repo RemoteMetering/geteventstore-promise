@@ -10,7 +10,7 @@ var _ = require('lodash');
 describe('Projections', function() {
     describe('Default Settings', function() {
         var assertionProjection = uuid.v4();
-        var assertionProjectionContent = fs.readFileSync(__dirname + '/support/testProjection.js', {
+        var assertionProjectionContent = fs.readFileSync(`${__dirname}/support/testProjection.js`, {
             encoding: 'utf8'
         });
 
@@ -85,7 +85,7 @@ describe('Projections', function() {
 
     describe('Custom Settings', function() {
         var assertionProjection = uuid.v4();
-        var assertionProjectionContent = fs.readFileSync(__dirname + '/support/testProjection.js', {
+        var assertionProjectionContent = fs.readFileSync(`${__dirname}/support/testProjection.js`, {
             encoding: 'utf8'
         });
 
@@ -164,13 +164,13 @@ describe('Projections', function() {
             var client = eventstore.http(httpConfig);
 
             var projectionName = 'TestProjection';
-            var projectionContent = fs.readFileSync(__dirname + '/support/testProjection.js', {
+            var projectionContent = fs.readFileSync(`${__dirname}/support/testProjection.js`, {
                 encoding: 'utf8'
             });
 
             client.projections.assert(projectionName, projectionContent).then(function() {
                 setTimeout(function() {
-                    var testStream = 'TestProjectionStream-' + uuid.v4();
+                    var testStream = `TestProjectionStream-${uuid.v4()}`;
                     client.writeEvent(testStream, 'TestProjectionEventType', {
                         something: '123'
                     }).then(function() {
@@ -196,14 +196,14 @@ describe('Projections', function() {
             this.timeout(1000 * 10);
             var client = eventstore.http(httpConfig);
 
-            var projectionName = 'TestProjection' + uuid.v4();
-            var projectionContent = fs.readFileSync(__dirname + '/support/testPartionedProjection.js', {
+            var projectionName = `TestProjection${uuid.v4()}`;
+            var projectionContent = fs.readFileSync(`${__dirname}/support/testPartionedProjection.js`, {
                 encoding: 'utf8'
             });
 
             client.projections.assert(projectionName, projectionContent).then(function() {
                 setTimeout(function() {
-                    var testStream = 'TestProjectionStream-' + uuid.v4();
+                    var testStream = `TestProjectionStream-${uuid.v4()}`;
                     client.writeEvent(testStream, 'TestProjectionEventType', {
                         something: '123'
                     }).then(function() {

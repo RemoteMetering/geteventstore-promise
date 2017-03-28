@@ -9,13 +9,13 @@ var baseErr = 'Remove Projection - ';
 module.exports = function(config) {
     var buildUrl = function(name) {
         var urlObj = JSON.parse(JSON.stringify(config));
-        urlObj.pathname = '/projection/' + name;
+        urlObj.pathname = `/projection/${name}`;
         return url.format(urlObj);
     };
 
     return function(name, deleteCheckpointStream, deleteStateStream) {
         return Promise.resolve().then(function() {
-            assert(name, baseErr + 'Name not provided');
+            assert(name, `${baseErr}Name not provided`);
 
             deleteCheckpointStream = deleteCheckpointStream || false;
             deleteStateStream = deleteStateStream || false;

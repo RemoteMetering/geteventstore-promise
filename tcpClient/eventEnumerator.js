@@ -9,7 +9,7 @@ var baseErr = 'Event Enumerator - ';
 var getNextBatch = function(config, streamName, state, length, direction, resolveLinkTos) {
     state.isFirstEnumeration = false;
     return Promise.resolve().then(function() {
-        assert(streamName, baseErr + 'Stream Name not provided');
+        assert(streamName, `${baseErr}Stream Name not provided`);
 
         return connectionManager.create(config).then(function(connection) {
             function handleResult(result) {

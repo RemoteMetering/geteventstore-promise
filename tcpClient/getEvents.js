@@ -10,7 +10,7 @@ var baseErr = 'Get Events - ';
 module.exports = function(config) {
     return function(streamName, startPosition, length, direction, resolveLinkTos) {
         return Promise.resolve().then(function() {
-            assert(streamName, baseErr + 'Stream Name not provided');
+            assert(streamName, `${baseErr}Stream Name not provided`);
 
             direction = direction || 'forward';
             startPosition = startPosition === undefined && direction === 'backward' ? -1 : startPosition || 0;

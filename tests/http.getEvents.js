@@ -8,7 +8,7 @@ var _ = require('lodash');
 
 describe('Http Client - Get Events', function() {
 
-    var testStream = 'TestStream-' + uuid.v4();
+    var testStream = `TestStream-${uuid.v4()}`;
     var numberOfEvents = 10;
 
     before(function() {
@@ -82,7 +82,7 @@ describe('Http Client - Get Events', function() {
         this.timeout(10000);
         var client = eventstore.http(httpConfig);
 
-        var testStream = 'TestStream-' + uuid.v4();
+        var testStream = `TestStream-${uuid.v4()}`;
         var numberOfEvents = 5000;
         var events = [];
 
@@ -114,7 +114,7 @@ describe('Http Client - Get Events', function() {
 });
 
 describe('Http Client - Get Events Failure', function() {
-    var testStream = 'TestStream-' + uuid.v4();
+    var testStream = `TestStream-${uuid.v4()}`;
 
     it('Should return 404 when stream does not exist', function() {
         var client = eventstore.http(httpConfig);

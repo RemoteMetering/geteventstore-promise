@@ -9,14 +9,14 @@ var baseError = 'Get Stream Subscriptions Info - ';
 module.exports = function(config) {
     var buildUrl = function(name, stream) {
         var urlObj = JSON.parse(JSON.stringify(config));
-        urlObj.pathname = '/subscriptions/' + stream + '/' + name + '/info';
+        urlObj.pathname = `/subscriptions/${stream}/${name}/info`;
         return url.format(urlObj);
     };
 
     return function(name, stream) {
         return Promise.resolve().then(function() {
-            assert(name, baseError + 'Persistant Subscription Name not provided');
-            assert(stream, baseError + 'Stream not provided');
+            assert(name, `${baseError}Persistant Subscription Name not provided`);
+            assert(stream, `${baseError}Stream not provided`);
 
             var options = {
                 uri: buildUrl(name, stream),
