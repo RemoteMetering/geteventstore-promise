@@ -8,7 +8,7 @@ At the command-line:
 > npm install geteventstore-promise
 
 In your Node.js application:
-> var eventstore = require('geteventstore-promise');
+> const eventstore = require('geteventstore-promise');
 
 # HTTP Client
 
@@ -37,9 +37,9 @@ Resolve linked events. Defaults to *true*
 #### Example
 
 ```javascript
-var eventstore = require('geteventstore-promise');
+const eventstore = require('geteventstore-promise');
 
-var client = eventstore.http({
+let client = eventstore.http({
                 hostname: 'localhost',
                 port: 2113,
                 credentials: {
@@ -48,8 +48,8 @@ var client = eventstore.http({
                 }
             });
 
-client.getEvents('TestStream', 0, 1000, 'forward') // defaults for getEvents if not specified
-.then(function(events){
+// defaults for getEvents if not specified
+client.getEvents('TestStream', 0, 1000, 'forward').then(events => {
     console.log('Events ', JSON.stringify(events));
 });
 ```
@@ -75,9 +75,9 @@ Resolve linked events. Defaults to *true*
 #### Example
 
 ```javascript
-var eventstore = require('geteventstore-promise');
+const eventstore = require('geteventstore-promise');
 
-var client = eventstore.http({
+let client = eventstore.http({
                 hostname: 'localhost',
                 port: 2113,
                 credentials: {
@@ -86,7 +86,7 @@ var client = eventstore.http({
                 }
             });
 
-client.getAllStreamEvents('TestStream').then(function(events){
+client.getAllStreamEvents('TestStream').then(events => {
     console.log('Events ', JSON.stringify(events));
 });
 ```
@@ -113,10 +113,10 @@ Any options to be specified (as documented in GetEvent Store documentation). Def
 #### Example
 
 ```javascript
-var eventstore = require('geteventstore-promise');
-var uuid = require('uuid');
+const eventstore = require('geteventstore-promise');
+const uuid = require('uuid');
 
-var client = eventstore.http({
+let client = eventstore.http({
                 hostname: 'localhost',
                 port: 2113,
                 credentials: {
@@ -125,10 +125,10 @@ var client = eventstore.http({
                 }
             });
 
-var testStream = 'TestStream-' + uuid.v4();
+let testStream = 'TestStream-' + uuid.v4();
 
-client.writeEvent(testStream, 'TestEventType', { something: '123' }).then(function() {
-    return client.getEvents(testStream).then(function(events){
+client.writeEvent(testStream, 'TestEventType', { something: '123' }).then(() => {
+    return client.getEvents(testStream).then(events => {
         console.log('Events ', JSON.stringify(events));
     });
 });
@@ -153,10 +153,10 @@ Any options to be specified (as documented in GetEvent Store documentation). Def
 #### Example
 
 ```javascript
-var eventstore = require('geteventstore-promise');
-var uuid = require('uuid');
+const eventstore = require('geteventstore-promise');
+const uuid = require('uuid');
 
-var client = eventstore.http({
+let client = eventstore.http({
                 hostname: 'localhost',
                 port: 2113,
                 credentials: {
@@ -165,12 +165,12 @@ var client = eventstore.http({
                 }
             });
 
-var events = [eventstore.eventFactory.NewEvent('TestEventType', { something: '456'})];
+let events = [eventstore.eventFactory.NewEvent('TestEventType', { something: '456'})];
 
-var testStream = 'TestStream-' + uuid.v4();
+let testStream = 'TestStream-' + uuid.v4();
 
-client.writeEvents(testStream, events).then(function() {
-    return client.getEvents(testStream).then(function(events){
+client.writeEvents(testStream, events).then(() => {
+    return client.getEvents(testStream).then(events => {
         console.log('Events ', JSON.stringify(events));
     });
 });
@@ -188,9 +188,9 @@ The name of the stream to check.
 #### Example
 
 ```javascript
-var eventstore = require('geteventstore-promise');
+const eventstore = require('geteventstore-promise');
 
-var client = eventstore.http({
+let client = eventstore.http({
                 hostname: 'localhost',
                 port: 2113,
                 credentials: {
@@ -199,9 +199,9 @@ var client = eventstore.http({
                 }
             });
 
-var projectionStreamName = 'ExistingProjectionStreamName';
+let projectionStreamName = 'ExistingProjectionStreamName';
 
-client.checkStreamExists(projectionStreamName).then(function(exists) {
+client.checkStreamExists(projectionStreamName).then(exists =>  {
     console.log('Exists ', exists);
 });
 ```
@@ -221,9 +221,9 @@ Hard delete the stream, defaults to false
 #### Example
 
 ```javascript
-var eventstore = require('geteventstore-promise');
+const eventstore = require('geteventstore-promise');
 
-var client = eventstore.http({
+let client = eventstore.http({
                 hostname: 'localhost',
                 port: 2113,
                 credentials: {
@@ -232,11 +232,11 @@ var client = eventstore.http({
                 }
             });
 
-var streamName = 'ExistingStreamName';
+let streamName = 'ExistingStreamName';
 
-client.delete(streamName).then(function() {
+client.delete(streamName).then(() => {
     console.log('Stream deleted');
-}).catch(function(err){
+}).catch(err => {
     // should only happen if something went wrong OR the stream does not exist
     console.log(err);
 });
@@ -250,9 +250,9 @@ Performs Ping command, rejects promise if unsuccessful
 #### Example
 
 ```javascript
-var eventstore = require('geteventstore-promise');
+const eventstore = require('geteventstore-promise');
 
-var client = eventstore.http({
+let client = eventstore.http({
                 hostname: 'localhost',
                 port: 2113,
                 credentials: {
@@ -261,9 +261,9 @@ var client = eventstore.http({
                 }
             });
 
-client.ping().then(function() {
+client.ping().then(() => {
     console.log('EventStore is OK');
-}).catch(function(err){
+}).catch(err => {
     // should only happen if something went wrong
     console.log(err);
 });
@@ -416,9 +416,9 @@ The name of the projection to get state of.
 #### Example
 
 ```javascript
-var eventstore = require('geteventstore-promise');
+const eventstore = require('geteventstore-promise');
 
-var client = eventstore.http({
+let client = eventstore.http({
                 hostname: 'localhost',
                 port: 2113,
                 credentials: {
@@ -428,7 +428,7 @@ var client = eventstore.http({
             });
 
 
-client.projections.getState('TestProjection').then(function(projectionState) {
+client.projections.getState('TestProjection').then(projectionState =>  {
     console.log('Projection State ', JSON.stringify(projectionState));
 });
 ```
@@ -446,9 +446,9 @@ If the promise is fulfilled then the scavenge command has been sent, it does not
 #### Example
 
 ```javascript
-var eventstore = require('geteventstore-promise');
+const eventstore = require('geteventstore-promise');
 
-var client = eventstore.http({
+let client = eventstore.http({
                 hostname: 'localhost',
                 port: 2113,
                 credentials: {
@@ -457,7 +457,7 @@ var client = eventstore.http({
                 }
             });
 
-client.admin.scavenge().then(function() {
+client.admin.scavenge().then(() => {
     console.log('Scavenge command sent ');
 });
 ```
@@ -473,9 +473,9 @@ If the promise is fulfilled then the shutdown command has been sent, it does not
 #### Example
 
 ```javascript
-var eventstore = require('geteventstore-promise');
+const eventstore = require('geteventstore-promise');
 
-var client = eventstore.http({
+let client = eventstore.http({
                 hostname: 'localhost',
                 port: 2113,
                 credentials: {
@@ -484,7 +484,7 @@ var client = eventstore.http({
                 }
             });
 
-client.admin.shutdown().then(function() {
+client.admin.shutdown().then(() => {
     console.log('Shutdown command sent ');
 });
 ```
@@ -542,9 +542,9 @@ Resolve linked events. Defaults to *true*
 #### Example
 
 ```javascript
-var eventstore = require('geteventstore-promise');
+const eventstore = require('geteventstore-promise');
 
-var client = eventstore.tcp({
+let client = eventstore.tcp({
                 hostname: 'localhost',
                 port: 1113,
                 credentials: {
@@ -553,7 +553,7 @@ var client = eventstore.tcp({
                 }
             });
 
-client.getEventsByType('TestStream', ['TestType']).then(function(events){
+client.getEventsByType('TestStream', ['TestType']).then(events => {
     console.log('Events ', JSON.stringify(events));
 });
 ```
@@ -579,9 +579,9 @@ Resolve linked events. Defaults to *true*
 #### Example
 
 ```javascript
-var eventstore = require('geteventstore-promise');
+const eventstore = require('geteventstore-promise');
 
-var client = eventstore.tcp({
+let client = eventstore.tcp({
                 hostname: 'localhost',
                 port: 1113,
                 credentials: {
@@ -590,7 +590,7 @@ var client = eventstore.tcp({
                 }
             });
 
-client.getAllStreamEvents('TestStream').then(function(events){
+client.getAllStreamEvents('TestStream').then(events => {
     console.log('Events ', JSON.stringify(events));
 });
 ```
@@ -619,9 +619,9 @@ Resolve linked events
 #### Example
 
 ```javascript
-var eventstore = require('geteventstore-promise');
+const eventstore = require('geteventstore-promise');
 
-var client = eventstore.tcp({
+let client = eventstore.tcp({
                 hostname: 'localhost',
                 port: 1113,
                 credentials: {
@@ -679,9 +679,9 @@ debug - in debug mode(true/false)
 #### Example
 
 ```javascript
-var eventstore = require('geteventstore-promise');
+const eventstore = require('geteventstore-promise');
 
-var client = eventstore.tcp({
+let client = eventstore.tcp({
                 hostname: 'localhost',
                 port: 1113,
                 credentials: {
@@ -690,22 +690,22 @@ var client = eventstore.tcp({
                 }
             });
 
-        var proccessedEventCount = 0;
+let proccessedEventCount = 0;
 
-        function onEventAppeared(ev) {
-            proccessedEventCount++;
-            return;
-        };
+function onEventAppeared(ev) {
+    proccessedEventCount++;
+    return;
+};
 
-        function onLiveProcessingStarted() {
-            return;
-        }
+function onLiveProcessingStarted() {
+    return;
+}
 
-        function onDropped(reason) {
-            done('should not drop');
-        };
+function onDropped(reason) {
+    done('should not drop');
+};
 
-client.SubscribeToStreamFrom('TestStream',0,onEventAppeared,onLiveProcessingStarted,onDropped);
+client.SubscribeToStreamFrom('TestStream', 0, onEventAppeared, onLiveProcessingStarted,onDropped);
 ```
 
 ---
@@ -736,9 +736,9 @@ The number of events to read per enumeration.
 #### Example
 
 ```javascript
-var eventstore = require('geteventstore-promise');
+const eventstore = require('geteventstore-promise');
 
-var client = eventstore.tcp({
+let client = eventstore.tcp({
                 hostname: 'localhost',
                 port: 1113,
                 credentials: {
@@ -747,10 +747,10 @@ var client = eventstore.tcp({
                 }
             });
 
-var streamName = 'TestStream';
-var enumerator = client.eventEnumerator(streamName);
+let streamName = 'TestStream';
+let enumerator = client.eventEnumerator(streamName);
 
-enumerator.next(20).then(function(result) {
+enumerator.next(20).then(result =>  {
     //Result
     // {
     //     isEndOfStream: true/false,
