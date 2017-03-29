@@ -1,3 +1,17 @@
+# 1.2.0 (2016-03-29)
+
+#### Source
+
+- Convert to ES6
+
+#### Misc.
+
+- Fix: debug logs doing unnecessary stringify, increases performance all around
+
+#### Breaking Changes
+
+- None
+
 # 1.1.26 (2017-03-27)
 
 #### TCP Client
