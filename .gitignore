@@ -36,4 +36,4 @@ yarn.lock
 .nyc_output
 
 # Distribution
-**/lib/*
+# lib/lib/*
