@@ -1,3 +1,13 @@
+# 1.2.1 (2016-03-29)
+
+#### TCP Client
+
+- Fix: filter deleted events on projected streams
+
+#### Breaking Changes
+
+- TCP: events, rename property eventStreamId to streamId
+
 # 1.2.0 (2016-03-29)
 
 #### Source
