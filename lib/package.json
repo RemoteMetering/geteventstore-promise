@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "node node_modules/mocha/bin/mocha --require babel-core/register tests/",
-    "clean": "rm -r dist/",
+    "clean": "rm -r -f dist/",
     "includeSource": "rsync -av --exclude='dist/' --exclude='node_modules' ./ dist/src",
     "compile": "npm run clean && babel --ignore node_modules,tests -D -d dist/ ./ && npm run includeSource",
     "package": "npm run compile && cd dist/ && npm pack"
