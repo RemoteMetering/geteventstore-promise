@@ -1,3 +1,9 @@
+# 1.2.2 (2016-03-29)
+
+#### TCP Client
+
+- Fix: convert metadata in mapping
+
 # 1.2.1 (2016-03-29)
 
 #### TCP Client
