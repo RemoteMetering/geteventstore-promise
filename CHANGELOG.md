@@ -1,3 +1,9 @@
+# 1.2.3 (2016-04-18)
+
+#### TCP Client
+
+- Feature: add deleteStream
+
 # 1.2.2 (2016-03-29)
 
 #### TCP Client
