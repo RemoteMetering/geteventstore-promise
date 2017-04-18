@@ -508,6 +508,7 @@ Github: [https://github.com/nicdex/eventstore-node](https://github.com/nicdex/ev
 * getEvents(streamName, startPosition, length, direction, resolveLinkTos)
 * writeEvent(streamName, eventType, data, metaData, options)
 * writeEvents(streamName, events, options)
+* deleteStream(streamName, hardDelete)
 
 # Supported Methods 
 
