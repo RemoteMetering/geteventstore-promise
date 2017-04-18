@@ -1,3 +1,9 @@
+# 1.2.5 (2016-04-18)
+
+#### TCP Client
+
+- Fix: deleting of projected streams(Expected version to any)
+
 # 1.2.4 (2016-04-18)
 
 #### TCP Client
