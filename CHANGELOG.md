@@ -1,3 +1,9 @@
+# 1.2.4 (2016-04-18)
+
+#### TCP Client
+
+- Fix: add eventId and positionCreated properties to mapped events
+
 # 1.2.3 (2016-04-18)
 
 #### TCP Client
