@@ -1,28 +1,28 @@
-# 1.2.5 (2016-04-18)
+# 1.2.5 (2017-04-18)
 
 #### TCP Client
 
 - Fix: deleting of projected streams(Expected version to any)
 
-# 1.2.4 (2016-04-18)
+# 1.2.4 (2017-04-18)
 
 #### TCP Client
 
 - Fix: add eventId and positionCreated properties to mapped events
 
-# 1.2.3 (2016-04-18)
+# 1.2.3 (2017-04-18)
 
 #### TCP Client
 
 - Feature: add deleteStream
 
-# 1.2.2 (2016-03-29)
+# 1.2.2 (2017-03-29)
 
 #### TCP Client
 
 - Fix: convert metadata in mapping
 
-# 1.2.1 (2016-03-29)
+# 1.2.1 (2017-03-29)
 
 #### TCP Client
 
@@ -32,7 +32,7 @@
 
 - TCP: events, rename property eventStreamId to streamId
 
-# 1.2.0 (2016-03-29)
+# 1.2.0 (2017-03-29)
 
 #### Source
 
