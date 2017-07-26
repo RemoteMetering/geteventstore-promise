@@ -638,7 +638,7 @@ let client = eventstore.tcp({
             });
 
         function onEventAppeared(ev) {
-            proccessedEventCount++;
+            processedEventCount++;
             return;
         };
 
@@ -650,7 +650,7 @@ let client = eventstore.tcp({
             done('should not drop');
         };
 
-client.SubscribeToStream('TestStream',onEventAppeared,onConfirm,onDropped,false);
+client.SubscribeToStream('TestStream', onEventAppeared, onConfirm, onDropped, false);
 ```
 
 ---
@@ -697,10 +697,10 @@ let client = eventstore.tcp({
                 }
             });
 
-let proccessedEventCount = 0;
+let processedEventCount = 0;
 
 function onEventAppeared(ev) {
-    proccessedEventCount++;
+    processedEventCount++;
     return;
 };
 
