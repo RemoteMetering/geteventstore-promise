@@ -1,3 +1,9 @@
+# 1.2.6 (2017-07-26)
+
+#### HTTP Client
+
+- Feature: add embed option to getEvents and getAllStreamEvents. Options: 'body' and 'rich', defaults to 'body' as per previous versions
+
 # 1.2.5 (2017-04-18)
 
 #### TCP Client
