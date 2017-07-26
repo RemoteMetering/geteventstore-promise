@@ -14,7 +14,7 @@ In your Node.js application:
 
 # Supported Methods
 
-## getEvents(streamName, startPosition, length, direction, resolveLinkTos)
+## getEvents(streamName, startPosition, length, direction, resolveLinkTos, embed)
 
 Returns events from a given stream.
 
@@ -33,6 +33,9 @@ The direction to the read the stream. Can be either 'forward' or 'backward'. Def
 
 ##### resolveLinkTos (optional)
 Resolve linked events. Defaults to *true*
+
+##### embed (optional)
+Resolve linked events. Options: 'body' and 'rich'. Defaults to *body*
 
 #### Example
 
@@ -56,7 +59,7 @@ client.getEvents('TestStream', 0, 1000, 'forward').then(events => {
 
 ---
 
-## getAllStreamEvents(streamName, chunkSize, startPosition, resolveLinkTos)
+## getAllStreamEvents(streamName, chunkSize, startPosition, resolveLinkTos, embed)
 
 Returns all events from a given stream.
 
@@ -71,6 +74,9 @@ If specified, the stream will be read starting at event number startPosition, ot
 
 ##### resolveLinkTos (optional)
 Resolve linked events. Defaults to *true*
+
+##### embed (optional)
+Resolve linked events. Options: 'body' and 'rich'. Defaults to *body*
 
 #### Example
 
