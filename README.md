@@ -505,9 +505,9 @@ Uses the `event-store-client` as authored by Carey Bishop
 
 Github: [https://github.com/x-cubed/event-store-client](https://github.com/x-cubed/event-store-client)
 
-Uses the `eventstore-node` as authored by nicdex
+Uses the `node-eventstore-client` as authored by nicdex
 
-Github: [https://github.com/nicdex/eventstore-node](https://github.com/nicdex/eventstore-node)
+Github: [https://github.com/nicdex/node-eventstore-client](https://github.com/nicdex/node-eventstore-client)
 
 # Common methods(same as HTTP, just use TCP configuration)
 
