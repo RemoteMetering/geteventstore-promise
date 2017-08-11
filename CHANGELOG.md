@@ -1,3 +1,9 @@
+# 1.2.7 (2017-08-11)
+
+#### TCP Client
+
+- Update to latest version of newly named node-eventstore-client from eventstore-node
+
 # 1.2.6 (2017-07-26)
 
 #### HTTP Client
