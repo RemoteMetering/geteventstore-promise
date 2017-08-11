@@ -1,3 +1,9 @@
+# 1.2.8 (2017-08-11)
+
+#### TCP Client
+
+- Improve tcp connection on error logging
+
 # 1.2.7 (2017-08-11)
 
 #### TCP Client
