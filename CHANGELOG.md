@@ -1,3 +1,19 @@
+# 1.3.0 (2017-10-27)
+
+#### Dependencies
+
+- Use latest packages
+- TCP: upgrade node-eventstore-client from 0.1.7 to 0.1.9
+
+#### Dev
+
+- Requires nodejs >= v.7.6
+
+#### Misc
+
+- Convert library source to use es6 modules, and async/await
+- Use babel latest preset
+
 # 1.2.8 (2017-08-11)
 
 #### TCP Client
