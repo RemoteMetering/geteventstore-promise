@@ -1,3 +1,9 @@
+# 1.3.1 (2017-10-27)
+
+#### HTTP Client
+
+- Remove redundant url parsing logic, by setting base url on client create
+
 # 1.3.0 (2017-10-27)
 
 #### Dependencies
