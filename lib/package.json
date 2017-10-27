@@ -4,10 +4,11 @@
   "description": "GetEventStore client wrapper using promises",
   "main": "index.js",
   "scripts": {
-    "test": "node node_modules/cross-env/dist/bin/cross-env NODE_ENV=test node node_modules/mocha/bin/mocha --require babel-core/register tests/",
+	"test": "node node_modules/cross-env/dist/bin/cross-env NODE_ENV=test node node_modules/mocha/bin/mocha --require babel-core/register tests/",
+	"build": "node_modules/.bin/babel --ignore node_modules,tests -D -d dist/ ./",
     "clean": "rm -r -f dist/",
     "includeSource": "rsync -av --exclude='dist/' --exclude='node_modules' ./ dist/src",
-    "compile": "npm run clean && babel --ignore node_modules,tests -D -d dist/ ./ && npm run includeSource"
+    "compile": "npm run clean && npm run build && npm run includeSource"
   },
   "repository": {
     "type": "git",
@@ -28,6 +29,7 @@
   },
   "homepage": "https://github.com/RemoteMetering/geteventstore-promise",
   "dependencies": {
+    "babel-runtime": "^6.26.0",
     "bluebird": "^3.5.1",
     "debug": "^3.1.0",
     "event-store-client": "^0.0.11",
@@ -39,11 +41,12 @@
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-latest": "^6.24.1",
     "babel-register": "^6.26.0",
-    "cross-env": "^5.0.5",
+    "cross-env": "^5.1.0",
     "mocha": "^3.5.0"
   }
 }
