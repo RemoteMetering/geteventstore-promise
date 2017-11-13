@@ -4,11 +4,11 @@
   "description": "GetEventStore client wrapper using promises",
   "main": "index.js",
   "scripts": {
-    "test": "node node_modules/cross-env/dist/bin/cross-env NODE_ENV=test node node_modules/mocha/bin/mocha --exit --require babel-core/register tests/",
-    "build": "node_modules/.bin/babel --ignore node_modules,tests -D -d dist/ ./",
+    "test": "cross-env NODE_ENV=test mocha --exit --require babel-core/register tests/",
+    "transpile": "babel --ignore node_modules,tests -D -d dist/ ./",
     "clean": "rm -r -f dist/",
     "includeSource": "rsync -av --exclude='dist/' --exclude='node_modules' ./ dist/src",
-    "compile": "npm run clean && npm run build && npm run includeSource"
+    "build": "npm run clean && npm run transpile && npm run includeSource"
   },
   "repository": {
     "type": "git",
