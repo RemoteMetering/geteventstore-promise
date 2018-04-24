@@ -1,3 +1,9 @@
+# 1.3.2 (2018-04-24)
+
+#### Dependencies
+
+- Use latest packages
+
 # 1.3.1 (2017-10-27)
 
 #### HTTP Client
