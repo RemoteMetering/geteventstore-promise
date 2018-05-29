@@ -34,20 +34,20 @@
     "bluebird": "^3.5.1",
     "debug": "^3.1.0",
     "event-store-client": "^1.0.0",
-    "lodash": "^4.17.5",
+    "lodash": "^4.17.10",
     "node-eventstore-client": "^0.2.3",
-    "request": "^2.85.0",
+    "request": "^2.87.0",
     "request-promise": "^4.2.2",
     "uuid": "^3.2.1"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.0",
+    "babel-core": "^6.26.3",
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-preset-env": "^1.6.1",
+    "babel-preset-env": "^1.7.0",
     "babel-register": "^6.26.0",
-    "cross-env": "^5.1.4",
-    "mocha": "^5.1.1"
+    "cross-env": "^5.1.6",
+    "mocha": "^5.2.0"
   }
 }
