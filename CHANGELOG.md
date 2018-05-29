@@ -1,3 +1,13 @@
+# 1.4.0 (2018-05-29)
+
+#### TCP Client
+
+- "created" property on read events will now return as a ISO-8601 string instead of date object
+
+#### Breaking Changes
+
+- TCP: To bring both HTTP and TCP read events results inline, "created" will now return as a ISO-8601 string
+
 # 1.3.3 (2018-05-29)
 
 #### HTTP Client
