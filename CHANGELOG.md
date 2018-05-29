@@ -1,3 +1,13 @@
+# 1.3.3 (2018-05-29)
+
+#### HTTP Client
+
+- Add "created" property to events on read, as TCP client returns
+
+#### Dependencies
+
+- Use latest packages
+
 # 1.3.2 (2018-04-24)
 
 #### Dependencies
