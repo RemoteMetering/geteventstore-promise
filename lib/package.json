@@ -8,7 +8,7 @@
     "test:docker": "cross-env NODE_ENV=test TEST_USE_DOCKER=true mocha --exit --require babel-core/register tests/",
     "transpile": "babel --ignore node_modules,tests -D -d dist/ ./",
     "clean": "rm -r -f dist/",
-    "includeSource": "rsync -av --exclude='dist/' --exclude='node_modules' ./ dist/src",
+    "includeSource": "rsync -av --exclude='dist/' --exclude='node_modules' ./ dist/src && cp -a ../README.md dist/",
     "build": "npm run clean && npm run transpile && npm run includeSource"
   },
   "repository": {
