@@ -1,3 +1,15 @@
+# 2.0.0 (2018-06-02)
+
+#### TCP Client
+
+- Feature - Implemented connection pooling(defaulting to 1 connection) using [https://github.com/coopernurse/node-pool](https://github.com/coopernurse/node-pool), please see config in library and pass config as "poolOptions" when initing TCP client.<br/> Example: ` {  ...,  poolOptions: { min: 1, max: 10 } } `
+
+#### Breaking Changes
+
+#### TCP Client
+
+- Replacement - 'closeConnections' with 'close', which will close connection pool
+
 # 1.4.0 (2018-05-29)
 
 #### TCP Client
