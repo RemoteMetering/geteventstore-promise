@@ -42,14 +42,14 @@ Resolve linked events. Options: 'body' and 'rich'. Defaults to *body*
 ```javascript
 const eventstore = require('geteventstore-promise');
 
-let client = eventstore.http({
-                hostname: 'localhost',
-                port: 2113,
-                credentials: {
-                    username: 'admin',
-                    password: 'changeit'
-                }
-            });
+const client = eventstore.http({
+	hostname: 'localhost',
+	port: 2113,
+	credentials: {
+		username: 'admin',
+		password: 'changeit'
+	}
+});
 
 // defaults for getEvents if not specified
 client.getEvents('TestStream', 0, 1000, 'forward').then(events => {
@@ -83,14 +83,14 @@ Resolve linked events. Options: 'body' and 'rich'. Defaults to *body*
 ```javascript
 const eventstore = require('geteventstore-promise');
 
-let client = eventstore.http({
-                hostname: 'localhost',
-                port: 2113,
-                credentials: {
-                    username: 'admin',
-                    password: 'changeit'
-                }
-            });
+const client = eventstore.http({
+	hostname: 'localhost',
+	port: 2113,
+	credentials: {
+		username: 'admin',
+		password: 'changeit'
+	}
+});
 
 client.getAllStreamEvents('TestStream').then(events => {
     console.log('Events ', JSON.stringify(events));
@@ -122,14 +122,14 @@ Any options to be specified (as documented in GetEvent Store documentation). Def
 const eventstore = require('geteventstore-promise');
 const uuid = require('uuid');
 
-let client = eventstore.http({
-                hostname: 'localhost',
-                port: 2113,
-                credentials: {
-                    username: 'admin',
-                    password: 'changeit'
-                }
-            });
+const client = eventstore.http({
+	hostname: 'localhost',
+	port: 2113,
+	credentials: {
+		username: 'admin',
+		password: 'changeit'
+	}
+});
 
 let testStream = 'TestStream-' + uuid.v4();
 
@@ -162,14 +162,14 @@ Any options to be specified (as documented in GetEvent Store documentation). Def
 const eventstore = require('geteventstore-promise');
 const uuid = require('uuid');
 
-let client = eventstore.http({
-                hostname: 'localhost',
-                port: 2113,
-                credentials: {
-                    username: 'admin',
-                    password: 'changeit'
-                }
-            });
+const client = eventstore.http({
+	hostname: 'localhost',
+	port: 2113,
+	credentials: {
+		username: 'admin',
+		password: 'changeit'
+	}
+});
 
 let events = [eventstore.eventFactory.NewEvent('TestEventType', { something: '456'})];
 
@@ -196,14 +196,14 @@ The name of the stream to check.
 ```javascript
 const eventstore = require('geteventstore-promise');
 
-let client = eventstore.http({
-                hostname: 'localhost',
-                port: 2113,
-                credentials: {
-                    username: 'admin',
-                    password: 'changeit'
-                }
-            });
+const client = eventstore.http({
+	hostname: 'localhost',
+	port: 2113,
+	credentials: {
+		username: 'admin',
+		password: 'changeit'
+	}
+});
 
 let projectionStreamName = 'ExistingProjectionStreamName';
 
@@ -229,14 +229,14 @@ Hard delete the stream, defaults to false
 ```javascript
 const eventstore = require('geteventstore-promise');
 
-let client = eventstore.http({
-                hostname: 'localhost',
-                port: 2113,
-                credentials: {
-                    username: 'admin',
-                    password: 'changeit'
-                }
-            });
+const client = eventstore.http({
+	hostname: 'localhost',
+	port: 2113,
+	credentials: {
+		username: 'admin',
+		password: 'changeit'
+	}
+});
 
 let streamName = 'ExistingStreamName';
 
@@ -258,14 +258,14 @@ Performs Ping command, rejects promise if unsuccessful
 ```javascript
 const eventstore = require('geteventstore-promise');
 
-let client = eventstore.http({
-                hostname: 'localhost',
-                port: 2113,
-                credentials: {
-                    username: 'admin',
-                    password: 'changeit'
-                }
-            });
+const client = eventstore.http({
+	hostname: 'localhost',
+	port: 2113,
+	credentials: {
+		username: 'admin',
+		password: 'changeit'
+	}
+});
 
 client.ping().then(() => {
     console.log('EventStore is OK');
@@ -424,14 +424,14 @@ The name of the projection to get state of.
 ```javascript
 const eventstore = require('geteventstore-promise');
 
-let client = eventstore.http({
-                hostname: 'localhost',
-                port: 2113,
-                credentials: {
-                    username: 'admin',
-                    password: 'changeit'
-                }
-            });
+const client = eventstore.http({
+	hostname: 'localhost',
+	port: 2113,
+	credentials: {
+		username: 'admin',
+		password: 'changeit'
+	}
+});
 
 
 client.projections.getState('TestProjection').then(projectionState =>  {
@@ -454,14 +454,14 @@ If the promise is fulfilled then the scavenge command has been sent, it does not
 ```javascript
 const eventstore = require('geteventstore-promise');
 
-let client = eventstore.http({
-                hostname: 'localhost',
-                port: 2113,
-                credentials: {
-                    username: 'admin',
-                    password: 'changeit'
-                }
-            });
+const client = eventstore.http({
+	hostname: 'localhost',
+	port: 2113,
+	credentials: {
+		username: 'admin',
+		password: 'changeit'
+	}
+});
 
 client.admin.scavenge().then(() => {
     console.log('Scavenge command sent ');
@@ -481,14 +481,14 @@ If the promise is fulfilled then the shutdown command has been sent, it does not
 ```javascript
 const eventstore = require('geteventstore-promise');
 
-let client = eventstore.http({
-                hostname: 'localhost',
-                port: 2113,
-                credentials: {
-                    username: 'admin',
-                    password: 'changeit'
-                }
-            });
+const client = eventstore.http({
+	hostname: 'localhost',
+	port: 2113,
+	credentials: {
+		username: 'admin',
+		password: 'changeit'
+	}
+});
 
 client.admin.shutdown().then(() => {
     console.log('Shutdown command sent ');
@@ -501,13 +501,30 @@ client.admin.shutdown().then(() => {
 
 # Acknowledgements
 
-Uses the `event-store-client` as authored by Carey Bishop
+Uses the `event-store-client` as authored by Carey Bishop for subscriptions
 
 Github: [https://github.com/x-cubed/event-store-client](https://github.com/x-cubed/event-store-client)
 
 Uses the `node-eventstore-client` as authored by nicdex
 
 Github: [https://github.com/nicdex/node-eventstore-client](https://github.com/nicdex/node-eventstore-client)
+
+# Config example
+
+```javascript
+const client = eventstore.tcp({
+	hostname: 'localhost',
+	port: 1113,
+	credentials: {
+		username: 'admin',
+		password: 'changeit'
+	},
+	poolOptions: {
+		min: 1,
+		max: 10
+	}
+});
+```
 
 # Common methods(same as HTTP, just use TCP configuration)
 
@@ -551,14 +568,14 @@ Resolve linked events. Defaults to *true*
 ```javascript
 const eventstore = require('geteventstore-promise');
 
-let client = eventstore.tcp({
-                hostname: 'localhost',
-                port: 1113,
-                credentials: {
-                    username: 'admin',
-                    password: 'changeit'
-                }
-            });
+const client = eventstore.tcp({
+	hostname: 'localhost',
+	port: 1113,
+	credentials: {
+		username: 'admin',
+		password: 'changeit'
+	}
+});
 
 client.getEventsByType('TestStream', ['TestType']).then(events => {
     console.log('Events ', JSON.stringify(events));
@@ -588,14 +605,14 @@ Resolve linked events. Defaults to *true*
 ```javascript
 const eventstore = require('geteventstore-promise');
 
-let client = eventstore.tcp({
-                hostname: 'localhost',
-                port: 1113,
-                credentials: {
-                    username: 'admin',
-                    password: 'changeit'
-                }
-            });
+const client = eventstore.tcp({
+	hostname: 'localhost',
+	port: 1113,
+	credentials: {
+		username: 'admin',
+		password: 'changeit'
+	}
+});
 
 client.getAllStreamEvents('TestStream').then(events => {
     console.log('Events ', JSON.stringify(events));
@@ -628,14 +645,14 @@ Resolve linked events
 ```javascript
 const eventstore = require('geteventstore-promise');
 
-let client = eventstore.tcp({
-                hostname: 'localhost',
-                port: 1113,
-                credentials: {
-                    username: 'admin',
-                    password: 'changeit'
-                }
-            });
+const client = eventstore.tcp({
+	hostname: 'localhost',
+	port: 1113,
+	credentials: {
+		username: 'admin',
+		password: 'changeit'
+	}
+});
 
         function onEventAppeared(ev) {
             processedEventCount++;
@@ -688,14 +705,14 @@ debug - in debug mode(true/false)
 ```javascript
 const eventstore = require('geteventstore-promise');
 
-let client = eventstore.tcp({
-                hostname: 'localhost',
-                port: 1113,
-                credentials: {
-                    username: 'admin',
-                    password: 'changeit'
-                }
-            });
+const client = eventstore.tcp({
+	hostname: 'localhost',
+	port: 1113,
+	credentials: {
+		username: 'admin',
+		password: 'changeit'
+	}
+});
 
 let processedEventCount = 0;
 
@@ -745,14 +762,14 @@ The number of events to read per enumeration.
 ```javascript
 const eventstore = require('geteventstore-promise');
 
-let client = eventstore.tcp({
-                hostname: 'localhost',
-                port: 1113,
-                credentials: {
-                    username: 'admin',
-                    password: 'changeit'
-                }
-            });
+const client = eventstore.tcp({
+	hostname: 'localhost',
+	port: 1113,
+	credentials: {
+		username: 'admin',
+		password: 'changeit'
+	}
+});
 
 let streamName = 'TestStream';
 let enumerator = client.eventEnumerator(streamName);
