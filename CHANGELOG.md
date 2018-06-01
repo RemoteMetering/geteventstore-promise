@@ -8,7 +8,7 @@
 
 #### TCP Client
 
-- Replacement - 'closeConnections' with 'close', which will close all down connection pool
+- Replacement - 'closeConnections' with 'close', which will close connection pool
 
 # 1.4.0 (2018-05-29)
 
