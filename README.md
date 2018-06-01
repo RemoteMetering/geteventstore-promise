@@ -535,11 +535,8 @@ const client = eventstore.tcp({
 
 # Supported Methods 
 
-## closeConnections()
-Closes all active connections.
-
-## closeConnections()
-Returns all active connections.
+## close()
+Close all active connections.
 
 ## getEventsByType(streamName, eventTypes, startPosition, length, direction, resolveLinkTos)
 
