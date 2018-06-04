@@ -1,3 +1,9 @@
+# 2.0.1 (2018-06-04)
+
+#### TCP Client
+
+- Fix - edge case when eventNumber is not coming back as a long
+
 # 2.0.0 (2018-06-02)
 
 #### TCP Client
