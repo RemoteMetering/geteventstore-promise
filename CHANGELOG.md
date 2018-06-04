@@ -13,6 +13,7 @@
 - Replacement - 'closeConnections' with 'close', which will close connection pool
 - Subscriptions - now return subscription object from tcp library instead of connection
 - Subscriptions - now return events in same format as normal getEvents
+- Subscriptions - onDropped arguments -> onDropped(subscription, reason, error)
 - subscribeToStream - no longer has "onConfirm" handler
 
 # 1.4.0 (2018-05-29)

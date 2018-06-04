@@ -649,8 +649,8 @@ function onEventAppeared(ev) {
 	return;
 };
 
-function onDropped(reason) {
-	done('should not drop');
+function onDropped(subscription, reason, error) {
+	
 };
 
 client.SubscribeToStream('TestStream', onEventAppeared, onDropped, false);
@@ -711,8 +711,8 @@ function onLiveProcessingStarted() {
     return;
 }
 
-function onDropped(reason) {
-    done('should not drop');
+function onDropped(subscription, reason, error) {
+    
 };
 
 client.SubscribeToStreamFrom('TestStream', 0, onEventAppeared, onLiveProcessingStarted,onDropped);
