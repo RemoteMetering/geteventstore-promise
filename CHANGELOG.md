@@ -4,11 +4,17 @@
 
 - Feature - Implemented connection pooling(defaulting to 1 connection) using [https://github.com/coopernurse/node-pool](https://github.com/coopernurse/node-pool), please see config in library and pass config as "poolOptions" when initing TCP client.<br/> Example: ` {  ...,  poolOptions: { min: 1, max: 10 } } `
 
+- Change - subscriptions now use [https://github.com/nicdex/node-eventstore-client](https://github.com/nicdex/node-eventstore-client) for subscriptions - Causes breaking changes
+
 #### Breaking Changes
 
 #### TCP Client
 
 - Replacement - 'closeConnections' with 'close', which will close connection pool
+- Subscriptions - now return subscription object from tcp library instead of connection
+- Subscriptions - now return events in same format as normal getEvents
+- Subscriptions - onDropped arguments -> onDropped(subscription, reason, error)
+- subscribeToStream - no longer has "onConfirm" handler
 
 # 1.4.0 (2018-05-29)
 
