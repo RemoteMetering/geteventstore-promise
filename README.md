@@ -501,10 +501,6 @@ client.admin.shutdown().then(() => {
 
 # Acknowledgements
 
-Uses the `event-store-client` as authored by Carey Bishop for subscriptions
-
-Github: [https://github.com/x-cubed/event-store-client](https://github.com/x-cubed/event-store-client)
-
 Uses the `node-eventstore-client` as authored by nicdex
 
 Github: [https://github.com/nicdex/node-eventstore-client](https://github.com/nicdex/node-eventstore-client)
@@ -618,7 +614,7 @@ client.getAllStreamEvents('TestStream').then(events => {
 
 ---
 
-## SubscribeToStream(streamName, onEventAppeared, onConfirm, onDropped, resolveLinkTos)
+## SubscribeToStream(streamName, onEventAppeared, onDropped, resolveLinkTos)
 
 Subscribes to a Stream (live subscription)
 
@@ -626,9 +622,6 @@ Subscribes to a Stream (live subscription)
 The name of the stream to read from.
 
 ##### onEventAppeared (optional)
-function
-
-##### onConfirm
 function
 
 ##### onDropped
@@ -651,20 +644,16 @@ const client = eventstore.tcp({
 	}
 });
 
-        function onEventAppeared(ev) {
-            processedEventCount++;
-            return;
-        };
+function onEventAppeared(ev) {
+	processedEventCount++;
+	return;
+};
 
-        function onConfirm() {
-            return;
-        }
+function onDropped(reason) {
+	done('should not drop');
+};
 
-        function onDropped(reason) {
-            done('should not drop');
-        };
-
-client.SubscribeToStream('TestStream', onEventAppeared, onConfirm, onDropped, false);
+client.SubscribeToStream('TestStream', onEventAppeared, onDropped, false);
 ```
 
 ---
