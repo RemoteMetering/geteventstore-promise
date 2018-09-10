@@ -131,7 +131,7 @@ const client = eventstore.http({
 	}
 });
 
-let testStream = 'TestStream-' + uuid.v4();
+const testStream = 'TestStream-' + uuid.v4();
 
 client.writeEvent(testStream, 'TestEventType', { something: '123' }).then(() => {
     return client.getEvents(testStream).then(events => {
@@ -171,9 +171,9 @@ const client = eventstore.http({
 	}
 });
 
-let events = [eventstore.eventFactory.NewEvent('TestEventType', { something: '456'})];
+const events = [eventstore.eventFactory.NewEvent('TestEventType', { something: '456'})];
 
-let testStream = 'TestStream-' + uuid.v4();
+const testStream = 'TestStream-' + uuid.v4();
 
 client.writeEvents(testStream, events).then(() => {
     return client.getEvents(testStream).then(events => {
@@ -205,8 +205,7 @@ const client = eventstore.http({
 	}
 });
 
-let projectionStreamName = 'ExistingProjectionStreamName';
-
+const projectionStreamName = 'ExistingProjectionStreamName';
 client.checkStreamExists(projectionStreamName).then(exists =>  {
     console.log('Exists ', exists);
 });
@@ -238,8 +237,7 @@ const client = eventstore.http({
 	}
 });
 
-let streamName = 'ExistingStreamName';
-
+const streamName = 'ExistingStreamName';
 client.delete(streamName).then(() => {
     console.log('Stream deleted');
 }).catch(err => {
@@ -757,9 +755,8 @@ const client = eventstore.tcp({
 	}
 });
 
-let streamName = 'TestStream';
-let enumerator = client.eventEnumerator(streamName);
-
+const streamName = 'TestStream';
+const enumerator = client.eventEnumerator(streamName);
 enumerator.next(20).then(result =>  {
     //Result
     // {
