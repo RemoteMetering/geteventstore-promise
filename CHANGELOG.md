@@ -1,3 +1,13 @@
+# 2.0.2 (2018-09-11)
+
+#### TCP Client
+
+- Feature - Add support for connecting to a cluster using gossip seeds or dns discovery ([https://github.com/RemoteMetering/geteventstore-promise#config-example))
+
+#### Misc
+
+- Update dependencies
+
 # 2.0.1 (2018-06-04)
 
 #### TCP Client

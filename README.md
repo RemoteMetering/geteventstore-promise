@@ -1,7 +1,7 @@
 # geteventstore-promise
 A Node.js Event Store client API wrapper using promises
 
-[![NPM](https://nodei.co/npm/geteventstore-promise.png?stars&downloads&downloadRank)](https://nodei.co/npm/geteventstore-promise/) [![NPM](https://nodei.co/npm-dl/geteventstore-promise.png?months=3&height=3)](https://nodei.co/npm/geteventstore-promise/)
+[![NPM](https://nodei.co/npm/geteventstore-promise.png?stars&downloads&downloadRank)](https://nodei.co/npm/geteventstore-promise/)
 
 # Installation
 At the command-line:
@@ -9,6 +9,19 @@ At the command-line:
 
 In your Node.js application:
 > const eventstore = require('geteventstore-promise');
+
+# Running Tests
+#### Using executable
+
+Set the ES_EXECUTABLE environment variable to point to the eventstore executable
+> ES_EXECUTABLE=/usr/bin/eventstored yarn test
+
+#### Using docker (cluster tests will only run this mode)
+
+> docker pull eventstore/eventstore
+
+> yarn test:docker
+
 
 # HTTP Client
 
@@ -131,7 +144,7 @@ const client = eventstore.http({
 	}
 });
 
-let testStream = 'TestStream-' + uuid.v4();
+const testStream = 'TestStream-' + uuid.v4();
 
 client.writeEvent(testStream, 'TestEventType', { something: '123' }).then(() => {
     return client.getEvents(testStream).then(events => {
@@ -171,9 +184,9 @@ const client = eventstore.http({
 	}
 });
 
-let events = [eventstore.eventFactory.NewEvent('TestEventType', { something: '456'})];
+const events = [eventstore.eventFactory.NewEvent('TestEventType', { something: '456'})];
 
-let testStream = 'TestStream-' + uuid.v4();
+const testStream = 'TestStream-' + uuid.v4();
 
 client.writeEvents(testStream, events).then(() => {
     return client.getEvents(testStream).then(events => {
@@ -205,8 +218,7 @@ const client = eventstore.http({
 	}
 });
 
-let projectionStreamName = 'ExistingProjectionStreamName';
-
+const projectionStreamName = 'ExistingProjectionStreamName';
 client.checkStreamExists(projectionStreamName).then(exists =>  {
     console.log('Exists ', exists);
 });
@@ -238,8 +250,7 @@ const client = eventstore.http({
 	}
 });
 
-let streamName = 'ExistingStreamName';
-
+const streamName = 'ExistingStreamName';
 client.delete(streamName).then(() => {
     console.log('Stream deleted');
 }).catch(err => {
@@ -516,7 +527,45 @@ const client = eventstore.tcp({
 		password: 'changeit'
 	},
 	poolOptions: {
-		min: 1,
+		min: 0,
+		max: 10
+	}
+});
+```
+
+# Config example - Clustering - Gossip Seeds
+
+```javascript
+const client = eventstore.tcp({
+	gossipSeeds: [
+		{ hostname: '192.168.0.10', port: 2113 },
+		{ hostname: '192.168.0.11', port: 2113 },
+		{ hostname: '192.168.0.12', port: 2113 }
+	],
+	credentials: {
+		username: 'admin',
+		password: 'changeit'
+	},
+	poolOptions: {
+		min: 0,
+		max: 10
+	}
+});
+```
+
+# Config example - Clustering - DNS Discovery
+
+```javascript
+const client = eventstore.tcp({
+	protocol: 'discover',
+	hostname: 'my.host',
+	port: 2113,
+	credentials: {
+		username: 'admin',
+		password: 'changeit'
+	},
+	poolOptions: {
+		min: 0,
 		max: 10
 	}
 });
@@ -757,9 +806,8 @@ const client = eventstore.tcp({
 	}
 });
 
-let streamName = 'TestStream';
-let enumerator = client.eventEnumerator(streamName);
-
+const streamName = 'TestStream';
+const enumerator = client.eventEnumerator(streamName);
 enumerator.next(20).then(result =>  {
     //Result
     // {
