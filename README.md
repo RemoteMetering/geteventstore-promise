@@ -1,7 +1,7 @@
 # geteventstore-promise
 A Node.js Event Store client API wrapper using promises
 
-[![NPM](https://nodei.co/npm/geteventstore-promise.png?stars&downloads&downloadRank)](https://nodei.co/npm/geteventstore-promise/) [![NPM](https://nodei.co/npm-dl/geteventstore-promise.png?months=3&height=3)](https://nodei.co/npm/geteventstore-promise/)
+[![NPM](https://nodei.co/npm/geteventstore-promise.png?stars&downloads&downloadRank)](https://nodei.co/npm/geteventstore-promise/)
 
 # Installation
 At the command-line:
@@ -514,7 +514,45 @@ const client = eventstore.tcp({
 		password: 'changeit'
 	},
 	poolOptions: {
-		min: 1,
+		min: 0,
+		max: 10
+	}
+});
+```
+
+# Config example - Clustering - Gossip Seeds
+
+```javascript
+const client = eventstore.tcp({
+	gossipSeeds: [
+		{ hostname: '192.168.0.10', port: 2113 },
+		{ hostname: '192.168.0.11', port: 2113 },
+		{ hostname: '192.168.0.12', port: 2113 }
+	],
+	credentials: {
+		username: 'admin',
+		password: 'changeit'
+	},
+	poolOptions: {
+		min: 0,
+		max: 10
+	}
+});
+```
+
+# Config example - Clustering - DNS Discovery
+
+```javascript
+const client = eventstore.tcp({
+	protocol: 'discover',
+	hostname: 'my.host',
+	port: 2113,
+	credentials: {
+		username: 'admin',
+		password: 'changeit'
+	},
+	poolOptions: {
+		min: 0,
 		max: 10
 	}
 });
