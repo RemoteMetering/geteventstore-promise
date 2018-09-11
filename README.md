@@ -10,6 +10,19 @@ At the command-line:
 In your Node.js application:
 > const eventstore = require('geteventstore-promise');
 
+# Running Tests
+#### Using executable
+
+Set the ES_EXECUTABLE environment variable to point to the eventstore executable
+> ES_EXECUTABLE=/usr/bin/eventstored yarn test
+
+#### Using docker (cluster tests will only run this mode)
+
+> docker pull eventstore/eventstore
+
+> yarn test:docker
+
+
 # HTTP Client
 
 # Supported Methods
