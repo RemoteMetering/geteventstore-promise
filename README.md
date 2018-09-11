@@ -16,7 +16,7 @@ In your Node.js application:
 Set the ES_EXECUTABLE environment variable to point to the eventstore executable
 > ES_EXECUTABLE=/usr/bin/eventstored yarn test
 
-#### Using docker (cluster tests will only run this mode)
+#### Using docker (cluster tests will only run in this mode)
 
 > docker pull eventstore/eventstore
 
