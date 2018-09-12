@@ -294,8 +294,8 @@ client.ping().then(() => {
 * assert(subscriptionName, streamName, options)
 * getEvents(subscriptionName, streamName, count, embed)
 * getSubscriptionInfo(subscriptionName, streamName)
-* getStreamSubsciptionsInfo(streamName)
-* getAllSubsciptionsInfo()
+* getStreamSubscriptionsInfo(streamName)
+* getAllSubscriptionsInfo()
 * remove(subscriptionName, streamName)
 
 ## persistentSubscriptions.assert(subscriptionName, streamName, options)
@@ -308,7 +308,7 @@ The name of the subscription group
 The stream name
 
 #### options(optional)
-The mode of the projection to create, defaults to 'continous'
+The mode of the projection to create, defaults to 'continuous'
 
 ##### resolveLinktos
 Tells the subscription to resolve link events.
@@ -405,13 +405,13 @@ Get all subscriptions info
     The content of the projection
 
     #### mode(optional)
-    The mode of the projection to create, defaults to 'continous'
+    The mode of the projection to create, defaults to 'continuous'
 
     #### enabled(optional)
     Projection enabled by default, defaults to true
 
     #### checkpointsEnabled(optional)
-    Should enable checkpoints, defaults to true for continous projections and false for onetime projections
+    Should enable checkpoints, defaults to true for continuous projections and false for onetime projections
 
     #### emitEnabled(optional)
     Should enable emitting, defaults to false
@@ -715,7 +715,7 @@ Subscribes to a Stream from a given event number (Catch up Subscription)
 The name of the stream to read from.
 
 ##### fromEventNumber
-The event number to subribe from
+The event number to subscribe from
 
 ##### onEventAppeared (optional)
 function
