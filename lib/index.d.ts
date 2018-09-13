@@ -13,11 +13,6 @@ import {
 	Pool as TCPPool 
 } from "generic-pool";
 
-export class EventFactory {
-	constructor();
-	newEvent(eventType: string, data: object, metadata: object, eventId: string): NewEvent;
-}
-
 export class NewEvent {
 	eventId: string;
 	eventType: string;
@@ -131,9 +126,13 @@ export class EventEnumeratorResult {
 	events: Event[];
 }
 
+export class EventFactory {
+	constructor();
+	newEvent(eventType: string, data: object, metadata: object, eventId: string): NewEvent;
+}
+
 export class HTTPClient {
 	constructor(config: HTTPConfig);
-
 	checkStreamExists(streamName: string): Promise<boolean>;
 	writeEvent(streamName: string, eventType: string, data: object, metaData?: object, options?: HTTPWriteEventOptions): Promise<void>;
 	writeEvents(streamName: string, events: NewEvent[], options?: HTTPWriteEventOptions): Promise<void>;
@@ -170,7 +169,6 @@ export class HTTPClient {
 
 export class TCPClient {
 	constructor(config: TCPConfig);
-
 	checkStreamExists(streamName: string): Promise<boolean>;
 	writeEvent(streamName: string, eventType: string, data: object, metaData?: object, options?: TCPWriteEventOptions): Promise<TCPWriteResult>;
 	writeEvents(streamName: string, events: NewEvent[], options?: TCPWriteEventsOptions): Promise<TCPWriteResult>;
@@ -184,7 +182,7 @@ export class TCPClient {
 		previous(length: number): Promise<EventEnumeratorResult>;
 		next(length: number): Promise<EventEnumeratorResult>;
 	}
-	subscribeToStream(streamName: string, onEventAppeared?: EventAppearedCallback<EventStoreCatchUpSubscription>, onDropped?: SubscriptionDroppedCallback<EventStoreSubscription>, resolveLinkTos?: boolean): Promise<EventStoreSubscription>;
+	subscribeToStream(streamName: string, onEventAppeared?: EventAppearedCallback<EventStoreSubscription>, onDropped?: SubscriptionDroppedCallback<EventStoreSubscription>, resolveLinkTos?: boolean): Promise<EventStoreSubscription>;
 	subscribeToStreamFrom(streamName: string, fromEventNumber?: number, onEventAppeared?: EventAppearedCallback<EventStoreCatchUpSubscription>, onLiveProcessingStarted?: LiveProcessingStartedCallback, onDropped?: SubscriptionDroppedCallback<EventStoreCatchUpSubscription>, settings?: SubscribeToStreamFromSettings): Promise<EventStoreCatchUpSubscription>;
 	close(): Promise<void>;
 	getPool(): Promise<TCPPool>;
