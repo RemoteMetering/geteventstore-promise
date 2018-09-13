@@ -65,9 +65,7 @@ const client = new EventStore.HTTPClient({
 });
 
 // defaults for getEvents if not specified
-client.getEvents('TestStream', 0, 1000, 'forward').then(events => {
-    console.log('Events ', JSON.stringify(events));
-});
+const events = await client.getEvents('TestStream', 0, 1000, 'forward')
 ```
 
 ---
@@ -105,9 +103,7 @@ const client = new EventStore.HTTPClient({
 	}
 });
 
-client.getAllStreamEvents('TestStream').then(events => {
-    console.log('Events ', JSON.stringify(events));
-});
+const allStreamEvents = await client.getAllStreamEvents('TestStream');
 ```
 
 ## writeEvent(streamName, eventType, data, metaData, options)
@@ -144,13 +140,8 @@ const client = new EventStore.HTTPClient({
 	}
 });
 
-const testStream = 'TestStream-' + uuid.v4();
-
-client.writeEvent(testStream, 'TestEventType', { something: '123' }).then(() => {
-    return client.getEvents(testStream).then(events => {
-        console.log('Events ', JSON.stringify(events));
-    });
-});
+await client.writeEvent('TestStream-' + uuid.v4(), 'TestEventType', { something: '123' });
+const events = await client.getEvents(testStream);
 ```
 
 ---
@@ -186,13 +177,8 @@ const client = new EventStore.HTTPClient({
 
 const events = [new EventStore.EventFactory().newEvent('TestEventType', { something: '456'})];
 
-const testStream = 'TestStream-' + uuid.v4();
-
-client.writeEvents(testStream, events).then(() => {
-    return client.getEvents(testStream).then(events => {
-        console.log('Events ', JSON.stringify(events));
-    });
-});
+await client.writeEvents('TestStream-' + uuid.v4(), events);
+const events = await client.getEvents(testStream);
 ```
 
 ---
@@ -218,10 +204,7 @@ const client = new EventStore.HTTPClient({
 	}
 });
 
-const projectionStreamName = 'ExistingProjectionStreamName';
-client.checkStreamExists(projectionStreamName).then(exists =>  {
-    console.log('Exists ', exists);
-});
+const exists = await client.checkStreamExists('ExistingProjectionStreamName');
 ```
 
 ---
@@ -250,13 +233,12 @@ const client = new EventStore.HTTPClient({
 	}
 });
 
-const streamName = 'ExistingStreamName';
-client.delete(streamName).then(() => {
-    console.log('Stream deleted');
-}).catch(err => {
-    // should only happen if something went wrong OR the stream does not exist
+try {
+	await client.delete('ExistingStreamName');
+} catch(err) {
+	// should only happen if something went wrong or the stream does not exist
     console.log(err);
-});
+}
 ```
 ---
 
@@ -278,12 +260,7 @@ const client = new EventStore.HTTPClient({
 	}
 });
 
-client.ping().then(() => {
-    console.log('EventStore is OK');
-}).catch(err => {
-    // should only happen if something went wrong
-    console.log(err);
-});
+await client.ping();
 ```
 ---
 
@@ -444,10 +421,7 @@ const client = new EventStore.HTTPClient({
 	}
 });
 
-
-client.projections.getState('TestProjection').then(projectionState =>  {
-    console.log('Projection State ', JSON.stringify(projectionState));
-});
+const projectionState = await client.projections.getState('TestProjection');
 ```
 
 ---
@@ -474,9 +448,8 @@ const client = new EventStore.HTTPClient({
 	}
 });
 
-client.admin.scavenge().then(() => {
-    console.log('Scavenge command sent ');
-});
+await client.admin.scavenge();
+console.log('Scavenge command sent!');
 ```
 
 ---
@@ -501,9 +474,8 @@ const client = new EventStore.HTTPClient({
 	}
 });
 
-client.admin.shutdown().then(() => {
-    console.log('Shutdown command sent ');
-});
+await client.admin.shutdown();
+console.log('Shutdown command sent!');
 ```
 
 ---
@@ -619,9 +591,7 @@ const client = new EventStore.TCPClient({
 	}
 });
 
-client.getEventsByType('TestStream', ['TestType']).then(events => {
-    console.log('Events ', JSON.stringify(events));
-});
+const eventsByType = await client.getEventsByType('TestStream', ['TestType']);
 ```
 
 ---
@@ -656,14 +626,12 @@ const client = new EventStore.TCPClient({
 	}
 });
 
-client.getAllStreamEvents('TestStream').then(events => {
-    console.log('Events ', JSON.stringify(events));
-});
+const allStreamEvents = await client.getAllStreamEvents('TestStream');
 ```
 
 ---
 
-## SubscribeToStream(streamName, onEventAppeared, onDropped, resolveLinkTos)
+## subscribeToStream(streamName, onEventAppeared, onDropped, resolveLinkTos)
 
 Subscribes to a Stream (live subscription)
 
@@ -702,12 +670,12 @@ function onDropped(subscription, reason, error) {
 	
 };
 
-client.SubscribeToStream('TestStream', onEventAppeared, onDropped, false);
+await client.subscribeToStream('TestStream', onEventAppeared, onDropped, false);
 ```
 
 ---
 
-## SubscribeToStreamFrom(streamName, fromEventNumber, onEventAppeared, onLiveProcessingStarted, onDropped, settings)
+## subscribeToStreamFrom(streamName, fromEventNumber, onEventAppeared, onLiveProcessingStarted, onDropped, settings)
 
 Subscribes to a Stream from a given event number (Catch up Subscription)
 
@@ -764,7 +732,7 @@ function onDropped(subscription, reason, error) {
     
 };
 
-client.SubscribeToStreamFrom('TestStream', 0, onEventAppeared, onLiveProcessingStarted,onDropped);
+await client.subscribeToStreamFrom('TestStream', 0, onEventAppeared, onLiveProcessingStarted,onDropped);
 ```
 
 ---
@@ -808,14 +776,12 @@ const client = new EventStore.TCPClient({
 
 const streamName = 'TestStream';
 const enumerator = client.eventEnumerator(streamName);
-enumerator.next(20).then(result =>  {
-    //Result
-    // {
-    //     isEndOfStream: true/false,
-    //     events: [ ..., ..., ... ]
-    // }
-});
-
+const result = await enumerator.next(20);
+//result
+// {
+//     isEndOfStream: true/false,
+//     events: [ ..., ..., ... ]
+// }
 ```
 
 ---
