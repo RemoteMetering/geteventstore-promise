@@ -1,3 +1,38 @@
+# 3.0.0 (2018-09-13)
+
+#### Features
+
+- Typescript definitions added
+- Package exports now exposed as classes
+
+	##### Previous Usage (Deprecated)
+	```javascript
+	const eventstore = require('geteventstore-promise');
+	const client = eventstore.http(...config);
+	const tcp = eventstore.tcp(...config);
+	const newEvent = eventstore.eventFactory.NewEvent(...args);
+	```
+
+	##### New Usage
+	```javascript
+	const EventStore = require('geteventstore-promise');
+	const client = new EventStore.HTTPClient(...config);
+	const tcp = new EventStore.TCPClient(...config);
+	const newEvent = new EventStore.EventFactory().newEvent(...args);
+	```
+
+#### Breaking Changes
+
+#### HTTP Client
+
+- Errors returned from HTTP calls might differ slightly from removed request-promise package vs the new axios implementation
+
+#### Dependencies
+
+- Remove - bluebird
+- Remove - lodash
+- Replace - request-promise with axios
+
 # 2.0.2 (2018-09-11)
 
 #### TCP Client
