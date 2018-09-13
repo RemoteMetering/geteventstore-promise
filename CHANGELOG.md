@@ -21,17 +21,21 @@
 	const newEvent = new EventStore.EventFactory().newEvent(...args);
 	```
 
-#### Breaking Changes
-
-#### HTTP Client
-
-- Errors returned from HTTP calls might differ slightly from removed request-promise package vs the new axios implementation
-
 #### Dependencies
 
 - Remove - bluebird
 - Remove - lodash
 - Replace - request-promise with axios
+
+#### Breaking Changes
+
+##### General
+
+- Promises - '.finally()' will not be available anymore due to the removal of bluebird
+
+##### HTTP Client
+
+- Errors returned from HTTP calls might differ slightly from removed request-promise package vs the new axios implementation
 
 # 2.0.2 (2018-09-11)
 
