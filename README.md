@@ -8,7 +8,7 @@ At the command-line:
 > npm install geteventstore-promise
 
 In your Node.js application:
-> const eventstore = require('geteventstore-promise');
+> const EventStore = require('geteventstore-promise');
 
 # Running Tests
 #### Using executable
@@ -53,9 +53,9 @@ Resolve linked events. Options: 'body' and 'rich'. Defaults to *body*
 #### Example
 
 ```javascript
-const eventstore = require('geteventstore-promise');
+const EventStore = require('geteventstore-promise');
 
-const client = eventstore.http({
+const client = new EventStore.HTTPClient({
 	hostname: 'localhost',
 	port: 2113,
 	credentials: {
@@ -94,9 +94,9 @@ Resolve linked events. Options: 'body' and 'rich'. Defaults to *body*
 #### Example
 
 ```javascript
-const eventstore = require('geteventstore-promise');
+const EventStore = require('geteventstore-promise');
 
-const client = eventstore.http({
+const client = new EventStore.HTTPClient({
 	hostname: 'localhost',
 	port: 2113,
 	credentials: {
@@ -132,10 +132,10 @@ Any options to be specified (as documented in GetEvent Store documentation). Def
 #### Example
 
 ```javascript
-const eventstore = require('geteventstore-promise');
+const EventStore = require('geteventstore-promise');
 const uuid = require('uuid');
 
-const client = eventstore.http({
+const client = new EventStore.HTTPClient({
 	hostname: 'localhost',
 	port: 2113,
 	credentials: {
@@ -164,7 +164,7 @@ The name of the stream to read from.
 
 ##### events
 The array of Event Store ready events to save.
-You can call ```eventstore.eventFactory.NewEvent('TestType', {something: 123});``` to get an Event Store ready event.
+You can call ```new EventStore.EventFactory().newEvent('TestType', {something: 123});``` to get an Event Store ready event.
 
 ##### options (optional)
 Any options to be specified (as documented in GetEvent Store documentation). Default is simply *ExpectedVersion = -2*.
@@ -172,10 +172,10 @@ Any options to be specified (as documented in GetEvent Store documentation). Def
 #### Example
 
 ```javascript
-const eventstore = require('geteventstore-promise');
+const EventStore = require('geteventstore-promise');
 const uuid = require('uuid');
 
-const client = eventstore.http({
+const client = new EventStore.HTTPClient({
 	hostname: 'localhost',
 	port: 2113,
 	credentials: {
@@ -184,7 +184,7 @@ const client = eventstore.http({
 	}
 });
 
-const events = [eventstore.eventFactory.NewEvent('TestEventType', { something: '456'})];
+const events = [new EventStore.EventFactory().newEvent('TestEventType', { something: '456'})];
 
 const testStream = 'TestStream-' + uuid.v4();
 
@@ -207,9 +207,9 @@ The name of the stream to check.
 #### Example
 
 ```javascript
-const eventstore = require('geteventstore-promise');
+const EventStore = require('geteventstore-promise');
 
-const client = eventstore.http({
+const client = new EventStore.HTTPClient({
 	hostname: 'localhost',
 	port: 2113,
 	credentials: {
@@ -239,9 +239,9 @@ Hard delete the stream, defaults to false
 #### Example
 
 ```javascript
-const eventstore = require('geteventstore-promise');
+const EventStore = require('geteventstore-promise');
 
-const client = eventstore.http({
+const client = new EventStore.HTTPClient({
 	hostname: 'localhost',
 	port: 2113,
 	credentials: {
@@ -267,9 +267,9 @@ Performs Ping command, rejects promise if unsuccessful
 #### Example
 
 ```javascript
-const eventstore = require('geteventstore-promise');
+const EventStore = require('geteventstore-promise');
 
-const client = eventstore.http({
+const client = new EventStore.HTTPClient({
 	hostname: 'localhost',
 	port: 2113,
 	credentials: {
@@ -433,9 +433,9 @@ The name of the projection to get state of.
 #### Example
 
 ```javascript
-const eventstore = require('geteventstore-promise');
+const EventStore = require('geteventstore-promise');
 
-const client = eventstore.http({
+const client = new EventStore.HTTPClient({
 	hostname: 'localhost',
 	port: 2113,
 	credentials: {
@@ -463,9 +463,9 @@ If the promise is fulfilled then the scavenge command has been sent, it does not
 #### Example
 
 ```javascript
-const eventstore = require('geteventstore-promise');
+const EventStore = require('geteventstore-promise');
 
-const client = eventstore.http({
+const client = new EventStore.HTTPClient({
 	hostname: 'localhost',
 	port: 2113,
 	credentials: {
@@ -490,9 +490,9 @@ If the promise is fulfilled then the shutdown command has been sent, it does not
 #### Example
 
 ```javascript
-const eventstore = require('geteventstore-promise');
+const EventStore = require('geteventstore-promise');
 
-const client = eventstore.http({
+const client = new EventStore.HTTPClient({
 	hostname: 'localhost',
 	port: 2113,
 	credentials: {
@@ -519,7 +519,7 @@ Github: [https://github.com/nicdex/node-eventstore-client](https://github.com/ni
 # Config example
 
 ```javascript
-const client = eventstore.tcp({
+const client = new EventStore.TCPClient({
 	hostname: 'localhost',
 	port: 1113,
 	credentials: {
@@ -536,7 +536,7 @@ const client = eventstore.tcp({
 # Config example - Clustering - Gossip Seeds
 
 ```javascript
-const client = eventstore.tcp({
+const client = new EventStore.TCPClient({
 	gossipSeeds: [
 		{ hostname: '192.168.0.10', port: 2113 },
 		{ hostname: '192.168.0.11', port: 2113 },
@@ -556,7 +556,7 @@ const client = eventstore.tcp({
 # Config example - Clustering - DNS Discovery
 
 ```javascript
-const client = eventstore.tcp({
+const client = new EventStore.TCPClient({
 	protocol: 'discover',
 	hostname: 'my.host',
 	port: 2113,
@@ -608,9 +608,9 @@ Resolve linked events. Defaults to *true*
 #### Example
 
 ```javascript
-const eventstore = require('geteventstore-promise');
+const EventStore = require('geteventstore-promise');
 
-const client = eventstore.tcp({
+const client = new EventStore.TCPClient({
 	hostname: 'localhost',
 	port: 1113,
 	credentials: {
@@ -645,9 +645,9 @@ Resolve linked events. Defaults to *true*
 #### Example
 
 ```javascript
-const eventstore = require('geteventstore-promise');
+const EventStore = require('geteventstore-promise');
 
-const client = eventstore.tcp({
+const client = new EventStore.TCPClient({
 	hostname: 'localhost',
 	port: 1113,
 	credentials: {
@@ -682,9 +682,9 @@ Resolve linked events
 #### Example
 
 ```javascript
-const eventstore = require('geteventstore-promise');
+const EventStore = require('geteventstore-promise');
 
-const client = eventstore.tcp({
+const client = new EventStore.TCPClient({
 	hostname: 'localhost',
 	port: 1113,
 	credentials: {
@@ -738,9 +738,9 @@ debug - in debug mode(true/false)
 #### Example
 
 ```javascript
-const eventstore = require('geteventstore-promise');
+const EventStore = require('geteventstore-promise');
 
-const client = eventstore.tcp({
+const client = new EventStore.TCPClient({
 	hostname: 'localhost',
 	port: 1113,
 	credentials: {
@@ -795,9 +795,9 @@ The number of events to read per enumeration.
 #### Example
 
 ```javascript
-const eventstore = require('geteventstore-promise');
+const EventStore = require('geteventstore-promise');
 
-const client = eventstore.tcp({
+const client = new EventStore.TCPClient({
 	hostname: 'localhost',
 	port: 1113,
 	credentials: {
