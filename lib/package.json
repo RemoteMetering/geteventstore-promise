@@ -4,8 +4,8 @@
   "description": "GetEventStore client wrapper using promises",
   "main": "index.js",
   "scripts": {
-    "test": "cross-env NODE_ENV=test mocha --exit --require babel-core/register tests/",
-    "test:docker": "cross-env NODE_ENV=test TEST_USE_DOCKER=true mocha --exit --require babel-core/register tests/",
+    "test": "cross-env NODE_ENV=test mocha --exit --require @babel/register tests/",
+    "test:docker": "cross-env NODE_ENV=test TEST_USE_DOCKER=true mocha --exit --require @babel/register tests/",
     "transpile": "babel --ignore node_modules,tests,yarn.lock -d dist/ ./",
     "clean": "rm -r -f dist/",
     "includeSource": "rsync -av --exclude='dist/' --exclude='node_modules' ./ dist/src && cp -rf ../README.md dist/ && cp -rf {index.d.ts,package.json} dist/",
