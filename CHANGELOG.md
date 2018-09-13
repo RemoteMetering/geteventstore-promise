@@ -8,16 +8,16 @@
 	##### Previous Usage (Deprecated)
 	```javascript
 	const eventstore = require('geteventstore-promise');
-	const client = eventstore.http(...config);
-	const tcp = eventstore.tcp(...config);
+	const httpClient = eventstore.http(...config);
+	const tcpClient = eventstore.tcp(...config);
 	const newEvent = eventstore.eventFactory.NewEvent(...args);
 	```
 
 	##### New Usage
 	```javascript
 	const EventStore = require('geteventstore-promise');
-	const client = new EventStore.HTTPClient(...config);
-	const tcp = new EventStore.TCPClient(...config);
+	const httpClient = new EventStore.HTTPClient(...config);
+	const tcpClient = new EventStore.TCPClient(...config);
 	const newEvent = new EventStore.EventFactory().newEvent(...args);
 	```
 
