@@ -8,7 +8,7 @@ At the command-line:
 > npm install geteventstore-promise
 
 In your Node.js application:
-> import EventStore from 'geteventstore-promise';
+> const EventStore = require('geteventstore-promise');
 
 # Running Tests
 #### Using executable
@@ -53,7 +53,7 @@ Resolve linked events. Options: 'body' and 'rich'. Defaults to *body*
 #### Example
 
 ```javascript
-import EventStore from 'geteventstore-promise';
+const EventStore = require('geteventstore-promise');
 
 const client = new EventStore.HTTPClient({
 	hostname: 'localhost',
@@ -92,7 +92,7 @@ Resolve linked events. Options: 'body' and 'rich'. Defaults to *body*
 #### Example
 
 ```javascript
-import EventStore from 'geteventstore-promise';
+const EventStore = require('geteventstore-promise');
 
 const client = new EventStore.HTTPClient({
 	hostname: 'localhost',
@@ -128,8 +128,8 @@ Any options to be specified (as documented in GetEvent Store documentation). Def
 #### Example
 
 ```javascript
-import EventStore from 'geteventstore-promise';
-import uuid from 'uuid';
+const EventStore = require('geteventstore-promise');
+const uuid = require('uuid');
 
 const client = new EventStore.HTTPClient({
 	hostname: 'localhost',
@@ -163,8 +163,8 @@ Any options to be specified (as documented in GetEvent Store documentation). Def
 #### Example
 
 ```javascript
-import EventStore from 'geteventstore-promise';
-import uuid from 'uuid';
+const EventStore = require('geteventstore-promise');
+const uuid = require('uuid');
 
 const client = new EventStore.HTTPClient({
 	hostname: 'localhost',
@@ -193,7 +193,7 @@ The name of the stream to check.
 #### Example
 
 ```javascript
-import EventStore from 'geteventstore-promise';
+const EventStore = require('geteventstore-promise');
 
 const client = new EventStore.HTTPClient({
 	hostname: 'localhost',
@@ -222,7 +222,7 @@ Hard delete the stream, defaults to false
 #### Example
 
 ```javascript
-import EventStore from 'geteventstore-promise';
+const EventStore = require('geteventstore-promise');
 
 const client = new EventStore.HTTPClient({
 	hostname: 'localhost',
@@ -249,7 +249,7 @@ Performs Ping command, rejects promise if unsuccessful
 #### Example
 
 ```javascript
-import EventStore from 'geteventstore-promise';
+const EventStore = require('geteventstore-promise');
 
 const client = new EventStore.HTTPClient({
 	hostname: 'localhost',
@@ -410,7 +410,7 @@ The name of the projection to get state of.
 #### Example
 
 ```javascript
-import EventStore from 'geteventstore-promise';
+const EventStore = require('geteventstore-promise');
 
 const client = new EventStore.HTTPClient({
 	hostname: 'localhost',
@@ -437,7 +437,7 @@ If the promise is fulfilled then the scavenge command has been sent, it does not
 #### Example
 
 ```javascript
-import EventStore from 'geteventstore-promise';
+const EventStore = require('geteventstore-promise');
 
 const client = new EventStore.HTTPClient({
 	hostname: 'localhost',
@@ -463,7 +463,7 @@ If the promise is fulfilled then the shutdown command has been sent, it does not
 #### Example
 
 ```javascript
-import EventStore from 'geteventstore-promise';
+const EventStore = require('geteventstore-promise');
 
 const client = new EventStore.HTTPClient({
 	hostname: 'localhost',
@@ -580,7 +580,7 @@ Resolve linked events. Defaults to *true*
 #### Example
 
 ```javascript
-import EventStore from 'geteventstore-promise';
+const EventStore = require('geteventstore-promise');
 
 const client = new EventStore.TCPClient({
 	hostname: 'localhost',
@@ -615,7 +615,7 @@ Resolve linked events. Defaults to *true*
 #### Example
 
 ```javascript
-import EventStore from 'geteventstore-promise';
+const EventStore = require('geteventstore-promise');
 
 const client = new EventStore.TCPClient({
 	hostname: 'localhost',
@@ -650,7 +650,7 @@ Resolve linked events
 #### Example
 
 ```javascript
-import EventStore from 'geteventstore-promise';
+const EventStore = require('geteventstore-promise');
 
 const client = new EventStore.TCPClient({
 	hostname: 'localhost',
@@ -706,7 +706,7 @@ debug - in debug mode(true/false)
 #### Example
 
 ```javascript
-import EventStore from 'geteventstore-promise';
+const EventStore = require('geteventstore-promise');
 
 const client = new EventStore.TCPClient({
 	hostname: 'localhost',
@@ -763,7 +763,7 @@ The number of events to read per enumeration.
 #### Example
 
 ```javascript
-import EventStore from 'geteventstore-promise';
+const EventStore = require('geteventstore-promise');
 
 const client = new EventStore.TCPClient({
 	hostname: 'localhost',
