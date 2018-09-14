@@ -126,9 +126,10 @@ export class EventEnumeratorResult {
 	events: Event[];
 }
 
+type NewEventFunction = (eventType: string, data: object, metadata: object, eventId: string) => NewEvent;
+
 export class EventFactory {
-	constructor();
-	newEvent(eventType: string, data: object, metadata: object, eventId: string): NewEvent;
+	newEvent: NewEventFunction;
 }
 
 export class HTTPClient {
@@ -181,18 +182,18 @@ export class TCPClient {
 		last(length: number): Promise<EventEnumeratorResult>;
 		previous(length: number): Promise<EventEnumeratorResult>;
 		next(length: number): Promise<EventEnumeratorResult>;
-	}
+	};
 	subscribeToStream(streamName: string, onEventAppeared?: EventAppearedCallback<EventStoreSubscription>, onDropped?: SubscriptionDroppedCallback<EventStoreSubscription>, resolveLinkTos?: boolean): Promise<EventStoreSubscription>;
 	subscribeToStreamFrom(streamName: string, fromEventNumber?: number, onEventAppeared?: EventAppearedCallback<EventStoreCatchUpSubscription>, onLiveProcessingStarted?: LiveProcessingStartedCallback, onDropped?: SubscriptionDroppedCallback<EventStoreCatchUpSubscription>, settings?: SubscribeToStreamFromSettings): Promise<EventStoreCatchUpSubscription>;
 	close(): Promise<void>;
-	getPool(): Promise<TCPPool>;
+	getPool(): Promise<TCPPool<{}>>;
 	closeAllPools(): Promise<void>;
 }
 
 //Deprecated
 export class tcp extends TCPClient {}
 export class http extends HTTPClient {}
-declare function NewEvent(eventType: string, data: object, metadata: object, eventId: string): NewEvent;
+
 export namespace eventFactory {
-	const NewEvent;
+	const NewEvent: NewEventFunction;
 }
