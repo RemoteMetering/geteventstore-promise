@@ -74,39 +74,39 @@ export class TCPConfig {
 	protocol?: string;
 	gossipSeeds?: GossipSeed[];
 	credentials: UserCredentials;
-	poolOptions: TCPPoolOptions;
+	poolOptions?: TCPPoolOptions;
 }
 
 export class HTTPWriteEventOptions  {
-	expectedVersion: number;
+	expectedVersion?: number;
 }
 
 export class TCPWriteEventOptions {
-	expectedVersion: number;
+	expectedVersion?: number;
 }
 
 export class TCPWriteEventsOptions extends TCPWriteEventOptions {
-	transactionWriteSize: number;
+	transactionWriteSize?: number;
 }
 
 export class ProjectionStateOptions {
-	partition: string;
+	partition?: string;
 }
 
 export class PersistentSubscriptionOptions {
-	resolveLinkTos: boolean;
-	startFrom: number;
-	extraStatistics: boolean;
-	messageTimeout: number;
-	maxRetryCount: number;
-	liveBufferSize: number;
-	readBatchSize: number;
-	historyBufferSize: number;
-	checkPointAfter: number;
-	minCheckPointCount: number;
-	maxCheckPointCount: number;
-	maxSubscriberCount: number;
-	namedConsumerStrategy: string;
+	resolveLinkTos?: boolean;
+	startFrom?: number;
+	extraStatistics?: boolean;
+	messageTimeout?: number;
+	maxRetryCount?: number;
+	liveBufferSize?: number;
+	readBatchSize?: number;
+	historyBufferSize?: number;
+	checkPointAfter?: number;
+	minCheckPointCount?: number;
+	maxCheckPointCount?: number;
+	maxSubscriberCount?: number;
+	namedConsumerStrategy?: string;
 }
 
 export class PersistentSubscriptionAssertResult {
@@ -117,8 +117,8 @@ export class PersistentSubscriptionAssertResult {
 }
 
 export class SubscribeToStreamFromSettings {
-	resolveLinkTos: boolean;
-	readBatchSize: number;
+	resolveLinkTos?: boolean;
+	readBatchSize?: number;
 }
 
 export class EventEnumeratorResult {
