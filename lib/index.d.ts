@@ -139,7 +139,7 @@ export class HTTPClient {
 	getEvents(streamName: string, startPosition?: number, length?: number, direction?: ReadDirection, resolveLinkTos?: boolean, embed?: EmbedType): Promise<Event[]>;
 	getEventsByType(streamName: string, eventTypes: string[], startPosition?: number, length?: number, direction?: ReadDirection, resolveLinkTos?: boolean): Promise<Event[]>;
 	deleteStream(streamName: string, hardDelete?: boolean): Promise<void>;
-	ping(): Promise<object>;
+	ping(): Promise<void>;
 	admin: {
 		scavenge(): Promise<void>;
 		shutdown(): Promise<void>;
@@ -184,7 +184,7 @@ export class TCPClient {
 	subscribeToStream(streamName: string, onEventAppeared?: EventAppearedCallback<EventStoreSubscription>, onDropped?: SubscriptionDroppedCallback<EventStoreSubscription>, resolveLinkTos?: boolean): Promise<EventStoreSubscription>;
 	subscribeToStreamFrom(streamName: string, fromEventNumber?: number, onEventAppeared?: EventAppearedCallback<EventStoreCatchUpSubscription>, onLiveProcessingStarted?: LiveProcessingStartedCallback, onDropped?: SubscriptionDroppedCallback<EventStoreCatchUpSubscription>, settings?: SubscribeToStreamFromSettings): Promise<EventStoreCatchUpSubscription>;
 	close(): Promise<void>;
-	getPool(): Promise<TCPPool<{}>>;
+	getPool(): Promise<TCPPool<object>>;
 	closeAllPools(): Promise<void>;
 }
 
