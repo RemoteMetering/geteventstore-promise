@@ -126,10 +126,8 @@ export class EventEnumeratorResult {
 	events: Event[];
 }
 
-type NewEventFunction = (eventType: string, data: object, metadata: object, eventId: string) => NewEvent;
-
 export class EventFactory {
-	newEvent: NewEventFunction;
+	newEvent: (eventType: string, data: object, metadata: object, eventId: string) => NewEvent;
 }
 
 export class HTTPClient {
@@ -195,5 +193,5 @@ export class tcp extends TCPClient {}
 export class http extends HTTPClient {}
 
 export namespace eventFactory {
-	const NewEvent: NewEventFunction;
+	const NewEvent: (eventType: string, data: object, metadata: object, eventId: string) => NewEvent;
 }
