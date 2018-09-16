@@ -74,39 +74,39 @@ export class TCPConfig {
 	protocol?: string;
 	gossipSeeds?: GossipSeed[];
 	credentials: UserCredentials;
-	poolOptions: TCPPoolOptions;
+	poolOptions?: TCPPoolOptions;
 }
 
 export class HTTPWriteEventOptions  {
-	expectedVersion: number;
+	expectedVersion?: number;
 }
 
 export class TCPWriteEventOptions {
-	expectedVersion: number;
+	expectedVersion?: number;
 }
 
 export class TCPWriteEventsOptions extends TCPWriteEventOptions {
-	transactionWriteSize: number;
+	transactionWriteSize?: number;
 }
 
 export class ProjectionStateOptions {
-	partition: string;
+	partition?: string;
 }
 
 export class PersistentSubscriptionOptions {
-	resolveLinkTos: boolean;
-	startFrom: number;
-	extraStatistics: boolean;
-	messageTimeout: number;
-	maxRetryCount: number;
-	liveBufferSize: number;
-	readBatchSize: number;
-	historyBufferSize: number;
-	checkPointAfter: number;
-	minCheckPointCount: number;
-	maxCheckPointCount: number;
-	maxSubscriberCount: number;
-	namedConsumerStrategy: string;
+	resolveLinkTos?: boolean;
+	startFrom?: number;
+	extraStatistics?: boolean;
+	messageTimeout?: number;
+	maxRetryCount?: number;
+	liveBufferSize?: number;
+	readBatchSize?: number;
+	historyBufferSize?: number;
+	checkPointAfter?: number;
+	minCheckPointCount?: number;
+	maxCheckPointCount?: number;
+	maxSubscriberCount?: number;
+	namedConsumerStrategy?: string;
 }
 
 export class PersistentSubscriptionAssertResult {
@@ -117,8 +117,8 @@ export class PersistentSubscriptionAssertResult {
 }
 
 export class SubscribeToStreamFromSettings {
-	resolveLinkTos: boolean;
-	readBatchSize: number;
+	resolveLinkTos?: boolean;
+	readBatchSize?: number;
 }
 
 export class EventEnumeratorResult {
@@ -126,10 +126,8 @@ export class EventEnumeratorResult {
 	events: Event[];
 }
 
-type NewEventFunction = (eventType: string, data: object, metadata: object, eventId: string) => NewEvent;
-
 export class EventFactory {
-	newEvent: NewEventFunction;
+	newEvent: (eventType: string, data: object, metadata: object, eventId: string) => NewEvent;
 }
 
 export class HTTPClient {
@@ -141,7 +139,7 @@ export class HTTPClient {
 	getEvents(streamName: string, startPosition?: number, length?: number, direction?: ReadDirection, resolveLinkTos?: boolean, embed?: EmbedType): Promise<Event[]>;
 	getEventsByType(streamName: string, eventTypes: string[], startPosition?: number, length?: number, direction?: ReadDirection, resolveLinkTos?: boolean): Promise<Event[]>;
 	deleteStream(streamName: string, hardDelete?: boolean): Promise<void>;
-	ping(): Promise<object>;
+	ping(): Promise<void>;
 	admin: {
 		scavenge(): Promise<void>;
 		shutdown(): Promise<void>;
@@ -186,7 +184,7 @@ export class TCPClient {
 	subscribeToStream(streamName: string, onEventAppeared?: EventAppearedCallback<EventStoreSubscription>, onDropped?: SubscriptionDroppedCallback<EventStoreSubscription>, resolveLinkTos?: boolean): Promise<EventStoreSubscription>;
 	subscribeToStreamFrom(streamName: string, fromEventNumber?: number, onEventAppeared?: EventAppearedCallback<EventStoreCatchUpSubscription>, onLiveProcessingStarted?: LiveProcessingStartedCallback, onDropped?: SubscriptionDroppedCallback<EventStoreCatchUpSubscription>, settings?: SubscribeToStreamFromSettings): Promise<EventStoreCatchUpSubscription>;
 	close(): Promise<void>;
-	getPool(): Promise<TCPPool<{}>>;
+	getPool(): Promise<TCPPool<object>>;
 	closeAllPools(): Promise<void>;
 }
 
@@ -195,5 +193,5 @@ export class tcp extends TCPClient {}
 export class http extends HTTPClient {}
 
 export namespace eventFactory {
-	const NewEvent: NewEventFunction;
+	const NewEvent: (eventType: string, data: object, metadata: object, eventId: string) => NewEvent;
 }
