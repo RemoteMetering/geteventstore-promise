@@ -13,14 +13,14 @@ import {
 	Pool as TCPPool 
 } from "generic-pool";
 
-export class NewEvent {
+export interface NewEvent {
 	eventId: string;
 	eventType: string;
 	data: object;
 	metadata?: object;
 }
 
-export class Event {
+export interface Event {
 	streamId: string;
 	eventId: string;
 	eventNumber: number;
@@ -41,23 +41,23 @@ export type ReadDirection = "forward" | "backward";
 
 export type EmbedType = "body" | "rich" | "PrettyBody" | "TryHarder";
 
-export class UserCredentials {
+export interface UserCredentials {
 	readonly username: string;
 	readonly password: string;
 }
 
-export class GossipSeed {
+export interface GossipSeed {
 	readonly hostname: string;
 	readonly port: number;
 }
 
-export class HTTPConfig {
+export interface HTTPConfig {
 	hostname: string;
 	port: number;
 	credentials: UserCredentials;
 }
 
-export class TCPConfig {
+export interface TCPConfig {
 	hostname?: string;
 	port?: number;
 	protocol?: string;
@@ -66,23 +66,23 @@ export class TCPConfig {
 	poolOptions?: TCPPoolOptions;
 }
 
-export class HTTPWriteEventOptions  {
+export interface HTTPWriteEventOptions  {
 	expectedVersion?: number;
 }
 
-export class TCPWriteEventOptions {
+export interface TCPWriteEventOptions {
 	expectedVersion?: number;
 }
 
-export class TCPWriteEventsOptions extends TCPWriteEventOptions {
+export interface TCPWriteEventsOptions extends TCPWriteEventOptions {
 	transactionWriteSize?: number;
 }
 
-export class ProjectionStateOptions {
+export interface ProjectionStateOptions {
 	partition?: string;
 }
 
-export class PersistentSubscriptionOptions {
+export interface PersistentSubscriptionOptions {
 	resolveLinkTos?: boolean;
 	startFrom?: number;
 	extraStatistics?: boolean;
@@ -98,19 +98,19 @@ export class PersistentSubscriptionOptions {
 	namedConsumerStrategy?: string;
 }
 
-export class PersistentSubscriptionAssertResult {
+export interface PersistentSubscriptionAssertResult {
 	correlationId: string;
 	reason: string;
 	result: string;
 	msgTypeId: number;
 }
 
-export class SubscribeToStreamFromSettings {
+export interface SubscribeToStreamFromSettings {
 	resolveLinkTos?: boolean;
 	readBatchSize?: number;
 }
 
-export class EventEnumeratorResult {
+export interface EventEnumeratorResult {
 	isEndOfStream: boolean;
 	events: Event[];
 }
