@@ -1,3 +1,9 @@
+# 3.0.1 (2018-09-17)
+
+#### Misc
+
+- Fix - General Typescript definition issues
+
 # 3.0.0 (2018-09-13)
 
 #### Features
