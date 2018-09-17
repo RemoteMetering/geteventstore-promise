@@ -35,22 +35,11 @@ export class Event {
 	positionCreated?: string;
 }
 
-export enum ProjectionMode {
-  	OneTime = "onetime",
-	Continuous = "continuous"
-}
+export type ProjectionMode = "onetime" | "continuous";
 
-export enum ReadDirection {
-	Forward = "forward",
-	Backward = "backward"
-}
+export type ReadDirection = "forward" | "backward"; 
 
-export enum EmbedType {
-	Body = "body",
-	Rich = "rich",
-	PrettyBody = "PrettyBody",
-	TryHarder = "TryHarder"
-}
+export type EmbedType = "body" | "rich" | "PrettyBody" | "TryHarder";
 
 export class UserCredentials {
 	readonly username: string;
