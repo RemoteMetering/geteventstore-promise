@@ -1,7 +1,7 @@
 import './_globalHooks';
 
 import httpConfig from './support/httpConfig';
-import EventStore from '../index';
+import EventStore from '../lib';
 
 describe('Http Client - Send Scavenge Command', () => {
 	it('Should send scavenge command', () => {

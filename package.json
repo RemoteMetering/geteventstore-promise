@@ -1,0 +1,47 @@
+{
+	"name": "geteventstore-promise",
+	"version": "3.0.1",
+	"description": "GetEventStore client wrapper using promises",
+	"main": "index.js",
+	"scripts": {
+		"test": "cross-env NODE_ENV=test mocha --exit --require @babel/register tests/",
+		"test:docker": "cross-env NODE_ENV=test TEST_USE_DOCKER=true mocha --exit --require @babel/register tests/",
+		"build": "babel --delete-dir-on-start -d dist/ lib"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/RemoteMetering/geteventstore-promise.git"
+	},
+	"keywords": [
+		"node",
+		"client",
+		"event store",
+		"geteventstore",
+		"eventstore",
+		"promise"
+	],
+	"author": "Remote Metering Solutions Team",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/RemoteMetering/geteventstore-promise/issues"
+	},
+	"homepage": "https://github.com/RemoteMetering/geteventstore-promise",
+	"dependencies": {
+		"@babel/runtime": "^7.1.2",
+		"axios": "^0.18.0",
+		"debug": "^4.0.1",
+		"generic-pool": "^3.4.2",
+		"node-eventstore-client": "^0.2.4",
+		"uuid": "^3.3.2"
+	},
+	"devDependencies": {
+		"@babel/cli": "^7.1.2",
+		"@babel/core": "^7.1.2",
+		"@babel/plugin-transform-runtime": "^7.1.0",
+		"@babel/preset-env": "^7.1.0",
+		"@babel/register": "^7.0.0",
+		"babel-plugin-add-module-exports": "^1.0.0",
+		"cross-env": "^5.2.0",
+		"mocha": "^5.2.0"
+	}
+}

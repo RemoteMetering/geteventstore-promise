@@ -1,5 +1,5 @@
 import esConfig from './support/inMemEventStoreConfig';
-import sleep from '../utilities/sleep';
+import sleep from './utilities/sleep';
 import { spawn } from 'child_process';
 import path from 'path';
 

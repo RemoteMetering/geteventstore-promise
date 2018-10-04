@@ -1,9 +1,9 @@
 import './_globalHooks';
 
-import chunkArray from '../utilities/chunkArray';
+import chunkArray from '../lib/utilities/chunkArray';
 import httpConfig from './support/httpConfig';
-import sleep from '../utilities/sleep';
-import EventStore from '../index';
+import sleep from './utilities/sleep';
+import EventStore from '../lib';
 import assert from 'assert';
 import uuid from 'uuid';
 
