@@ -1,7 +1,7 @@
 import './_globalHooks';
 
 import tcpConfig from './support/tcpConfig';
-import EventStore from '../';
+import EventStore from '../lib';
 import assert from 'assert';
 import uuid from 'uuid';
 
