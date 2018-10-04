@@ -6,6 +6,7 @@
 	"scripts": {
 		"test": "cross-env NODE_ENV=test mocha --exit --require @babel/register tests/",
 		"test:docker": "cross-env NODE_ENV=test TEST_USE_DOCKER=true mocha --exit --require @babel/register tests/",
+		"coverage": "nyc yarn test:docker",
 		"build": "babel --delete-dir-on-start -d dist/ lib"
 	},
 	"repository": {
@@ -42,6 +43,21 @@
 		"@babel/register": "^7.0.0",
 		"babel-plugin-add-module-exports": "^1.0.0",
 		"cross-env": "^5.2.0",
-		"mocha": "^5.2.0"
+		"mocha": "^5.2.0",
+		"nyc": "^13.0.1"
+	},
+	"nyc": {
+		"reporter": [
+			"lcov",
+			"text",
+			"html"
+		],
+		"include": [
+			"lib/*"
+		],
+		"exclude": [
+			"lib/AggRoot.js"
+		],
+		"all": true
 	}
 }

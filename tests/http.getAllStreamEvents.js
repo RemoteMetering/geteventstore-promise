@@ -25,7 +25,7 @@ describe('Http Client - Get All Stream Events', () => {
 		assert(allEvents[0].created, 'Created should be defined');
 		assert.equal(allEvents[0].data.id, 0);
 		assert.equal(allEvents[999].data.id, 999);
-	});
+	}).timeout(5000);
 
 	it('Should write events and read back all events from start event', async() => {
 		const client = new EventStore.HTTPClient(httpConfig);
@@ -43,7 +43,7 @@ describe('Http Client - Get All Stream Events', () => {
 		assert.equal(allEvents.length, 500);
 		assert.equal(allEvents[0].data.id, 500);
 		assert.equal(allEvents[499].data.id, 999);
-	});
+	}).timeout(5000);
 
 	it('Should write events and read back stream events with embed type rich', async() => {
 		const client = new EventStore.HTTPClient(httpConfig);
