@@ -6,7 +6,7 @@ import assert from 'assert';
 import uuid from 'uuid';
 
 describe('Http Client - Check Stream Exist', () => {
-	it('Should return true when a stream exist', async () => {
+	it('Should return true when a stream exists', async () => {
 		const client = new EventStore.HTTPClient(httpConfig);
 
 		const testStream = `TestStream-${uuid.v4()}`;
