@@ -1,14 +1,14 @@
 import './_globalHooks';
 
 import httpConfig from './support/httpConfig';
-import EventStore from '../index';
+import EventStore from '../lib';
 import assert from 'assert';
 import uuid from 'uuid';
 
 const eventFactory = new EventStore.EventFactory();
 
 describe('Http Client - Write Events', () => {
-	it('Write to a new stream and read the events', async() => {
+	it('Write to a new stream and read the events', async () => {
 		const client = new EventStore.HTTPClient(httpConfig);
 
 		const events = [eventFactory.newEvent('TestEventType', {
@@ -18,6 +18,24 @@ describe('Http Client - Write Events', () => {
 		const testStream = `TestStream-${uuid.v4()}`;
 		await client.writeEvents(testStream, events);
 		const evs = await client.getEvents(testStream);
+		assert.equal(evs[0].data.something, '456');
+	});
+
+	it('Write to a new stream and read the events by type', async () => {
+		const client = new EventStore.HTTPClient(httpConfig);
+
+		const events = [eventFactory.newEvent('TestEventType', {
+			something: '456'
+		}), eventFactory.newEvent('ToBeIgnoredType', {
+			something: '789'
+		})];
+
+		const testStream = `TestStream-${uuid.v4()}`;
+		await client.writeEvents(testStream, events);
+
+		const evs = await client.getEventsByType(testStream, ['TestEventType']);
+		assert.equal(evs.length, 1);
+		assert.equal(evs[0].eventType, 'TestEventType');
 		assert.equal(evs[0].data.something, '456');
 	});
 

@@ -1,7 +1,7 @@
 import './_globalHooks';
 
 import tcpConfig from './support/tcpConfig';
-import EventStore from '../index';
+import EventStore from '../lib';
 import assert from 'assert';
 import uuid from 'uuid';
 
@@ -101,7 +101,7 @@ describe('TCP Client - Test Connection', () => {
 
 		let failed = false;
 		try {
-			const pool = await client.getPool();
+			await client.getPool();
 			failed = true;
 		} catch (err) {
 			if (failed) throw new Error('Connection Pool should not exist');
@@ -118,7 +118,7 @@ describe('TCP Client - Test Connection', () => {
 
 		let failed = false;
 		try {
-			const pool = await client.getPool();
+			await client.getPool();
 			failed = true;
 		} catch (err) {
 			if (failed) throw new Error('Connection Pool should not exist');

@@ -1,17 +1,17 @@
 import './_globalHooks';
 
-import tcpConfig from './support/tcpConfig';
-import EventStore from '../index';
+import httpConfig from './support/httpConfig';
+import EventStore from '../lib';
 import assert from 'assert';
 
-describe('TCP Client - Config', () => {
+describe('Http Client - Config', () => {
 	it('Should return assertion error when config is undefined', done => {
 		try {
-			new EventStore.TCPClient();
+			new EventStore.HTTPClient();
 			done('Config should not pass assertion');
 		} catch (err) {
 			assert.equal(err === undefined, false);
-			assert.equal(err.message, 'geteventstore-promise - TCP client - config not provided');
+			assert.equal(err.message, 'geteventstore-promise - HTTP client - config not provided');
 			done();
 		}
 	});
@@ -19,17 +19,17 @@ describe('TCP Client - Config', () => {
 	it('Should return assertion error when hostname is undefined', done => {
 		try {
 			const config = {
-				port: 1113,
+				port: 2113,
 				credentials: {
 					username: 'admin',
 					password: 'changeit'
 				}
 			};
-			new EventStore.TCPClient(config);
+			new EventStore.HTTPClient(config);
 			done();
 		} catch (err) {
 			assert.equal(err === undefined, false);
-			assert.equal(err.message, 'geteventstore-promise - TCP client - hostname property not provided');
+			assert.equal(err.message, 'geteventstore-promise - HTTP client - hostname property not provided');
 			done();
 		}
 	});
@@ -38,20 +38,20 @@ describe('TCP Client - Config', () => {
 		try {
 			const config = {
 				hostname: 'localhost',
-				port: 1113
+				port: 2113
 			};
-			new EventStore.TCPClient(config);
+			new EventStore.HTTPClient(config);
 			done();
 		} catch (err) {
 			assert.equal(err === undefined, false);
-			assert.equal(err.message, 'geteventstore-promise - TCP client - credentials property not provided');
+			assert.equal(err.message, 'geteventstore-promise - HTTP client - credentials property not provided');
 			done();
 		}
 	});
 
-	it('Should return tcp client when config is complete', done => {
+	it('Should return http client when config is complete', done => {
 		try {
-			const client = new EventStore.TCPClient(tcpConfig);
+			const client = new EventStore.HTTPClient(httpConfig);
 			assert.equal(client !== undefined, true);
 			done();
 		} catch (err) {

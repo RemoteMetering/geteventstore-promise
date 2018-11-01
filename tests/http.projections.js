@@ -1,8 +1,8 @@
 import './_globalHooks';
 
 import httpConfig from './support/httpConfig';
-import sleep from '../utilities/sleep';
-import EventStore from '../index';
+import sleep from './utilities/sleep';
+import EventStore from '../lib';
 import assert from 'assert';
 import uuid from 'uuid';
 import fs from 'fs';

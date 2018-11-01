@@ -3,7 +3,7 @@ import './_globalHooks';
 import tcpConfigDNSDiscoveryCluster from './support/tcpConfigDNSDiscoveryCluster';
 import tcpConfigGossipCluster from './support/tcpConfigGossipCluster';
 import inMemConfig from './support/inMemEventStoreConfig';
-import EventStore from '../index';
+import EventStore from '../lib';
 import assert from 'assert';
 import uuid from 'uuid';
 

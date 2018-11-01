@@ -1,14 +1,14 @@
 import './_globalHooks';
 
 import tcpConfig from './support/tcpConfig';
-import EventStore from '../index';
+import EventStore from '../lib';
 import assert from 'assert';
 import uuid from 'uuid';
 
 const eventFactory = new EventStore.EventFactory();
 
 describe('TCP Client - Get All Stream Events', () => {
-	it('Should write events and read back all stream events', async() => {
+	it('Should write events and read back all stream events', async () => {
 		const client = new EventStore.TCPClient(tcpConfig);
 
 		const events = [];
@@ -25,9 +25,9 @@ describe('TCP Client - Get All Stream Events', () => {
 		assert.equal(evs.length, 1000);
 		assert.equal(evs[0].data.id, 0);
 		assert.equal(evs[999].data.id, 999);
-	});
+	}).timeout(5000);
 
-	it('Should write events and read back all events from start event', async() => {
+	it('Should write events and read back all events from start event', async () => {
 		const client = new EventStore.TCPClient(tcpConfig);
 
 		const events = [];
@@ -44,5 +44,5 @@ describe('TCP Client - Get All Stream Events', () => {
 		assert.equal(evs.length, 500);
 		assert.equal(evs[0].data.id, 500);
 		assert.equal(evs[499].data.id, 999);
-	});
+	}).timeout(5000);
 });

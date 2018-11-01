@@ -1,12 +1,12 @@
 import './_globalHooks';
 
 import tcpConfig from './support/tcpConfig';
-import EventStore from '../index';
+import EventStore from '../lib';
 import assert from 'assert';
 import uuid from 'uuid';
 
 describe('TCP Client - Check Stream Exist', () => {
-	it('Should return true when a stream exist', async function() {
+	it('Should return true when a stream exists', async function() {
 		this.timeout(5000);
 		const client = new EventStore.TCPClient(tcpConfig);
 
