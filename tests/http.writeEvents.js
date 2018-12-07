@@ -63,4 +63,33 @@ describe('Http Client - Write Events', () => {
 			assert(err.message, 'Error Message Expected');
 		});
 	});
+
+	it('Should fail promise if passed in wrong expectedVersion (covering edge case of expectedVersion=0)', async() => {
+		const client = new EventStore.HTTPClient(httpConfig);
+
+		const events = [eventFactory.newEvent('TestEventType', {
+			something: '456'
+		}), eventFactory.newEvent('ToBeIgnoredType', {
+			something: '789'
+		})];
+
+		const testStream = `TestStream-${uuid.v4()}`;
+		await client.writeEvents(testStream, events);
+
+		const events2 = [eventFactory.newEvent('TestEventType', {
+			something: 'abc'
+		})];
+
+		try {
+			await client.writeEvents(testStream, events2, {
+				expectedVersion: 0
+			});
+		}
+		catch(err) {
+			assert(err, 'Error expected');
+			assert(err.message, 'Error Message Expected');
+			return;
+		}
+		assert.fail('Write should not have succeeded');
+	});
 });

@@ -18,15 +18,53 @@ describe('Http Client - Write Event', () => {
 		assert.equal(events[0].data.something, '123');
 	});
 
-	it('Should fail promise if no event data provided', function() {
+	it('Should fail promise if no event data provided', async() => {
 		const client = new EventStore.HTTPClient(httpConfig);
 		const testStream = `TestStream-${uuid.v4()}`;
 
-		return client.writeEvent(testStream, 'TestEventType').then(() => {
-			assert.fail('Write should not have succeeded');
-		}).catch(err => {
+		try {
+			await client.writeEvent(testStream, 'TestEventType');
+		}
+		catch(err) {
 			assert(err, 'Error expected');
 			assert(err.message, 'Error Message Expected');
+			return;
+		}
+		assert.fail('Write should not have succeeded');
+	});
+
+	it('Should fail promise if passed in wrong expectedVersion (covering edge case of expectedVersion=0)', async() => {
+		const client = new EventStore.HTTPClient(httpConfig);
+		const testStream = `TestStream-${uuid.v4()}`;
+
+		await client.writeEvent(testStream, 'TestEventType', {
+			something: '123'
 		});
+
+		await client.writeEvent(testStream, 'TestEventType', {
+			something: '456'
+		}, null, {
+			expectedVersion: 0
+		});
+
+		await client.writeEvent(testStream, 'TestEventType', {
+			something: '789'
+		}, null, {
+			expectedVersion: 1
+		});
+
+		try {
+			await client.writeEvent(testStream, 'TestEventType', {
+				something: 'abc'
+			}, null, {
+				expectedVersion: 0
+			});
+		}
+		catch(err) {
+			assert(err, 'Error expected');
+			assert(err.message, 'Error Message Expected');
+			return;
+		}
+		assert.fail('Write should not have succeeded');
 	});
 });
