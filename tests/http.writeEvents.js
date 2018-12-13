@@ -64,32 +64,54 @@ describe('Http Client - Write Events', () => {
 		});
 	});
 
-	it('Should fail promise if passed in wrong expectedVersion (covering edge case of expectedVersion=0)', async() => {
-		const client = new EventStore.HTTPClient(httpConfig);
+	describe('Pre-populating stream', () => {
+		let client,
+			testStream,
+			events,
+			events2;
 
-		const events = [eventFactory.newEvent('TestEventType', {
-			something: '456'
-		}), eventFactory.newEvent('ToBeIgnoredType', {
-			something: '789'
-		})];
+		beforeEach(async() => {
+			client = new EventStore.HTTPClient(httpConfig);
 
-		const testStream = `TestStream-${uuid.v4()}`;
-		await client.writeEvents(testStream, events);
+			events = [eventFactory.newEvent('TestEventType', {
+				something: '456'
+			}), eventFactory.newEvent('ToBeIgnoredType', {
+				something: '789'
+			})];
 
-		const events2 = [eventFactory.newEvent('TestEventType', {
-			something: 'abc'
-		})];
+			testStream = `TestStream-${uuid.v4()}`;
+			await client.writeEvents(testStream, events);
 
-		try {
-			await client.writeEvents(testStream, events2, {
-				expectedVersion: 0
-			});
-		}
-		catch(err) {
-			assert(err, 'Error expected');
-			assert(err.message, 'Error Message Expected');
-			return;
-		}
-		assert.fail('Write should not have succeeded');
-	});
+			events2 = [eventFactory.newEvent('TestEventType', {
+				something: 'abc'
+			})];
+		})
+		
+		it('Should fail promise if passed in wrong expectedVersion (covering edge case of expectedVersion=0)', async() => {
+			try {
+				await client.writeEvents(testStream, events2, {
+					expectedVersion: 0
+				});
+			}
+			catch(err) {
+				assert(err, 'Error expected');
+				assert(err.message, 'Error Message Expected');
+				return;
+			}
+			assert.fail('Write should not have succeeded');
+		});
+
+		it('Should write event if expectedVersion=null', async() => {
+			try {
+				await client.writeEvents(testStream, events2, {
+					expectedVersion: null
+				});
+			}
+			catch(err) {
+				assert.fail('Write should not have failed');
+				return;
+			}
+			assert(true, 'Write succeeded');
+		});
+	})
 });
