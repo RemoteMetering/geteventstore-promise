@@ -63,55 +63,55 @@ describe('Http Client - Write Events', () => {
 			assert(err.message, 'Error Message Expected');
 		});
 	});
-
-	describe('Pre-populating stream', () => {
-		let client,
-			testStream,
-			events,
-			events2;
-
-		beforeEach(async() => {
-			client = new EventStore.HTTPClient(httpConfig);
-
-			events = [eventFactory.newEvent('TestEventType', {
-				something: '456'
-			}), eventFactory.newEvent('ToBeIgnoredType', {
-				something: '789'
-			})];
-
-			testStream = `TestStream-${uuid.v4()}`;
-			await client.writeEvents(testStream, events);
-
-			events2 = [eventFactory.newEvent('TestEventType', {
-				something: 'abc'
-			})];
-		})
-		
-		it('Should fail promise if passed in wrong expectedVersion (covering edge case of expectedVersion=0)', async() => {
-			try {
-				await client.writeEvents(testStream, events2, {
-					expectedVersion: 0
-				});
-			}
-			catch(err) {
-				assert(err, 'Error expected');
-				assert(err.message, 'Error Message Expected');
-				return;
-			}
-			assert.fail('Write should not have succeeded');
-		});
-
-		it('Should write event if expectedVersion=null', async() => {
-			try {
-				await client.writeEvents(testStream, events2, {
-					expectedVersion: null
-				});
-			}
-			catch(err) {
-				assert.fail('Write should not have failed');
-				return;
-			}
-			assert(true, 'Write succeeded');
-		});
-	})
 });
+
+describe('Http Client - Write Events to pre-populated stream', () => {
+	let client,
+		testStream,
+		events,
+		events2;
+
+	beforeEach(async() => {
+		client = new EventStore.HTTPClient(httpConfig);
+
+		events = [eventFactory.newEvent('TestEventType', {
+			something: '456'
+		}), eventFactory.newEvent('ToBeIgnoredType', {
+			something: '789'
+		})];
+
+		testStream = `TestStream-${uuid.v4()}`;
+		await client.writeEvents(testStream, events);
+
+		events2 = [eventFactory.newEvent('TestEventType', {
+			something: 'abc'
+		})];
+	})
+	
+	it('Should fail promise if passed in wrong expectedVersion (covering edge case of expectedVersion=0)', async() => {
+		try {
+			await client.writeEvents(testStream, events2, {
+				expectedVersion: 0
+			});
+		}
+		catch(err) {
+			assert(err, 'Error expected');
+			assert(err.message, 'Error Message Expected');
+			return;
+		}
+		assert.fail('Write should not have succeeded');
+	});
+
+	it('Should write event if expectedVersion=null', async() => {
+		try {
+			await client.writeEvents(testStream, events2, {
+				expectedVersion: null
+			});
+		}
+		catch(err) {
+			assert.fail('Write should not have failed');
+			return;
+		}
+		assert(true, 'Write succeeded');
+	});
+})
