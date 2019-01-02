@@ -4,8 +4,7 @@ A Node.js Event Store client API wrapper using promises
 [![NPM](https://nodei.co/npm/geteventstore-promise.png?stars&downloads&downloadRank)](https://nodei.co/npm/geteventstore-promise/)
 
 # Installation
-At the command-line:
-> npm install geteventstore-promise
+> yarn add geteventstore-promise
 
 In your Node.js application:
 > const EventStore = require('geteventstore-promise');
