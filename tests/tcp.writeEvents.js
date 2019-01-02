@@ -8,7 +8,7 @@ import uuid from 'uuid';
 const eventFactory = new EventStore.EventFactory();
 
 describe('TCP Client - Write Events', () => {
-	it('Write to a new stream and read the events', async() => {
+	it('Write to a new stream and read the events', async () => {
 		const client = new EventStore.TCPClient(tcpConfig);
 
 		const events = [eventFactory.newEvent('TestEventType', {
@@ -22,7 +22,7 @@ describe('TCP Client - Write Events', () => {
 		assert.equal(evs[0].data.something, '456');
 	});
 
-	it('Write to a new stream and read the events by type', async() => {
+	it('Write to a new stream and read the events by type', async () => {
 		const client = new EventStore.TCPClient(tcpConfig);
 
 		const events = [eventFactory.newEvent('TestEventType', {
@@ -70,7 +70,7 @@ describe('TCP Client - Write Events to pre-populated stream', () => {
 		events,
 		events2;
 
-	beforeEach(async() => {
+	beforeEach(async () => {
 		client = new EventStore.TCPClient(tcpConfig);
 
 		events = [eventFactory.newEvent('TestEventType', {
@@ -85,15 +85,14 @@ describe('TCP Client - Write Events to pre-populated stream', () => {
 		events2 = [eventFactory.newEvent('TestEventType', {
 			something: 'abc'
 		})];
-	})
-	
-	it('Should fail promise if passed in wrong expectedVersion (covering edge case of expectedVersion=0)', async() => {
+	});
+
+	it('Should fail promise if passed in wrong expectedVersion (covering edge case of expectedVersion=0)', async () => {
 		try {
 			await client.writeEvents(testStream, events2, {
 				expectedVersion: 0
 			});
-		}
-		catch(err) {
+		} catch (err) {
 			assert(err, 'Error expected');
 			assert(err.message, 'Error Message Expected');
 			return;
@@ -101,16 +100,13 @@ describe('TCP Client - Write Events to pre-populated stream', () => {
 		assert.fail('Write should not have succeeded');
 	});
 
-	it('Should write event if expectedVersion=null', async() => {
+	it('Should write event if expectedVersion=null', async () => {
 		try {
 			await client.writeEvents(testStream, events2, {
 				expectedVersion: null
 			});
-		}
-		catch(err) {
+		} catch (err) {
 			assert.fail('Write should not have failed');
-			return;
 		}
-		assert(true, 'Write succeeded');
 	});
-})
+});

@@ -1,3 +1,17 @@
+# 3.0.2 (2019-01-02)
+
+#### Fix
+
+- Expected version on writes defaulting to -2 when 0 provided. Thanks [@amaghfur](https://github.com/amaghfur)
+
+#### Dependencies
+
+- Update packages
+
+#### Misc
+
+- Change folder structure
+
 # 3.0.1 (2018-09-17)
 
 #### Misc
@@ -47,7 +61,7 @@
 
 #### TCP Client
 
-- Feature - Add support for connecting to a cluster using gossip seeds or dns discovery ([https://github.com/RemoteMetering/geteventstore-promise#config-example))
+- Feature - Add support for connecting to a cluster using gossip seeds or dns discovery (https://github.com/RemoteMetering/geteventstore-promise#config-example)
 
 #### Misc
 
