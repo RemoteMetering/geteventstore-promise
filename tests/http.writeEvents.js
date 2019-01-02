@@ -71,7 +71,7 @@ describe('Http Client - Write Events to pre-populated stream', () => {
 		events,
 		events2;
 
-	beforeEach(async() => {
+	beforeEach(async () => {
 		client = new EventStore.HTTPClient(httpConfig);
 
 		events = [eventFactory.newEvent('TestEventType', {
@@ -86,15 +86,14 @@ describe('Http Client - Write Events to pre-populated stream', () => {
 		events2 = [eventFactory.newEvent('TestEventType', {
 			something: 'abc'
 		})];
-	})
-	
-	it('Should fail promise if passed in wrong expectedVersion (covering edge case of expectedVersion=0)', async() => {
+	});
+
+	it('Should fail promise if passed in wrong expectedVersion (covering edge case of expectedVersion=0)', async () => {
 		try {
 			await client.writeEvents(testStream, events2, {
 				expectedVersion: 0
 			});
-		}
-		catch(err) {
+		} catch (err) {
 			assert(err, 'Error expected');
 			assert(err.message, 'Error Message Expected');
 			return;
@@ -102,16 +101,13 @@ describe('Http Client - Write Events to pre-populated stream', () => {
 		assert.fail('Write should not have succeeded');
 	});
 
-	it('Should write event if expectedVersion=null', async() => {
+	it('Should write event if expectedVersion=null', async () => {
 		try {
 			await client.writeEvents(testStream, events2, {
 				expectedVersion: null
 			});
-		}
-		catch(err) {
+		} catch (err) {
 			assert.fail('Write should not have failed');
-			return;
 		}
-		assert(true, 'Write succeeded');
 	});
-})
+});

@@ -78,8 +78,6 @@ describe('TCP Client - Write Event to pre-populated stream', () => {
 			});
 		} catch (err) {
 			assert.fail('Write should not have failed');
-			return;
 		}
-		assert(true, 'Write succeeded');
 	});
 });
