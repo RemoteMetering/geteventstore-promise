@@ -28,23 +28,23 @@
 	},
 	"homepage": "https://github.com/RemoteMetering/geteventstore-promise",
 	"dependencies": {
-		"@babel/runtime": "^7.1.2",
+		"@babel/runtime": "^7.2.0",
 		"axios": "^0.18.0",
-		"debug": "^4.0.1",
+		"debug": "^4.1.1",
 		"generic-pool": "^3.4.2",
-		"node-eventstore-client": "^0.2.4",
+		"node-eventstore-client": "^0.2.7",
 		"uuid": "^3.3.2"
 	},
 	"devDependencies": {
-		"@babel/cli": "^7.1.2",
-		"@babel/core": "^7.1.2",
-		"@babel/plugin-transform-runtime": "^7.1.0",
-		"@babel/preset-env": "^7.1.0",
+		"@babel/cli": "^7.2.3",
+		"@babel/core": "^7.2.2",
+		"@babel/plugin-transform-runtime": "^7.2.0",
+		"@babel/preset-env": "^7.2.3",
 		"@babel/register": "^7.0.0",
 		"babel-plugin-add-module-exports": "^1.0.0",
 		"cross-env": "^5.2.0",
 		"mocha": "^5.2.0",
-		"nyc": "^13.0.1"
+		"nyc": "^13.1.0"
 	},
 	"nyc": {
 		"reporter": [
