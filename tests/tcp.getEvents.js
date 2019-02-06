@@ -1,6 +1,7 @@
 import './_globalHooks';
 
 import tcpConfig from './support/tcpConfig';
+import sleep from './utilities/sleep';
 import EventStore from '../lib';
 import assert from 'assert';
 import uuid from 'uuid';
@@ -82,7 +83,7 @@ describe('TCP Client - Get Events', () => {
 		assert(typeof events[0].eventNumber === 'number', 'event number should be a number');
 	});
 
-	it('Should get events reading forward with a length greater than the stream length return a maximum of 4096', async function() {
+	it('Should get events reading forward with a length greater than the stream length return a maximum of 4096', async function () {
 		this.timeout(40000);
 		const client = new EventStore.TCPClient(tcpConfig);
 
@@ -113,5 +114,17 @@ describe('TCP Client - Get Events', () => {
 		assert(typeof events[0].positionEventNumber === 'number', 'position event number should be a number');
 		assert.equal(0, events[0].positionEventNumber, 'Position event number should be a number');
 		assert.equal('$ce-TestStream', events[0].positionStreamId);
+	});
+
+	it('Should get system and deleted events without resolveLinkTos', async () => {
+		const client = new EventStore.TCPClient(tcpConfig);
+
+		const deletedStream = 'TestStreamDeleted';
+		await client.writeEvent(deletedStream, 'TestEventType', { something: 1 });
+
+		await sleep(500);
+
+		const events = await client.getEvents('$streams', 0, 4096, 'forward', false);
+		assert(events.length > 0, 'More than 0 events expected');
 	});
 });

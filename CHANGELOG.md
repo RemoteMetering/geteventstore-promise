@@ -1,3 +1,9 @@
+# 3.0.3 (2019-02-06)
+
+#### TCP Client
+
+- Fix - mapping of non-json events
+
 # 3.0.2 (2019-01-02)
 
 #### Fix

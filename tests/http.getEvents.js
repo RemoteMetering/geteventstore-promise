@@ -1,6 +1,7 @@
 import './_globalHooks';
 
 import httpConfig from './support/httpConfig';
+import sleep from './utilities/sleep';
 import EventStore from '../lib';
 import assert from 'assert';
 import uuid from 'uuid';
@@ -71,7 +72,7 @@ describe('Http Client - Get Events', () => {
 		assert.equal(events[0].data.something, 10);
 	});
 
-	it('Should get events reading forward with a length greater than the stream length return a maximum of 4096', async function() {
+	it('Should get events reading forward with a length greater than the stream length return a maximum of 4096', async function () {
 		this.timeout(10000);
 		const client = new EventStore.HTTPClient(httpConfig);
 
@@ -100,6 +101,18 @@ describe('Http Client - Get Events', () => {
 		assert(events[0].data.something);
 		assert.equal(0, events[0].positionEventNumber);
 		assert.equal('$ce-TestStream', events[0].positionStreamId);
+	});
+
+	it('Should get system and deleted events without resolveLinkTos', async () => {
+		const client = new EventStore.HTTPClient(httpConfig);
+
+		const deletedStream = 'TestStreamDeleted';
+		await client.writeEvent(deletedStream, 'TestEventType', { something: 1 });
+
+		await sleep(500);
+
+		const events = await client.getEvents('$streams', 0, 4096, 'forward', false);
+		assert(events.length > 0, 'More than 0 events expected');
 	});
 
 	it('Should get events reading backward with embed type rich', async () => {
