@@ -4,6 +4,10 @@
 
 - Add readEventsForward and readEventsBackward returning read metadata + events
 
+#### Misc
+
+- Rename "length" parameter to "count"
+
 # 3.0.3 (2019-02-06)
 
 #### TCP Client
