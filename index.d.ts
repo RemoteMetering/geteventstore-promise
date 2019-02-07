@@ -125,8 +125,8 @@ export class HTTPClient {
 	writeEvent(streamName: string, eventType: string, data: object, metaData?: object, options?: HTTPWriteEventOptions): Promise<void>;
 	writeEvents(streamName: string, events: NewEvent[], options?: HTTPWriteEventOptions): Promise<void>;
 	getAllStreamEvents(streamName: string, chunkSize?: number, startPosition?: number, resolveLinkTos?: boolean, embed?: EmbedType): Promise<Event[]>;
-	getEvents(streamName: string, startPosition?: number, length?: number, direction?: ReadDirection, resolveLinkTos?: boolean, embed?: EmbedType): Promise<Event[]>;
-	getEventsByType(streamName: string, eventTypes: string[], startPosition?: number, length?: number, direction?: ReadDirection, resolveLinkTos?: boolean): Promise<Event[]>;
+	getEvents(streamName: string, startPosition?: number, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean, embed?: EmbedType): Promise<Event[]>;
+	getEventsByType(streamName: string, eventTypes: string[], startPosition?: number, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): Promise<Event[]>;
 	deleteStream(streamName: string, hardDelete?: boolean): Promise<void>;
 	ping(): Promise<void>;
 	admin: {
@@ -161,14 +161,14 @@ export class TCPClient {
 	writeEvent(streamName: string, eventType: string, data: object, metaData?: object, options?: TCPWriteEventOptions): Promise<TCPWriteResult>;
 	writeEvents(streamName: string, events: NewEvent[], options?: TCPWriteEventsOptions): Promise<TCPWriteResult>;
 	getAllStreamEvents(streamName: string, chunkSize?: number, startPosition?: number, resolveLinkTos?: boolean): Promise<Event[]>;
-	getEvents(streamName: string, startPosition?: number, length?: number, direction?: ReadDirection, resolveLinkTos?: boolean): Promise<Event[]>;
-	getEventsByType(streamName: string, eventTypes: string[], startPosition?: number, length?: number, direction?: ReadDirection, resolveLinkTos?: boolean): Promise<Event[]>;
+	getEvents(streamName: string, startPosition?: number, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): Promise<Event[]>;
+	getEventsByType(streamName: string, eventTypes: string[], startPosition?: number, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): Promise<Event[]>;
 	deleteStream(streamName: string, hardDelete?: boolean): Promise<TCPDeleteResult>;
 	eventEnumerator(streamName: string, direction?: ReadDirection, resolveLinkTos?: boolean): {
-		first(length: number): Promise<EventEnumeratorResult>;
-		last(length: number): Promise<EventEnumeratorResult>;
-		previous(length: number): Promise<EventEnumeratorResult>;
-		next(length: number): Promise<EventEnumeratorResult>;
+		first(count: number): Promise<EventEnumeratorResult>;
+		last(count: number): Promise<EventEnumeratorResult>;
+		previous(count: number): Promise<EventEnumeratorResult>;
+		next(count: number): Promise<EventEnumeratorResult>;
 	};
 	subscribeToStream(streamName: string, onEventAppeared?: EventAppearedCallback<EventStoreSubscription>, onDropped?: SubscriptionDroppedCallback<EventStoreSubscription>, resolveLinkTos?: boolean): Promise<EventStoreSubscription>;
 	subscribeToStreamFrom(streamName: string, fromEventNumber?: number, onEventAppeared?: EventAppearedCallback<EventStoreCatchUpSubscription>, onLiveProcessingStarted?: LiveProcessingStartedCallback, onDropped?: SubscriptionDroppedCallback<EventStoreCatchUpSubscription>, settings?: SubscribeToStreamFromSettings): Promise<EventStoreCatchUpSubscription>;

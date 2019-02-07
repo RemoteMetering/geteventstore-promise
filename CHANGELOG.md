@@ -382,13 +382,13 @@
 #### HTTP Client
 
 - Fix: writeEvents return successful if empty array given
-- Fix: any get events function will default to 4096 length if greater is requested (warning also displayed)
+- Fix: any get events function will default to 4096 count if greater is requested (warning also displayed)
 - Feature: add getAllStreamEvents function
 
 #### TCP Client
 
 - Feature: added start event number on getAllStreamEvents
-- Fix: any get events function will default to 4096 length if greater is requested (warning also displayed)
+- Fix: any get events function will default to 4096 count if greater is requested (warning also displayed)
 - Change: default chunkSize of reads from 250 to 1000 
 
 #### Tests

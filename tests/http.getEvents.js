@@ -64,7 +64,7 @@ describe('Http Client - Get Events', () => {
 		assert.equal(events[0].data.something, 3);
 	});
 
-	it('Should get events reading backward with a length greater than the stream length', async () => {
+	it('Should get events reading backward with a count greater than the stream length', async () => {
 		const client = new EventStore.HTTPClient(httpConfig);
 
 		const events = await client.getEvents(testStream, undefined, 10000, 'backward');
@@ -72,7 +72,7 @@ describe('Http Client - Get Events', () => {
 		assert.equal(events[0].data.something, 10);
 	});
 
-	it('Should get events reading forward with a length greater than the stream length return a maximum of 4096', async function () {
+	it('Should get events reading forward with a count greater than the stream length return a maximum of 4096', async function () {
 		this.timeout(10000);
 		const client = new EventStore.HTTPClient(httpConfig);
 

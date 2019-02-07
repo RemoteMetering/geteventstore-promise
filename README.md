@@ -26,7 +26,7 @@ Set the ES_EXECUTABLE environment variable to point to the eventstore executable
 
 # Supported Methods
 
-## getEvents(streamName, startPosition, length, direction, resolveLinkTos, embed)
+## getEvents(streamName, startPosition, count, direction, resolveLinkTos, embed)
 
 Returns events from a given stream.
 
@@ -37,7 +37,7 @@ The name of the stream to read from.
 If specified, the stream will be read starting at event number startPosition, otherwise *0*
 'head' will start reading from the back of the stream, if direction is specified as 'backward'
 
-##### length (optional)
+##### count (optional)
 The number of events to be read, defaults to *1000*, max of *4096*
 
 ##### direction (optional)
@@ -544,7 +544,7 @@ const client = new EventStore.TCPClient({
 
 # Common methods(same as HTTP, just use TCP configuration)
 
-* getEvents(streamName, startPosition, length, direction, resolveLinkTos)
+* getEvents(streamName, startPosition, count, direction, resolveLinkTos)
 * writeEvent(streamName, eventType, data, metaData, options)
 * writeEvents(streamName, events, options)
 * deleteStream(streamName, hardDelete)
@@ -554,7 +554,7 @@ const client = new EventStore.TCPClient({
 ## close()
 Close all active connections.
 
-## getEventsByType(streamName, eventTypes, startPosition, length, direction, resolveLinkTos)
+## getEventsByType(streamName, eventTypes, startPosition, count, direction, resolveLinkTos)
 
 Returns all events from a given stream by Event Types.
 
@@ -567,7 +567,7 @@ An array of event types to filter by.
 ##### startPosition (optional)
 If specified, the stream will be read starting at event number startPosition, otherwise *0*
 
-##### length (optional)
+##### count (optional)
 The number of events to be read, defaults to *1000*, max of *4096*
 
 ##### direction (optional)
