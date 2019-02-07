@@ -1,3 +1,9 @@
+# 3.1.0 (2019-02-07)
+
+#### Features
+
+- Add readEventsForward and readEventsBackward returning read metadata + events
+
 # 3.0.3 (2019-02-06)
 
 #### TCP Client
