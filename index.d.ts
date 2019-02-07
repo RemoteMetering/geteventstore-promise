@@ -98,8 +98,11 @@ export interface HTTPReadResult {
 	updated: string,
 	streamId: string,
 	author: HTTPReadResultAuthor,
-	headOfStream: false,
-	isEndOfStream: false,
+	headOfStream: boolean,
+	isEndOfStream: boolean,
+	readDirection: ReadDirection,
+	fromEventNumber: number;
+	nextEventNumber: number;
 	selfUrl: string,
 	links: HTTPReadResultLink[],
 	events: Event[]

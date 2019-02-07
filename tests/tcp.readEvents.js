@@ -26,7 +26,7 @@ describe('TCP Client - Get Events', () => {
 		return client.writeEvents(testStream, events);
 	});
 
-	it('Should get events reading forward', async () => {
+	it('Should read events reading forward', async () => {
 		const client = new EventStore.TCPClient(tcpConfig);
 
 		const result = await client.readEventsForward(testStream);
@@ -40,7 +40,7 @@ describe('TCP Client - Get Events', () => {
 		assert(typeof result.events[0].eventNumber === 'number', 'event number should be a number');
 	});
 
-	it('Should get events reading backward', async () => {
+	it('Should read events reading backward', async () => {
 		const client = new EventStore.TCPClient(tcpConfig);
 
 		const result = await client.readEventsBackward(testStream);
@@ -49,7 +49,7 @@ describe('TCP Client - Get Events', () => {
 		assert(typeof result.events[0].eventNumber === 'number', 'event number should be a number');
 	});
 
-	it('Should get last event reading backward with larger size than events', async () => {
+	it('Should read last event reading backward with larger size than events', async () => {
 		const client = new EventStore.TCPClient(tcpConfig);
 
 		const result = await client.readEventsBackward(testStream, 0, 250);
@@ -65,7 +65,7 @@ describe('TCP Client - Get Events', () => {
 		assert.equal(result.events.length, 0);
 	});
 
-	it('Should get events reading backward from a start position', async () => {
+	it('Should read events reading backward from a start position', async () => {
 		const client = new EventStore.TCPClient(tcpConfig);
 
 		const result = await client.readEventsBackward(testStream, 2);
@@ -74,7 +74,7 @@ describe('TCP Client - Get Events', () => {
 		assert(typeof result.events[0].eventNumber === 'number', 'event number should be a number');
 	});
 
-	it('Should get events reading backward with a count greater than the stream length', async () => {
+	it('Should read events reading backward with a count greater than the stream length', async () => {
 		const client = new EventStore.TCPClient(tcpConfig);
 
 		const result = await client.readEventsBackward(testStream, undefined, 10000);
@@ -83,7 +83,7 @@ describe('TCP Client - Get Events', () => {
 		assert(typeof result.events[0].eventNumber === 'number', 'event number should be a number');
 	});
 
-	it('Should get events reading forward with a count greater than the stream length return a maximum of 4096', async function () {
+	it('Should read events reading forward with a count greater than the stream length return a maximum of 4096', async function () {
 		this.timeout(40000);
 		const client = new EventStore.TCPClient(tcpConfig);
 
@@ -104,7 +104,7 @@ describe('TCP Client - Get Events', () => {
 		assert.equal(result.events[4095].data.something, 4096);
 	});
 
-	it('Should get linked to events and map correctly', async () => {
+	it('Should read linked to events and map correctly', async () => {
 		const client = new EventStore.TCPClient(tcpConfig);
 
 		const result = await client.readEventsForward('$ce-TestStream', 0, 1);
@@ -116,7 +116,7 @@ describe('TCP Client - Get Events', () => {
 		assert.equal('$ce-TestStream', result.events[0].positionStreamId);
 	});
 
-	it('Should get system and deleted events without resolveLinkTos', async () => {
+	it('Should read system and deleted events without resolveLinkTos', async () => {
 		const client = new EventStore.TCPClient(tcpConfig);
 
 		const deletedStream = 'TestStreamDeleted';
