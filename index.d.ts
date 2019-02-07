@@ -5,7 +5,8 @@ import {
 	DeleteResult as TCPDeleteResult,
 	EventAppearedCallback,
 	LiveProcessingStartedCallback,
-	SubscriptionDroppedCallback
+	SubscriptionDroppedCallback,
+	StreamEventsSlice
 }  from 'node-eventstore-client';
 
 import { 
@@ -78,6 +79,32 @@ export interface TCPWriteEventsOptions extends TCPWriteEventOptions {
 	transactionWriteSize?: number;
 }
 
+export interface TCPReadResult extends StreamEventsSlice {
+	events: Event[]
+}
+
+export interface HTTPReadResultAuthor {
+	name: string;
+}
+
+export interface HTTPReadResultLink {
+	uri: string;
+	relation: string;
+}
+
+export interface HTTPReadResult {
+	title: string,
+	id: string,
+	updated: string,
+	streamId: string,
+	author: HTTPReadResultAuthor,
+	headOfStream: false,
+	isEndOfStream: false,
+	selfUrl: string,
+	links: HTTPReadResultLink[],
+	events: Event[]
+}
+
 export interface ProjectionStateOptions {
 	partition?: string;
 }
@@ -127,8 +154,8 @@ export class HTTPClient {
 	getAllStreamEvents(streamName: string, chunkSize?: number, startPosition?: number, resolveLinkTos?: boolean, embed?: EmbedType): Promise<Event[]>;
 	getEvents(streamName: string, startPosition?: number, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean, embed?: EmbedType): Promise<Event[]>;
 	getEventsByType(streamName: string, eventTypes: string[], startPosition?: number, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): Promise<Event[]>;
-	readEventsForward(streamName: string, startPosition?: number, count?: number, resolveLinkTos?: boolean, embed?: EmbedType): Promise<Event[]>;
-	readEventsBackward(streamName: string, startPosition?: number, count?: number, resolveLinkTos?: boolean, embed?: EmbedType): Promise<Event[]>;
+	readEventsForward(streamName: string, startPosition?: number, count?: number, resolveLinkTos?: boolean, embed?: EmbedType): Promise<HTTPReadResult>;
+	readEventsBackward(streamName: string, startPosition?: number, count?: number, resolveLinkTos?: boolean, embed?: EmbedType): Promise<HTTPReadResult>;
 	deleteStream(streamName: string, hardDelete?: boolean): Promise<void>;
 	ping(): Promise<void>;
 	admin: {
@@ -165,8 +192,8 @@ export class TCPClient {
 	getAllStreamEvents(streamName: string, chunkSize?: number, startPosition?: number, resolveLinkTos?: boolean): Promise<Event[]>;
 	getEvents(streamName: string, startPosition?: number, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): Promise<Event[]>;
 	getEventsByType(streamName: string, eventTypes: string[], startPosition?: number, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): Promise<Event[]>;
-	readEventsForward(streamName: string, startPosition?: number, count?: number, resolveLinkTos?: boolean): Promise<Event[]>;
-	readEventsBackward(streamName: string, startPosition?: number, count?: number, resolveLinkTos?: boolean): Promise<Event[]>;
+	readEventsForward(streamName: string, startPosition?: number, count?: number, resolveLinkTos?: boolean): Promise<TCPReadResult>;
+	readEventsBackward(streamName: string, startPosition?: number, count?: number, resolveLinkTos?: boolean): Promise<TCPReadResult>;
 	deleteStream(streamName: string, hardDelete?: boolean): Promise<TCPDeleteResult>;
 	eventEnumerator(streamName: string, direction?: ReadDirection, resolveLinkTos?: boolean): {
 		first(count: number): Promise<EventEnumeratorResult>;
