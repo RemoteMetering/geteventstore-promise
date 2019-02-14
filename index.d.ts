@@ -5,8 +5,7 @@ import {
 	DeleteResult as TCPDeleteResult,
 	EventAppearedCallback,
 	LiveProcessingStartedCallback,
-	SubscriptionDroppedCallback,
-	StreamEventsSlice
+	SubscriptionDroppedCallback
 }  from 'node-eventstore-client';
 
 import { 
@@ -79,8 +78,15 @@ export interface TCPWriteEventsOptions extends TCPWriteEventOptions {
 	transactionWriteSize?: number;
 }
 
-export interface TCPReadResult extends StreamEventsSlice {
-	events: Event[]
+export interface TCPReadResult {
+	status: string;
+	stream: string;
+	fromEventNumber: Long;
+	readDirection: string;
+	events: Event[];
+	nextEventNumber: Long;
+	lastEventNumber: Long;
+	isEndOfStream: boolean;
 }
 
 export interface HTTPReadResultAuthor {
