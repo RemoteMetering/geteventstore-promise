@@ -1,3 +1,9 @@
+# 3.1.1 (2019-02-14)
+
+#### Fix
+
+- TCPReadResult typescript definition
+
 # 3.1.0 (2019-02-07)
 
 #### Features
