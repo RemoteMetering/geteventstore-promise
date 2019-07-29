@@ -13,6 +13,10 @@ import {
 	Pool as TCPPool 
 } from "generic-pool";
 
+import {
+	ConnectionSettings
+} from 'geteventstore-promise';
+
 export interface NewEvent {
 	eventId: string;
 	eventType: string;
@@ -57,7 +61,7 @@ export interface HTTPConfig {
 	credentials: UserCredentials;
 }
 
-export interface TCPConfig {
+export interface TCPConfig extends ConnectionSettings {
 	hostname?: string;
 	port?: number;
 	protocol?: string;
