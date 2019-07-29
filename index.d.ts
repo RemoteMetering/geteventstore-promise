@@ -5,17 +5,14 @@ import {
 	DeleteResult as TCPDeleteResult,
 	EventAppearedCallback,
 	LiveProcessingStartedCallback,
-	SubscriptionDroppedCallback
+	SubscriptionDroppedCallback,
+	ConnectionSettings
 }  from 'node-eventstore-client';
 
 import { 
 	Options as TCPPoolOptions,
 	Pool as TCPPool 
 } from "generic-pool";
-
-import {
-	ConnectionSettings
-} from 'geteventstore-promise';
 
 export interface NewEvent {
 	eventId: string;
