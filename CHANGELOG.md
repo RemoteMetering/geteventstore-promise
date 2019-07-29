@@ -1,3 +1,19 @@
+# 3.1.2 (2019-07-29)
+
+#### Misc
+
+- Typings - Inherit base TCP config from 'node-eventstore-client'. Thanks [@adebisi-fa](https://github.com/adebisi-fa)
+
+#### Dependencies
+
+- Update packages
+
+# 3.1.1 (2019-02-14)
+
+#### Fix
+
+- TCPReadResult typescript definition
+
 # 3.1.1 (2019-02-14)
 
 #### Fix
