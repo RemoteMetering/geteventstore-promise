@@ -5,7 +5,8 @@ import {
 	DeleteResult as TCPDeleteResult,
 	EventAppearedCallback,
 	LiveProcessingStartedCallback,
-	SubscriptionDroppedCallback
+	SubscriptionDroppedCallback,
+	ConnectionSettings
 }  from 'node-eventstore-client';
 
 import { 
@@ -57,7 +58,7 @@ export interface HTTPConfig {
 	credentials: UserCredentials;
 }
 
-export interface TCPConfig {
+export interface TCPConfig extends ConnectionSettings {
 	hostname?: string;
 	port?: number;
 	protocol?: string;
