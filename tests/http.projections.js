@@ -57,7 +57,7 @@ describe('Projections', () => {
 			const response = await client.projections.reset(assertionProjection);
 			assert.equal(response.name, assertionProjection);
 			const projectionInfo = await client.projections.getInfo(assertionProjection);
-			assert.equal(projectionInfo.status, 'Preparing/Stopped');
+			assert(['Preparing/Stopped', 'Running'].includes(projectionInfo.status), `Invalid status after reset: ${projectionInfo.status}`);
 		});
 
 		it('Should remove continuous projection', async function () {
