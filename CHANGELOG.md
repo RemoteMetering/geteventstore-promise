@@ -1,3 +1,13 @@
+# 3.1.3 (2019-09-09)
+
+#### Fix
+
+- Typings - Metadata and eventId is optional. Thanks [@spontoreau](https://github.com/spontoreau)
+
+#### Dependencies
+
+- Update packages
+
 # 3.1.2 (2019-07-29)
 
 #### Misc
