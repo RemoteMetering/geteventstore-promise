@@ -1,6 +1,6 @@
 # 3.1.3 (2019-09-09)
 
-#### Misc
+#### Fix
 
 - Typings - Metadata and eventId is optional. Thanks [@spontoreau](https://github.com/spontoreau)
 
