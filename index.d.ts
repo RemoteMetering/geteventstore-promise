@@ -153,7 +153,7 @@ export interface EventEnumeratorResult {
 }
 
 export class EventFactory {
-	newEvent: (eventType: string, data: object, metadata: object, eventId: string) => NewEvent;
+	newEvent: (eventType: string, data: object, metadata?: object, eventId?: string) => NewEvent;
 }
 
 export class HTTPClient {
