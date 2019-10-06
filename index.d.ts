@@ -14,6 +14,10 @@ import {
 	Pool as TCPPool 
 } from "generic-pool";
 
+export interface MappedEventAppearedCallback<TSubscription> {
+    (subscription: TSubscription, event: Event): void | Promise<void>;
+}
+
 export interface NewEvent {
 	eventId: string;
 	eventType: string;
@@ -211,8 +215,8 @@ export class TCPClient {
 		previous(count: number): Promise<EventEnumeratorResult>;
 		next(count: number): Promise<EventEnumeratorResult>;
 	};
-	subscribeToStream(streamName: string, onEventAppeared?: EventAppearedCallback<EventStoreSubscription>, onDropped?: SubscriptionDroppedCallback<EventStoreSubscription>, resolveLinkTos?: boolean): Promise<EventStoreSubscription>;
-	subscribeToStreamFrom(streamName: string, fromEventNumber?: number, onEventAppeared?: EventAppearedCallback<EventStoreCatchUpSubscription>, onLiveProcessingStarted?: LiveProcessingStartedCallback, onDropped?: SubscriptionDroppedCallback<EventStoreCatchUpSubscription>, settings?: SubscribeToStreamFromSettings): Promise<EventStoreCatchUpSubscription>;
+	subscribeToStream(streamName: string, onEventAppeared?: MappedEventAppearedCallback<EventStoreSubscription>, onDropped?: SubscriptionDroppedCallback<EventStoreSubscription>, resolveLinkTos?: boolean): Promise<EventStoreSubscription>;
+	subscribeToStreamFrom(streamName: string, fromEventNumber?: number, onEventAppeared?: MappedEventAppearedCallback<EventStoreCatchUpSubscription>, onLiveProcessingStarted?: LiveProcessingStartedCallback, onDropped?: SubscriptionDroppedCallback<EventStoreCatchUpSubscription>, settings?: SubscribeToStreamFromSettings): Promise<EventStoreCatchUpSubscription>;
 	close(): Promise<void>;
 	getPool(): Promise<TCPPool<object>>;
 	closeAllPools(): Promise<void>;
