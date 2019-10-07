@@ -200,5 +200,69 @@ describe('Projections', () => {
 			const client = new EventStore.HTTPClient(httpConfig);
 			return client.projections.getState('SomeProjectionNameThatDoesNotExist').catch(err => assert(err.response.status, 404));
 		});
+
+		it('Should return content for test projection result', async function () {
+			this.timeout(10 * 1000);
+			const client = new EventStore.HTTPClient(httpConfig);
+
+			const projectionName = 'TestProjection';
+			const projectionContent = fs.readFileSync(`${__dirname}/support/testProjection.js`, {
+				encoding: 'utf8'
+			});
+
+			await client.projections.assert(projectionName, projectionContent);
+			await sleep(500);
+
+			const testStream = `TestProjectionStream-${uuid.v4()}`;
+			await client.writeEvent(testStream, 'TestProjectionEventType', {
+				something: '123'
+			});
+
+			await sleep(1000);
+			const projectionState = await client.projections.getResult(projectionName);
+			assert.equal(projectionState.data, '321');
+
+			const stopResponse = await client.projections.stop(projectionName);
+			assert.equal(stopResponse.name, projectionName);
+			const removeResponse = await client.projections.remove(projectionName);
+			assert.equal(removeResponse.name, projectionName);
+		});
+
+		it('Should return content for test partitioned projection', async function () {
+			this.timeout(1000 * 10);
+			const client = new EventStore.HTTPClient(httpConfig);
+
+			const projectionName = `TestProjection${uuid.v4()}`;
+			const projectionContent = fs.readFileSync(`${__dirname}/support/testPartitionedProjection.js`, {
+				encoding: 'utf8'
+			});
+
+			await client.projections.assert(projectionName, projectionContent);
+			await sleep(500);
+
+			const testStream = `TestProjectionStream-${uuid.v4()}`;
+			await client.writeEvent(testStream, 'TestProjectionEventType', {
+				something: '123'
+			});
+
+			await sleep(4000);
+			const options = {
+				partition: testStream
+			};
+
+			const projectionState = await client.projections.getResult(projectionName, options);
+			assert.equal(projectionState.data, '321');
+
+			const stopResponse = await client.projections.stop(projectionName);
+			assert.equal(stopResponse.name, projectionName);
+			const removeResponse = await client.projections.remove(projectionName);
+			assert.equal(removeResponse.name, projectionName);
+		});
+
+		it('Should return 404 for non-existent projection result', function () {
+			this.timeout(10 * 1000);
+			const client = new EventStore.HTTPClient(httpConfig);
+			return client.projections.getResult('SomeProjectionNameThatDoesNotExist').catch(err => assert(err.response.status, 404));
+		});
 	});
 });
