@@ -1,7 +1,7 @@
-import { 
-	EventStoreSubscription, 
-	EventStoreCatchUpSubscription, 
-	WriteResult as TCPWriteResult, 
+import {
+	EventStoreSubscription,
+	EventStoreCatchUpSubscription,
+	WriteResult as TCPWriteResult,
 	DeleteResult as TCPDeleteResult,
 	EventAppearedCallback,
 	LiveProcessingStartedCallback,
@@ -9,9 +9,9 @@ import {
 	ConnectionSettings
 }  from 'node-eventstore-client';
 
-import { 
+import {
 	Options as TCPPoolOptions,
-	Pool as TCPPool 
+	Pool as TCPPool
 } from "generic-pool";
 
 export interface NewEvent {
@@ -38,7 +38,7 @@ export interface Event {
 
 export type ProjectionMode = "onetime" | "continuous";
 
-export type ReadDirection = "forward" | "backward"; 
+export type ReadDirection = "forward" | "backward";
 
 export type EmbedType = "body" | "rich" | "PrettyBody" | "TryHarder";
 
@@ -179,6 +179,7 @@ export class HTTPClient {
 		assert(name: string, projectionContent: string, mode?: ProjectionMode, enabled?: boolean, checkpointsEnabled?: boolean, emitEnabled?: boolean): Promise<void>;
 		remove(name: string, deleteCheckpointStream?: boolean, deleteStateStream?: boolean): Promise<void>;
 		getState(name: string, options?: ProjectionStateOptions): Promise<object>;
+		getResult(name: string, options?: ProjectionStateOptions): Promise<object>;
 		getInfo(name: string): Promise<object>;
 		getAllProjectionsInfo(): Promise<object>;
 		disableAll(): Promise<void>;
