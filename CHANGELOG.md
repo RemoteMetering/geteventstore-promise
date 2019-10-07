@@ -4,7 +4,7 @@
 
 - subscriptions - onEventAppeared aligned with `node-eventstore-client`, previously: `onEventAppeared(ev)` now: `onEventAppeared(subscription, ev)`. Thanks [@adebisi-fa](https://github.com/adebisi-fa)
 
-#### Feature
+#### Features
 
 - projections - `result` query added. Thanks [@set4812](https://github.com/set4812)
 
