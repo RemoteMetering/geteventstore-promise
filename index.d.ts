@@ -3,7 +3,6 @@ import {
 	EventStoreCatchUpSubscription, 
 	WriteResult as TCPWriteResult, 
 	DeleteResult as TCPDeleteResult,
-	EventAppearedCallback,
 	LiveProcessingStartedCallback,
 	SubscriptionDroppedCallback,
 	ConnectionSettings
@@ -13,10 +12,6 @@ import {
 	Options as TCPPoolOptions,
 	Pool as TCPPool 
 } from "generic-pool";
-
-export interface MappedEventAppearedCallback<TSubscription> {
-    (subscription: TSubscription, event: Event): void | Promise<void>;
-}
 
 export interface NewEvent {
 	eventId: string;
@@ -149,6 +144,10 @@ export interface PersistentSubscriptionAssertResult {
 export interface SubscribeToStreamFromSettings {
 	resolveLinkTos?: boolean;
 	readBatchSize?: number;
+}
+
+export interface MappedEventAppearedCallback<TSubscription> {
+    (subscription: TSubscription, event: Event): void | Promise<void>;
 }
 
 export interface EventEnumeratorResult {
