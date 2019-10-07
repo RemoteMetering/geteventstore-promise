@@ -1,3 +1,13 @@
+# 3.2.0 (2019-10-07)
+
+#### Breaking Changes
+
+- subscriptions - onEventAppeared aligned with `node-eventstore-client`, previously: `onEventAppeared(ev)` now: `onEventAppeared(subscription, ev)`. Thanks [@adebisi-fa](https://github.com/adebisi-fa)
+
+#### Feature
+
+- projections - `result` query added. Thanks [@set4812](https://github.com/set4812)
+
 # 3.1.3 (2019-09-09)
 
 #### Fix
