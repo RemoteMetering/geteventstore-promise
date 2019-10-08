@@ -52,9 +52,9 @@ describe('TCP Client - Subscribe To Stream From', () => {
 		function onEventAppeared(sub, ev) {
 			assert(ev.positionEventId, 'Position link event id expected');
 			if (doDone) {
+				hasPassed = true;
 				done();
 				client.close();
-				hasPassed = true;
 			}
 			doDone = false;
 		}
