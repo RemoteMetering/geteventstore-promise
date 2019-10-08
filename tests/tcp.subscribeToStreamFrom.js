@@ -8,7 +8,7 @@ import uuid from 'uuid';
 
 const eventFactory = new EventStore.EventFactory();
 
-describe('TCP Client - Subscribe To Stream', () => {
+describe('TCP Client - Subscribe To Stream From', () => {
 	it('Should get all events written to a subscription stream', function (done) {
 		this.timeout(15 * 1000);
 		const client = new EventStore.TCPClient(tcpConfig);
@@ -49,12 +49,12 @@ describe('TCP Client - Subscribe To Stream', () => {
 		let doDone = true;
 		let hasPassed = false;
 
-		function onEventAppeared(ev) {
+		function onEventAppeared(sub, ev) {
 			assert(ev.positionEventId, 'Position link event id expected');
 			if (doDone) {
+				hasPassed = true;
 				done();
 				client.close();
-				hasPassed = true;
 			}
 			doDone = false;
 		}

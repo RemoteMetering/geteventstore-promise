@@ -128,7 +128,7 @@ describe('Projections', () => {
 	});
 
 	describe('General', () => {
-		it('Should return content with all eventstore projections information', async function () {
+		it('Should return all eventstore projections information', async function () {
 			this.timeout(10 * 1000);
 			const client = new EventStore.HTTPClient(httpConfig);
 
@@ -137,7 +137,7 @@ describe('Projections', () => {
 			assert(projectionsInfo.projections.length > 0);
 		});
 
-		it('Should return content for test projection state', async function () {
+		it('Should return state for test projection', async function () {
 			this.timeout(10 * 1000);
 			const client = new EventStore.HTTPClient(httpConfig);
 
@@ -164,7 +164,7 @@ describe('Projections', () => {
 			assert.equal(removeResponse.name, projectionName);
 		});
 
-		it('Should return content for test partitioned projection', async function () {
+		it('Should return state for partitioned test projection', async function () {
 			this.timeout(1000 * 10);
 			const client = new EventStore.HTTPClient(httpConfig);
 
@@ -195,13 +195,13 @@ describe('Projections', () => {
 			assert.equal(removeResponse.name, projectionName);
 		});
 
-		it('Should return 404 for non-existent projection state', function () {
+		it('Should return 404 for non-existent projection when requesting state', function () {
 			this.timeout(10 * 1000);
 			const client = new EventStore.HTTPClient(httpConfig);
 			return client.projections.getState('SomeProjectionNameThatDoesNotExist').catch(err => assert(err.response.status, 404));
 		});
 
-		it('Should return content for test projection result', async function () {
+		it('Should return result for test projection', async function () {
 			this.timeout(10 * 1000);
 			const client = new EventStore.HTTPClient(httpConfig);
 
@@ -228,7 +228,7 @@ describe('Projections', () => {
 			assert.equal(removeResponse.name, projectionName);
 		});
 
-		it('Should return content for test partitioned projection', async function () {
+		it('Should return result for partitioned test projection', async function () {
 			this.timeout(1000 * 10);
 			const client = new EventStore.HTTPClient(httpConfig);
 
@@ -259,7 +259,7 @@ describe('Projections', () => {
 			assert.equal(removeResponse.name, projectionName);
 		});
 
-		it('Should return 404 for non-existent projection result', function () {
+		it('Should return 404 for non-existent projection when requesting result', function () {
 			this.timeout(10 * 1000);
 			const client = new EventStore.HTTPClient(httpConfig);
 			return client.projections.getResult('SomeProjectionNameThatDoesNotExist').catch(err => assert(err.response.status, 404));

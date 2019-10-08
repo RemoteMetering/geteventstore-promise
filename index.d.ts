@@ -6,7 +6,7 @@ import {
 	LiveProcessingStartedCallback,
 	SubscriptionDroppedCallback,
 	ConnectionSettings
-}  from 'node-eventstore-client';
+}  from "node-eventstore-client";
 
 import {
 	Options as TCPPoolOptions,
