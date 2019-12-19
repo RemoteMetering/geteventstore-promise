@@ -77,7 +77,7 @@ Returns all events from a given stream.
 The name of the stream to read from.
 
 ##### chunkSize (optional)
-The amount of events to read in each call to Event Store, defaults to *1000*, 
+The amount of events to read in each call to Event Store, defaults to *1000*,
 
 ##### startPosition (optional)
 If specified, the stream will be read starting at event number startPosition, otherwise *0*
@@ -509,7 +509,7 @@ const projectionState = await client.projections.getState('TestProjection');
 
 Sends scavenge command to Event Store.
 
-If the promise is fulfilled then the scavenge command has been sent, it does not guarantee that the scavenge will be successful. 
+If the promise is fulfilled then the scavenge command has been sent, it does not guarantee that the scavenge will be successful.
 
 #### Example
 
@@ -535,7 +535,7 @@ console.log('Scavenge command sent!');
 
 Sends shutdown command to Event Store.
 
-If the promise is fulfilled then the shutdown command has been sent, it does not guarantee that the shutdown will be successful. 
+If the promise is fulfilled then the shutdown command has been sent, it does not guarantee that the shutdown will be successful.
 
 #### Example
 
@@ -629,7 +629,7 @@ const client = new EventStore.TCPClient({
 * writeEvents(streamName, events, options)
 * deleteStream(streamName, hardDelete)
 
-# Supported Methods 
+# Supported Methods
 
 ## close()
 Close all active connections.
@@ -683,7 +683,7 @@ Returns all events from a given stream.
 The name of the stream to read from.
 
 ##### chunkSize (optional)
-The amount of events to read in each call to Event Store, defaults to *1000*, 
+The amount of events to read in each call to Event Store, defaults to *1000*,
 
 ##### startPosition (optional)
 If specified, the stream will be read starting at event number startPosition, otherwise *0*
@@ -740,13 +740,13 @@ const client = new EventStore.TCPClient({
 	}
 });
 
-function onEventAppeared(ev) {
+function onEventAppeared(subscription, ev) {
 	processedEventCount++;
 	return;
 };
 
 function onDropped(subscription, reason, error) {
-	
+
 };
 
 await client.subscribeToStream('TestStream', onEventAppeared, onDropped, false);
@@ -774,7 +774,7 @@ function
 function
 
 ##### settings
-resolveLinkTos - Whether or not to resolve link events 
+resolveLinkTos - Whether or not to resolve link events
 
 maxLiveQueueSize - The max amount to buffer when processing from live subscription
 
@@ -798,7 +798,7 @@ const client = new EventStore.TCPClient({
 
 let processedEventCount = 0;
 
-function onEventAppeared(ev) {
+function onEventAppeared(subscription, ev) {
     processedEventCount++;
     return;
 };
@@ -808,7 +808,7 @@ function onLiveProcessingStarted() {
 }
 
 function onDropped(subscription, reason, error) {
-    
+
 };
 
 await client.subscribeToStreamFrom('TestStream', 0, onEventAppeared, onLiveProcessingStarted,onDropped);
