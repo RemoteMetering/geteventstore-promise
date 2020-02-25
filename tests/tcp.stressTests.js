@@ -1,9 +1,9 @@
 import './_globalHooks';
 
+import generateEventId from '../lib/utilities/generateEventId';
 import tcpConfig from './support/tcpConfig';
 import EventStore from '../lib';
 import assert from 'assert';
-import uuid from 'uuid';
 
 const eventFactory = new EventStore.EventFactory();
 
@@ -12,7 +12,7 @@ describe('TCP Client - Stress Tests', () => {
 		this.timeout(20000);
 		const client = new EventStore.TCPClient(tcpConfig);
 
-		const testStream = `TestStream-${uuid.v4()}`;
+		const testStream = `TestStream-${generateEventId()}`;
 		const numberOfEvents = 5000;
 		const events = [];
 
@@ -31,7 +31,7 @@ describe('TCP Client - Stress Tests', () => {
 		this.timeout(60000);
 		const client = new EventStore.TCPClient(tcpConfig);
 
-		const testStream = `TestStream-${uuid.v4()}`;
+		const testStream = `TestStream-${generateEventId()}`;
 		const numberOfEvents = 5000;
 		const events = [];
 		let writeCount = 0;

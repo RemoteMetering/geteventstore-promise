@@ -1,14 +1,14 @@
 import './_globalHooks';
 
+import generateEventId from '../lib/utilities/generateEventId';
 import httpConfig from './support/httpConfig';
 import EventStore from '../lib';
 import assert from 'assert';
-import uuid from 'uuid';
 
 describe('Http Client - Write Event', () => {
 	it('Write to a new stream and read the event', async () => {
 		const client = new EventStore.HTTPClient(httpConfig);
-		const testStream = `TestStream-${uuid.v4()}`;
+		const testStream = `TestStream-${generateEventId()}`;
 
 		await client.writeEvent(testStream, 'TestEventType', {
 			something: '123'
@@ -20,7 +20,7 @@ describe('Http Client - Write Event', () => {
 
 	it('Should fail promise if no event data provided', async () => {
 		const client = new EventStore.HTTPClient(httpConfig);
-		const testStream = `TestStream-${uuid.v4()}`;
+		const testStream = `TestStream-${generateEventId()}`;
 
 		try {
 			await client.writeEvent(testStream, 'TestEventType');
@@ -38,7 +38,7 @@ describe('Http Client - Write Event to pre-populated stream', () => {
 	let testStream;
 	beforeEach(async () => {
 		client = new EventStore.HTTPClient(httpConfig);
-		testStream = `TestStream-${uuid.v4()}`;
+		testStream = `TestStream-${generateEventId()}`;
 
 		await client.writeEvent(testStream, 'TestEventType', {
 			something: '123'
