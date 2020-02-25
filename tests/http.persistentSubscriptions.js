@@ -1,11 +1,11 @@
 import './_globalHooks';
 
+import generateEventId from '../lib/utilities/generateEventId';
 import chunkArray from '../lib/utilities/chunkArray';
 import httpConfig from './support/httpConfig';
 import sleep from './utilities/sleep';
 import EventStore from '../lib';
 import assert from 'assert';
-import uuid from 'uuid';
 
 const eventFactory = new EventStore.EventFactory();
 
@@ -13,7 +13,7 @@ describe('HTTP Client - Persistent Subscription', () => {
 	it('Should get and ack first batch of events written to a stream', async function() {
 		this.timeout(15 * 1000);
 		const client = new EventStore.HTTPClient(httpConfig);
-		const testStream = `TestStream-${uuid.v4()}`;
+		const testStream = `TestStream-${generateEventId()}`;
 
 		const events = [];
 		for (let k = 0; k < 10; k++) {
@@ -38,7 +38,7 @@ describe('HTTP Client - Persistent Subscription', () => {
 	it('Should ack and nack messages individually', async function() {
 		this.timeout(20 * 1000);
 		const client = new EventStore.HTTPClient(httpConfig);
-		const testStream = `TestStream-${uuid.v4()}`;
+		const testStream = `TestStream-${generateEventId()}`;
 
 		const events = [];
 		for (let k = 0; k < 12; k++) {
@@ -75,7 +75,7 @@ describe('HTTP Client - Persistent Subscription', () => {
 	it('Should update persistent subscription ', async function() {
 		this.timeout(15 * 1000);
 		const client = new EventStore.HTTPClient(httpConfig);
-		const testStream = `TestStream-${uuid.v4()}`;
+		const testStream = `TestStream-${generateEventId()}`;
 
 		const events = [];
 		for (let k = 0; k < 12; k++) {
@@ -101,7 +101,7 @@ describe('HTTP Client - Persistent Subscription', () => {
 	it('Should delete persistent subscription', function(done) {
 		this.timeout(15 * 1000);
 		const client = new EventStore.HTTPClient(httpConfig);
-		const testStream = `TestStream-${uuid.v4()}`;
+		const testStream = `TestStream-${generateEventId()}`;
 
 		const events = [];
 		for (let k = 0; k < 12; k++) {
@@ -127,7 +127,7 @@ describe('HTTP Client - Persistent Subscription', () => {
 	it('Should return persistent subscription info', async function() {
 		this.timeout(15 * 1000);
 		const client = new EventStore.HTTPClient(httpConfig);
-		const testStream = `TestStream-${uuid.v4()}`;
+		const testStream = `TestStream-${generateEventId()}`;
 
 		const events = [];
 		for (let k = 0; k < 10; k++) {
@@ -149,7 +149,7 @@ describe('HTTP Client - Persistent Subscription', () => {
 	it('Should return persistent subscriptions info for a stream', async function() {
 		this.timeout(15 * 1000);
 		const client = new EventStore.HTTPClient(httpConfig);
-		const testStream = `TestStream-${uuid.v4()}`;
+		const testStream = `TestStream-${generateEventId()}`;
 
 		const events = [];
 		for (let k = 0; k < 10; k++) {
@@ -170,7 +170,7 @@ describe('HTTP Client - Persistent Subscription', () => {
 	it('Should return persistent subscriptions info for all', async function() {
 		this.timeout(15 * 1000);
 		const client = new EventStore.HTTPClient(httpConfig);
-		const testStream = `TestStream-${uuid.v4()}`;
+		const testStream = `TestStream-${generateEventId()}`;
 
 		const events = [];
 		for (let k = 0; k < 10; k++) {

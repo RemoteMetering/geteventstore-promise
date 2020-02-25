@@ -1,9 +1,9 @@
 import './_globalHooks';
 
+import generateEventId from '../lib/utilities/generateEventId';
 import httpConfig from './support/httpConfig';
 import EventStore from '../lib';
 import assert from 'assert';
-import uuid from 'uuid';
 
 const eventFactory = new EventStore.EventFactory();
 
@@ -18,7 +18,7 @@ describe('Http Client - Get All Stream Events', () => {
 			}));
 		}
 
-		const testStream = `TestStream-${uuid.v4()}`;
+		const testStream = `TestStream-${generateEventId()}`;
 		await client.writeEvents(testStream, events);
 		const allEvents = await client.getAllStreamEvents(testStream);
 		assert.equal(allEvents.length, 1000);
@@ -37,7 +37,7 @@ describe('Http Client - Get All Stream Events', () => {
 			}));
 		}
 
-		const testStream = `TestStream-${uuid.v4()}`;
+		const testStream = `TestStream-${generateEventId()}`;
 		await client.writeEvents(testStream, events);
 		const allEvents = await client.getAllStreamEvents(testStream, 250, 500);
 		assert.equal(allEvents.length, 500);
@@ -55,7 +55,7 @@ describe('Http Client - Get All Stream Events', () => {
 			}));
 		}
 
-		const testStream = `TestStream-${uuid.v4()}`;
+		const testStream = `TestStream-${generateEventId()}`;
 		await client.writeEvents(testStream, events);
 		const allEvents = await client.getAllStreamEvents(testStream, 1000, 0, true, 'rich');
 		assert.equal(allEvents.length, 1000);

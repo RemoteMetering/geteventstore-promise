@@ -1,15 +1,15 @@
 import './_globalHooks';
 
+import generateEventId from '../lib/utilities/generateEventId';
 import httpConfig from './support/httpConfig';
 import sleep from './utilities/sleep';
 import EventStore from '../lib';
 import assert from 'assert';
-import uuid from 'uuid';
 import fs from 'fs';
 
 describe('Projections', () => {
 	describe('Default Settings', () => {
-		const assertionProjection = uuid.v4();
+		const assertionProjection = generateEventId();
 		const assertionProjectionContent = fs.readFileSync(`${__dirname}/support/testProjection.js`, {
 			encoding: 'utf8'
 		});
@@ -74,7 +74,7 @@ describe('Projections', () => {
 	});
 
 	describe('Custom Settings', () => {
-		const assertionProjection = uuid.v4();
+		const assertionProjection = generateEventId();
 		const assertionProjectionContent = fs.readFileSync(`${__dirname}/support/testProjection.js`, {
 			encoding: 'utf8'
 		});
@@ -149,7 +149,7 @@ describe('Projections', () => {
 			await client.projections.assert(projectionName, projectionContent);
 			await sleep(500);
 
-			const testStream = `TestProjectionStream-${uuid.v4()}`;
+			const testStream = `TestProjectionStream-${generateEventId()}`;
 			await client.writeEvent(testStream, 'TestProjectionEventType', {
 				something: '123'
 			});
@@ -168,7 +168,7 @@ describe('Projections', () => {
 			this.timeout(1000 * 10);
 			const client = new EventStore.HTTPClient(httpConfig);
 
-			const projectionName = `TestProjection${uuid.v4()}`;
+			const projectionName = `TestProjection${generateEventId()}`;
 			const projectionContent = fs.readFileSync(`${__dirname}/support/testPartitionedProjection.js`, {
 				encoding: 'utf8'
 			});
@@ -176,7 +176,7 @@ describe('Projections', () => {
 			await client.projections.assert(projectionName, projectionContent);
 			await sleep(500);
 
-			const testStream = `TestProjectionStream-${uuid.v4()}`;
+			const testStream = `TestProjectionStream-${generateEventId()}`;
 			await client.writeEvent(testStream, 'TestProjectionEventType', {
 				something: '123'
 			});
@@ -213,7 +213,7 @@ describe('Projections', () => {
 			await client.projections.assert(projectionName, projectionContent);
 			await sleep(500);
 
-			const testStream = `TestProjectionStream-${uuid.v4()}`;
+			const testStream = `TestProjectionStream-${generateEventId()}`;
 			await client.writeEvent(testStream, 'TestProjectionEventType', {
 				something: '123'
 			});
@@ -232,7 +232,7 @@ describe('Projections', () => {
 			this.timeout(1000 * 10);
 			const client = new EventStore.HTTPClient(httpConfig);
 
-			const projectionName = `TestProjection${uuid.v4()}`;
+			const projectionName = `TestProjection${generateEventId()}`;
 			const projectionContent = fs.readFileSync(`${__dirname}/support/testPartitionedProjection.js`, {
 				encoding: 'utf8'
 			});
@@ -240,7 +240,7 @@ describe('Projections', () => {
 			await client.projections.assert(projectionName, projectionContent);
 			await sleep(500);
 
-			const testStream = `TestProjectionStream-${uuid.v4()}`;
+			const testStream = `TestProjectionStream-${generateEventId()}`;
 			await client.writeEvent(testStream, 'TestProjectionEventType', {
 				something: '123'
 			});

@@ -1,15 +1,15 @@
 import './_globalHooks';
 
+import generateEventId from '../lib/utilities/generateEventId';
 import httpConfig from './support/httpConfig';
 import EventStore from '../lib';
 import assert from 'assert';
-import uuid from 'uuid';
 
 describe('Http Client - Check Stream Exist', () => {
 	it('Should return true when a stream exists', async () => {
 		const client = new EventStore.HTTPClient(httpConfig);
 
-		const testStream = `TestStream-${uuid.v4()}`;
+		const testStream = `TestStream-${generateEventId()}`;
 		await client.writeEvent(testStream, 'TestEventType', {
 			something: '123'
 		});
@@ -41,7 +41,7 @@ describe('Http Client - Check Stream Exist', () => {
 		clonedConfig.timeout = 0.00001;
 
 		const client = new EventStore.HTTPClient(clonedConfig);
-		const testStream = `TestStream-${uuid.v4()}`;
+		const testStream = `TestStream-${generateEventId()}`;
 		client.writeEvent(testStream, 'TestEventType', {
 			something: '123'
 		}).then(() => client.checkStreamExists(testStream).then(() => {

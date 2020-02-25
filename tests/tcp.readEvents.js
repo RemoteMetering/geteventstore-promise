@@ -1,15 +1,15 @@
 import './_globalHooks';
 
+import generateEventId from '../lib/utilities/generateEventId';
 import tcpConfig from './support/tcpConfig';
 import sleep from './utilities/sleep';
 import EventStore from '../lib';
 import assert from 'assert';
-import uuid from 'uuid';
 
 const eventFactory = new EventStore.EventFactory();
 
 describe('TCP Client - Get Events', () => {
-	const testStream = `TestStream-${uuid.v4()}`;
+	const testStream = `TestStream-${generateEventId()}`;
 	const numberOfEvents = 10;
 
 	before(() => {
@@ -87,7 +87,7 @@ describe('TCP Client - Get Events', () => {
 		this.timeout(40000);
 		const client = new EventStore.TCPClient(tcpConfig);
 
-		const testStream = `TestStream-${uuid.v4()}`;
+		const testStream = `TestStream-${generateEventId()}`;
 		const numberOfEvents = 5000;
 		const events = [];
 

@@ -206,7 +206,7 @@ Any options to be specified (as documented in GetEvent Store documentation). Def
 
 ```javascript
 const EventStore = require('geteventstore-promise');
-const uuid = require('uuid');
+const { v4: generateEventId } = require('uuid');
 
 const client = new EventStore.HTTPClient({
 	hostname: 'localhost',
@@ -217,7 +217,7 @@ const client = new EventStore.HTTPClient({
 	}
 });
 
-await client.writeEvent('TestStream-' + uuid.v4(), 'TestEventType', { something: '123' });
+await client.writeEvent('TestStream-' + generateEventId(), 'TestEventType', { something: '123' });
 const events = await client.getEvents(testStream);
 ```
 
@@ -241,7 +241,7 @@ Any options to be specified (as documented in GetEvent Store documentation). Def
 
 ```javascript
 const EventStore = require('geteventstore-promise');
-const uuid = require('uuid');
+const { v4: generateEventId } = require('uuid');
 
 const client = new EventStore.HTTPClient({
 	hostname: 'localhost',
@@ -254,7 +254,7 @@ const client = new EventStore.HTTPClient({
 
 const events = [new EventStore.EventFactory().newEvent('TestEventType', { something: '456'})];
 
-await client.writeEvents('TestStream-' + uuid.v4(), events);
+await client.writeEvents('TestStream-' + generateEventId(), events);
 const events = await client.getEvents(testStream);
 ```
 

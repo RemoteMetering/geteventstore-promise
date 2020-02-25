@@ -1,15 +1,15 @@
 import './_globalHooks';
 
+import generateEventId from '../lib/utilities/generateEventId';
 import tcpConfig from './support/tcpConfig';
 import EventStore from '../lib';
 import assert from 'assert';
-import uuid from 'uuid';
 
 describe('TCP Client - Write Event', () => {
 	it('Write to a new stream and read the event', async () => {
 		const client = new EventStore.TCPClient(tcpConfig);
 
-		const testStream = `TestStream-${uuid.v4()}`;
+		const testStream = `TestStream-${generateEventId()}`;
 		await client.writeEvent(testStream, 'TestEventType', {
 			something: '123'
 		});
@@ -21,7 +21,7 @@ describe('TCP Client - Write Event', () => {
 	it('Should fail promise if no event data provided', () => {
 		const client = new EventStore.TCPClient(tcpConfig);
 
-		const testStream = `TestStream-${uuid.v4()}`;
+		const testStream = `TestStream-${generateEventId()}`;
 		return client.writeEvent(testStream, 'TestEventType').then(() => {
 			assert.fail('write should not have succeeded');
 		}).catch(err => {
@@ -35,7 +35,7 @@ describe('TCP Client - Write Event to pre-populated stream', () => {
 	let testStream;
 	beforeEach(async () => {
 		client = new EventStore.TCPClient(tcpConfig);
-		testStream = `TestStream-${uuid.v4()}`;
+		testStream = `TestStream-${generateEventId()}`;
 
 		await client.writeEvent(testStream, 'TestEventType', {
 			something: '123'
