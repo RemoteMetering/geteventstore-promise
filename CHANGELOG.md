@@ -1,3 +1,9 @@
+# 3.2.1 (2020-02-27)
+
+#### Dependencies
+
+- Update packages
+
 # 3.2.0 (2019-10-07)
 
 #### Breaking Changes
