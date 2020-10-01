@@ -32,7 +32,7 @@
 		"axios": "^0.19.2",
 		"debug": "^4.1.1",
 		"generic-pool": "^3.7.1",
-		"node-eventstore-client": "^0.2.15",
+		"node-eventstore-client": "0.2.18",
 		"uuid": "^7.0.1"
 	},
 	"devDependencies": {
