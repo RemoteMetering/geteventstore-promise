@@ -364,7 +364,7 @@ The stream name
 #### options(optional)
 The mode of the projection to create, defaults to 'continuous'
 
-##### resolveLinktos
+##### resolveLinkTos
 Tells the subscription to resolve link events.
 
 ##### startFrom
@@ -481,8 +481,9 @@ Returns the state of the Projection as a JSON object.
 The name of the projection to get state of.
 
 ##### options(optional)
-    ##### partition
-    The name of the partition to retrieve.
+
+##### partition
+The name of the partition to retrieve.
 
 #### Example
 
