@@ -1,3 +1,14 @@
+# 3.2.2 (2020-10-05)
+
+#### Fix
+
+- persistentSubscriptions.assert - `resolveLinkTos` not applying due to typo. Thanks [@maniolias](https://github.com/maniolias)
+- persistentSubscriptions.getEvents - 401 due to missing auth headers. Thanks [@maniolias](https://github.com/maniolias)
+
+#### Dependencies
+
+- Update packages
+
 # 3.2.1 (2020-02-27)
 
 #### Dependencies
