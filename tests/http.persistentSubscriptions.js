@@ -91,11 +91,13 @@ describe('HTTP Client - Persistent Subscription', () => {
 
 		const options = {
 			readBatchSize: 121,
+			resolveLinkTos: true
 		};
 		await client.persistentSubscriptions.assert(testSubscriptionName, testStream, options);
 
 		const result = await client.persistentSubscriptions.getSubscriptionInfo(testSubscriptionName, testStream);
 		assert.equal(options.readBatchSize, result.config.readBatchSize);
+		assert.equal(options.resolveLinkTos, result.config.resolveLinktos);
 	});
 
 	it('Should delete persistent subscription', function(done) {
