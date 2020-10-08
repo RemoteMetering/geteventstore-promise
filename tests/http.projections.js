@@ -83,9 +83,12 @@ describe('Projections', () => {
 			this.timeout(10 * 1000);
 			const client = new EventStore.HTTPClient(httpConfig);
 
-			const response = await client.projections.assert(assertionProjection, assertionProjectionContent, 'onetime', true, true, true);
+			const response = await client.projections.assert(assertionProjection, assertionProjectionContent, 'onetime', true, true, true, true);
 			await sleep(2000);
 			assert.equal(response.name, assertionProjection);
+			const responseWithTrackEmittedStreamsEnabled = await client.projections.getInfo(assertionProjection, true);
+			assert.equal(responseWithTrackEmittedStreamsEnabled.config.trackEmittedStreams, true);
+			assert.equal(responseWithTrackEmittedStreamsEnabled.config.emitEnabled, true);
 		});
 
 		it('Should remove one-time projection', async function () {

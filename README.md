@@ -451,7 +451,7 @@ Get all subscriptions info
 * enableAll()
 * disableAll()
 * getAllProjectionsInfo()
-* assert(projectionName, projectionContent, mode, enabled, checkpointsEnabled, emitEnabled)
+* assert(projectionName, projectionContent, mode, enabled, checkpointsEnabled, emitEnabled, trackEmittedStreams)
     #### projectionName
     The name of the projection
 
@@ -470,6 +470,8 @@ Get all subscriptions info
     #### emitEnabled(optional)
     Should enable emitting, defaults to false
 
+    #### trackEmittedStreams(optional)
+    Should track the emitted streams (tracking emitted streams enables you to delete a projection and all the streams that it has created), defaults to false
 
 ## Example for using any projection method
 
