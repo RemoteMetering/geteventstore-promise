@@ -179,11 +179,12 @@ export class HTTPClient {
 		start(name: string): Promise<void>;
 		stop(name: string): Promise<void>;
 		reset(name: string): Promise<void>;
-		assert(name: string, projectionContent: string, mode?: ProjectionMode, enabled?: boolean, checkpointsEnabled?: boolean, emitEnabled?: boolean): Promise<void>;
+		assert(name: string, projectionContent: string, mode?: ProjectionMode, enabled?: boolean, checkpointsEnabled?: boolean, emitEnabled?: boolean, trackEmittedStreams?: boolean): Promise<void>;
 		remove(name: string, deleteCheckpointStream?: boolean, deleteStateStream?: boolean): Promise<void>;
+		config(name: string): Promise<object>;
 		getState(name: string, options?: ProjectionStateOptions): Promise<object>;
 		getResult(name: string, options?: ProjectionStateOptions): Promise<object>;
-		getInfo(name: string): Promise<object>;
+		getInfo(name: string, includeConfig?: boolean): Promise<object>;
 		getAllProjectionsInfo(): Promise<object>;
 		disableAll(): Promise<void>;
 		enableAll(): Promise<void>;

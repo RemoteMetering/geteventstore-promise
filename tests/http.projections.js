@@ -1,11 +1,12 @@
 import './_globalHooks';
 
+import assert from 'assert';
+import fs from 'fs';
+
+import EventStore from '../lib';
 import generateEventId from '../lib/utilities/generateEventId';
 import httpConfig from './support/httpConfig';
 import sleep from './utilities/sleep';
-import EventStore from '../lib';
-import assert from 'assert';
-import fs from 'fs';
 
 describe('Projections', () => {
 	describe('Default Settings', () => {
@@ -20,6 +21,10 @@ describe('Projections', () => {
 
 			const response = await client.projections.assert(assertionProjection, assertionProjectionContent);
 			assert.equal(response.name, assertionProjection);
+
+			const responseWithTrackEmittedStreamsEnabled = await client.projections.getInfo(assertionProjection, true);
+			assert.equal(responseWithTrackEmittedStreamsEnabled.config.emitEnabled, false);
+			assert.equal(responseWithTrackEmittedStreamsEnabled.config.trackEmittedStreams, false);
 		});
 
 		it('Should update existing projection', async function () {
@@ -71,6 +76,22 @@ describe('Projections', () => {
 			const removeResponse = await client.projections.remove(assertionProjection);
 			assert.equal(removeResponse.name, assertionProjection);
 		});
+
+		it('Should get config for continuous projection', async function () {
+			this.timeout(10 * 1000);
+			const client = new EventStore.HTTPClient(httpConfig);
+
+			const projectionConfig = await client.projections.config(assertionProjection);
+			await sleep(1000);
+
+			assert.equal(projectionConfig.emitEnabled, false);
+			assert.equal(projectionConfig.trackEmittedStreams, false);
+			assert.equal(projectionConfig.msgTypeId, 268);
+			assert.equal(projectionConfig.checkpointHandledThreshold, 4000);
+			assert.equal(projectionConfig.checkpointUnhandledBytesThreshold, 10000000);
+			assert.equal(projectionConfig.pendingEventsThreshold, 5000);
+			assert.equal(projectionConfig.maxWriteBatchLength, 500);
+		});
 	});
 
 	describe('Custom Settings', () => {
@@ -83,9 +104,12 @@ describe('Projections', () => {
 			this.timeout(10 * 1000);
 			const client = new EventStore.HTTPClient(httpConfig);
 
-			const response = await client.projections.assert(assertionProjection, assertionProjectionContent, 'onetime', true, true, true);
+			const response = await client.projections.assert(assertionProjection, assertionProjectionContent, 'onetime', true, true, true, true);
 			await sleep(2000);
 			assert.equal(response.name, assertionProjection);
+			const responseWithTrackEmittedStreamsEnabled = await client.projections.getInfo(assertionProjection, true);
+			assert.equal(responseWithTrackEmittedStreamsEnabled.config.trackEmittedStreams, true);
+			assert.equal(responseWithTrackEmittedStreamsEnabled.config.emitEnabled, true);
 		});
 
 		it('Should remove one-time projection', async function () {
