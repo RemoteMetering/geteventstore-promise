@@ -1,3 +1,9 @@
+# 3.2.3 (2020-10-20)
+
+- projections - `config` query added. Thanks [@maniolias](https://github.com/maniolias)
+- projections - `getInfo`, `includeConfig` in result set added. Thanks [@maniolias](https://github.com/maniolias)
+- projections - `assert`, `trackEmittedStreams` added. Thanks [@maniolias](https://github.com/maniolias)
+
 # 3.2.2 (2020-10-05)
 
 #### Fix
