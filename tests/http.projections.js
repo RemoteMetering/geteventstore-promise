@@ -76,6 +76,22 @@ describe('Projections', () => {
 			const removeResponse = await client.projections.remove(assertionProjection);
 			assert.equal(removeResponse.name, assertionProjection);
 		});
+
+		it('Should get config for continuous projection', async function () {
+			this.timeout(10 * 1000);
+			const client = new EventStore.HTTPClient(httpConfig);
+
+			const projectionConfig = await client.projections.config(assertionProjection);
+			await sleep(1000);
+
+			assert.equal(projectionConfig.emitEnabled, false);
+			assert.equal(projectionConfig.trackEmittedStreams, false);
+			assert.equal(projectionConfig.msgTypeId, 268);
+			assert.equal(projectionConfig.checkpointHandledThreshold, 4000);
+			assert.equal(projectionConfig.checkpointUnhandledBytesThreshold, 10000000);
+			assert.equal(projectionConfig.pendingEventsThreshold, 5000);
+			assert.equal(projectionConfig.maxWriteBatchLength, 500);
+		});
 	});
 
 	describe('Custom Settings', () => {

@@ -443,11 +443,33 @@ Get all subscriptions info
 # Supported Methods
 
 * start(projectionName)
+    #### projectionName
+    The name of the projection
 * stop(projectionName)
+    #### projectionName
+    The name of the projection
 * reset(projectionName)
+    #### projectionName
+    The name of the projection
 * remove(projectionName)
+    #### projectionName
+    The name of the projection
+* config(projectionName)
+    #### projectionName
+    The name of the projection
 * getState(projectionName, options)
-* getInfo(projectionName)
+    #### projectionName
+    The name of the projection
+
+    #### options
+    Object, `partition` used to specify the partition to query the state with. e.g. `{ partition: 1 }`
+* getInfo(projectionName, includeConfig)
+    #### projectionName
+    The name of the projection
+
+    #### includeConfig
+    Specify if we want to include the projection config in the projection info result set
+
 * enableAll()
 * disableAll()
 * getAllProjectionsInfo()
