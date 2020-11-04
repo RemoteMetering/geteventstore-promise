@@ -1,3 +1,9 @@
+# 3.2.4 (2020-11-04)
+
+#### Fix
+
+- projections - `assert`, `trackEmittedStreams` setter. Thanks [@maniolias](https://github.com/maniolias)
+
 # 3.2.3 (2020-10-20)
 
 - projections - `config` query added. Thanks [@maniolias](https://github.com/maniolias)
