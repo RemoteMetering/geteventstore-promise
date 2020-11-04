@@ -28,8 +28,8 @@
 	},
 	"homepage": "https://github.com/RemoteMetering/geteventstore-promise",
 	"dependencies": {
-		"@babel/runtime": "^7.12.1",
-		"axios": "^0.20.0",
+		"@babel/runtime": "^7.12.5",
+		"axios": "^0.21.0",
 		"debug": "^4.2.0",
 		"generic-pool": "^3.7.1",
 		"node-eventstore-client": "^0.2.18",
@@ -43,7 +43,7 @@
 		"@babel/register": "^7.12.1",
 		"babel-plugin-add-module-exports": "^1.0.4",
 		"cross-env": "^7.0.2",
-		"mocha": "^8.2.0",
+		"mocha": "^8.2.1",
 		"nyc": "^15.1.0"
 	},
 	"nyc": {
