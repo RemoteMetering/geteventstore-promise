@@ -121,6 +121,23 @@ describe('Projections', () => {
 			const removeResponse = await client.projections.remove(assertionProjection);
 			assert.equal(removeResponse.name, assertionProjection);
 		});
+
+		it('Should create one-time projection with emits enabled but trackEmittedStreams disabled then remove it', async function () {
+			this.timeout(10 * 1000);
+			const client = new EventStore.HTTPClient(httpConfig);
+
+			const response = await client.projections.assert(assertionProjection, assertionProjectionContent, 'onetime', true, true, true);
+			await sleep(2000);
+			assert.equal(response.name, assertionProjection);
+			const responseWithTrackEmittedStreamsEnabled = await client.projections.getInfo(assertionProjection, true);
+			assert.equal(responseWithTrackEmittedStreamsEnabled.config.trackEmittedStreams, false);
+			assert.equal(responseWithTrackEmittedStreamsEnabled.config.emitEnabled, true);
+
+			const stopResponse = await client.projections.stop(assertionProjection);
+			assert.equal(stopResponse.name, assertionProjection);
+			const removeResponse = await client.projections.remove(assertionProjection);
+			assert.equal(removeResponse.name, assertionProjection);
+		});
 	});
 
 	describe('Global Projections Operations', () => {
