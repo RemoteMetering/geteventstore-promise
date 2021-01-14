@@ -17,7 +17,7 @@ Set the ES_EXECUTABLE environment variable to point to the eventstore executable
 
 #### Using docker (cluster tests will only run in this mode)
 
-> docker pull eventstore/eventstore
+> docker pull eventstore/eventstore:release-5.0.8
 
 > yarn test:docker
 
@@ -77,7 +77,7 @@ Returns all events from a given stream.
 The name of the stream to read from.
 
 ##### chunkSize (optional)
-The amount of events to read in each call to Event Store, defaults to *1000*, 
+The amount of events to read in each call to Event Store, defaults to *1000*,
 
 ##### startPosition (optional)
 If specified, the stream will be read starting at event number startPosition, otherwise *0*
@@ -206,7 +206,7 @@ Any options to be specified (as documented in GetEvent Store documentation). Def
 
 ```javascript
 const EventStore = require('geteventstore-promise');
-const uuid = require('uuid');
+const { v4: generateEventId } = require('uuid');
 
 const client = new EventStore.HTTPClient({
 	hostname: 'localhost',
@@ -217,7 +217,7 @@ const client = new EventStore.HTTPClient({
 	}
 });
 
-await client.writeEvent('TestStream-' + uuid.v4(), 'TestEventType', { something: '123' });
+await client.writeEvent('TestStream-' + generateEventId(), 'TestEventType', { something: '123' });
 const events = await client.getEvents(testStream);
 ```
 
@@ -241,7 +241,7 @@ Any options to be specified (as documented in GetEvent Store documentation). Def
 
 ```javascript
 const EventStore = require('geteventstore-promise');
-const uuid = require('uuid');
+const { v4: generateEventId } = require('uuid');
 
 const client = new EventStore.HTTPClient({
 	hostname: 'localhost',
@@ -254,7 +254,7 @@ const client = new EventStore.HTTPClient({
 
 const events = [new EventStore.EventFactory().newEvent('TestEventType', { something: '456'})];
 
-await client.writeEvents('TestStream-' + uuid.v4(), events);
+await client.writeEvents('TestStream-' + generateEventId(), events);
 const events = await client.getEvents(testStream);
 ```
 
@@ -364,7 +364,7 @@ The stream name
 #### options(optional)
 The mode of the projection to create, defaults to 'continuous'
 
-##### resolveLinktos
+##### resolveLinkTos
 Tells the subscription to resolve link events.
 
 ##### startFrom
@@ -443,15 +443,37 @@ Get all subscriptions info
 # Supported Methods
 
 * start(projectionName)
+    #### projectionName
+    The name of the projection
 * stop(projectionName)
+    #### projectionName
+    The name of the projection
 * reset(projectionName)
+    #### projectionName
+    The name of the projection
 * remove(projectionName)
+    #### projectionName
+    The name of the projection
+* config(projectionName)
+    #### projectionName
+    The name of the projection
 * getState(projectionName, options)
-* getInfo(projectionName)
+    #### projectionName
+    The name of the projection
+
+    #### options
+    Object, `partition` used to specify the partition to query the state with. e.g. `{ partition: 1 }`
+* getInfo(projectionName, includeConfig)
+    #### projectionName
+    The name of the projection
+
+    #### includeConfig
+    Specify if we want to include the projection config in the projection info result set
+
 * enableAll()
 * disableAll()
 * getAllProjectionsInfo()
-* assert(projectionName, projectionContent, mode, enabled, checkpointsEnabled, emitEnabled)
+* assert(projectionName, projectionContent, mode, enabled, checkpointsEnabled, emitEnabled, trackEmittedStreams)
     #### projectionName
     The name of the projection
 
@@ -470,6 +492,8 @@ Get all subscriptions info
     #### emitEnabled(optional)
     Should enable emitting, defaults to false
 
+    #### trackEmittedStreams(optional)
+    Should track the emitted streams (tracking emitted streams enables you to delete a projection and all the streams that it has created), defaults to false
 
 ## Example for using any projection method
 
@@ -481,8 +505,9 @@ Returns the state of the Projection as a JSON object.
 The name of the projection to get state of.
 
 ##### options(optional)
-    ##### partition
-    The name of the partition to retrieve.
+
+##### partition
+The name of the partition to retrieve.
 
 #### Example
 
@@ -509,7 +534,7 @@ const projectionState = await client.projections.getState('TestProjection');
 
 Sends scavenge command to Event Store.
 
-If the promise is fulfilled then the scavenge command has been sent, it does not guarantee that the scavenge will be successful. 
+If the promise is fulfilled then the scavenge command has been sent, it does not guarantee that the scavenge will be successful.
 
 #### Example
 
@@ -535,7 +560,7 @@ console.log('Scavenge command sent!');
 
 Sends shutdown command to Event Store.
 
-If the promise is fulfilled then the shutdown command has been sent, it does not guarantee that the shutdown will be successful. 
+If the promise is fulfilled then the shutdown command has been sent, it does not guarantee that the shutdown will be successful.
 
 #### Example
 
@@ -629,7 +654,7 @@ const client = new EventStore.TCPClient({
 * writeEvents(streamName, events, options)
 * deleteStream(streamName, hardDelete)
 
-# Supported Methods 
+# Supported Methods
 
 ## close()
 Close all active connections.
@@ -683,7 +708,7 @@ Returns all events from a given stream.
 The name of the stream to read from.
 
 ##### chunkSize (optional)
-The amount of events to read in each call to Event Store, defaults to *1000*, 
+The amount of events to read in each call to Event Store, defaults to *1000*,
 
 ##### startPosition (optional)
 If specified, the stream will be read starting at event number startPosition, otherwise *0*
@@ -740,13 +765,13 @@ const client = new EventStore.TCPClient({
 	}
 });
 
-function onEventAppeared(ev) {
+function onEventAppeared(subscription, ev) {
 	processedEventCount++;
 	return;
 };
 
 function onDropped(subscription, reason, error) {
-	
+
 };
 
 await client.subscribeToStream('TestStream', onEventAppeared, onDropped, false);
@@ -774,7 +799,7 @@ function
 function
 
 ##### settings
-resolveLinkTos - Whether or not to resolve link events 
+resolveLinkTos - Whether or not to resolve link events
 
 maxLiveQueueSize - The max amount to buffer when processing from live subscription
 
@@ -798,7 +823,7 @@ const client = new EventStore.TCPClient({
 
 let processedEventCount = 0;
 
-function onEventAppeared(ev) {
+function onEventAppeared(subscription, ev) {
     processedEventCount++;
     return;
 };
@@ -808,7 +833,7 @@ function onLiveProcessingStarted() {
 }
 
 function onDropped(subscription, reason, error) {
-    
+
 };
 
 await client.subscribeToStreamFrom('TestStream', 0, onEventAppeared, onLiveProcessingStarted,onDropped);

@@ -1,9 +1,9 @@
 import './_globalHooks';
 
+import generateEventId from '../lib/utilities/generateEventId';
 import tcpConfig from './support/tcpConfig';
 import EventStore from '../lib';
 import assert from 'assert';
-import uuid from 'uuid';
 
 const eventFactory = new EventStore.EventFactory();
 
@@ -15,12 +15,12 @@ describe('TCP Client - Test Connection', () => {
 				something: i
 			}));
 		}
-		await Promise.all(events.map(ev => client.writeEvent(`TestStream-${uuid.v4()}`, ev.eventType, ev.data)));
+		await Promise.all(events.map(ev => client.writeEvent(`TestStream-${generateEventId()}`, ev.eventType, ev.data)));
 	};
 
 	it('Should connect and write event on correct connection properties', () => {
 		const client = new EventStore.TCPClient(tcpConfig);
-		const testStream = `TestStream-${uuid.v4()}`;
+		const testStream = `TestStream-${generateEventId()}`;
 		return client.writeEvent(testStream, 'TestEventType', {
 			something: '123'
 		});
@@ -34,7 +34,7 @@ describe('TCP Client - Test Connection', () => {
 
 		const client = new EventStore.TCPClient(config);
 
-		const testStream = `TestStream-${uuid.v4()}`;
+		const testStream = `TestStream-${generateEventId()}`;
 		return client.writeEvent(testStream, 'TestEventType', {
 			something: '123'
 		}).then(() => {
@@ -52,7 +52,7 @@ describe('TCP Client - Test Connection', () => {
 
 		const client = new EventStore.TCPClient(config);
 
-		const testStream = `TestStream-${uuid.v4()}`;
+		const testStream = `TestStream-${generateEventId()}`;
 		return client.writeEvent(testStream, 'TestEventType', {
 			something: '123'
 		}).then(() => {
@@ -93,7 +93,7 @@ describe('TCP Client - Test Connection', () => {
 		const config = JSON.parse(JSON.stringify(tcpConfig));
 		const client = new EventStore.TCPClient(config);
 
-		const testStream = `TestStream-${uuid.v4()}`;
+		const testStream = `TestStream-${generateEventId()}`;
 		await client.writeEvent(testStream, 'TestEventType', {
 			something: '123'
 		});

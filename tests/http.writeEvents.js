@@ -1,9 +1,9 @@
 import './_globalHooks';
 
+import generateEventId from '../lib/utilities/generateEventId';
 import httpConfig from './support/httpConfig';
 import EventStore from '../lib';
 import assert from 'assert';
-import uuid from 'uuid';
 
 const eventFactory = new EventStore.EventFactory();
 
@@ -15,7 +15,7 @@ describe('Http Client - Write Events', () => {
 			something: '456'
 		})];
 
-		const testStream = `TestStream-${uuid.v4()}`;
+		const testStream = `TestStream-${generateEventId()}`;
 		await client.writeEvents(testStream, events);
 		const evs = await client.getEvents(testStream);
 		assert.equal(evs[0].data.something, '456');
@@ -30,7 +30,7 @@ describe('Http Client - Write Events', () => {
 			something: '789'
 		})];
 
-		const testStream = `TestStream-${uuid.v4()}`;
+		const testStream = `TestStream-${generateEventId()}`;
 		await client.writeEvents(testStream, events);
 
 		const evs = await client.getEventsByType(testStream, ['TestEventType']);
@@ -44,7 +44,7 @@ describe('Http Client - Write Events', () => {
 
 		const events = [];
 
-		const testStream = `TestStream-${uuid.v4()}`;
+		const testStream = `TestStream-${generateEventId()}`;
 		return client.writeEvents(testStream, events);
 	});
 
@@ -55,7 +55,7 @@ describe('Http Client - Write Events', () => {
 			something: 'here'
 		};
 
-		const testStream = `TestStream-${uuid.v4()}`;
+		const testStream = `TestStream-${generateEventId()}`;
 		return client.writeEvents(testStream, events).then(() => {
 			assert.fail('should not have succeeded');
 		}).catch(err => {
@@ -80,7 +80,7 @@ describe('Http Client - Write Events to pre-populated stream', () => {
 			something: '789'
 		})];
 
-		testStream = `TestStream-${uuid.v4()}`;
+		testStream = `TestStream-${generateEventId()}`;
 		await client.writeEvents(testStream, events);
 
 		events2 = [eventFactory.newEvent('TestEventType', {

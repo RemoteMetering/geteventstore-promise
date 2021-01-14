@@ -1,3 +1,32 @@
+# 3.2.4 (2020-11-04)
+
+#### Fix
+
+- projections - `assert`, `trackEmittedStreams` setter. Thanks [@maniolias](https://github.com/maniolias)
+
+# 3.2.3 (2020-10-20)
+
+- projections - `config` query added. Thanks [@maniolias](https://github.com/maniolias)
+- projections - `getInfo`, `includeConfig` in result set added. Thanks [@maniolias](https://github.com/maniolias)
+- projections - `assert`, `trackEmittedStreams` added. Thanks [@maniolias](https://github.com/maniolias)
+
+# 3.2.2 (2020-10-05)
+
+#### Fix
+
+- persistentSubscriptions.assert - `resolveLinkTos` not applying due to typo. Thanks [@maniolias](https://github.com/maniolias)
+- persistentSubscriptions.getEvents - 401 due to missing auth headers. Thanks [@maniolias](https://github.com/maniolias)
+
+#### Dependencies
+
+- Update packages
+
+# 3.2.1 (2020-02-27)
+
+#### Dependencies
+
+- Update packages
+
 # 3.2.0 (2019-10-07)
 
 #### Breaking Changes

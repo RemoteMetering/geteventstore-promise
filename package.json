@@ -1,6 +1,6 @@
 {
 	"name": "geteventstore-promise",
-	"version": "3.2.0",
+	"version": "3.2.4",
 	"description": "GetEventStore client wrapper using promises",
 	"main": "index.js",
 	"scripts": {
@@ -29,24 +29,23 @@
 	},
 	"homepage": "https://github.com/RemoteMetering/geteventstore-promise",
 	"dependencies": {
-		"@babel/runtime": "7.8.7",
-		"axios": "^0.19.0",
-		"debug": "^4.1.1",
+		"@babel/runtime": "^7.12.5",
+		"axios": "^0.21.0",
+		"debug": "^4.2.0",
 		"generic-pool": "^3.7.1",
-		"node-eventstore-client": "^0.2.13",
-		"uuid": "^3.3.3"
+		"node-eventstore-client": "^0.2.18",
+		"uuid": "^8.3.1"
 	},
 	"devDependencies": {
-		"@babel/cli": "^7.6.2",
-		"@babel/core": "7.8.7",
-		"@babel/plugin-transform-runtime": "^7.6.2",
-		"@babel/preset-env": "7.8.7",
-		"@babel/register": "^7.6.2",
-		"@types/generic-pool": "^3.1.9",
-		"babel-plugin-add-module-exports": "^1.0.2",
-		"cross-env": "^6.0.3",
-		"mocha": "^6.2.1",
-		"nyc": "^14.1.1"
+		"@babel/cli": "^7.12.1",
+		"@babel/core": "^7.12.3",
+		"@babel/plugin-transform-runtime": "^7.12.1",
+		"@babel/preset-env": "^7.12.1",
+		"@babel/register": "^7.12.1",
+		"babel-plugin-add-module-exports": "^1.0.4",
+		"cross-env": "^7.0.2",
+		"mocha": "^8.2.1",
+		"nyc": "^15.1.0"
 	},
 	"nyc": {
 		"reporter": [

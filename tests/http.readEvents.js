@@ -1,15 +1,15 @@
 import './_globalHooks';
 
+import generateEventId from '../lib/utilities/generateEventId';
 import httpConfig from './support/httpConfig';
 import sleep from './utilities/sleep';
 import EventStore from '../lib';
 import assert from 'assert';
-import uuid from 'uuid';
 
 const eventFactory = new EventStore.EventFactory();
 
 describe('Http Client - Read Events', () => {
-	const testStream = `TestStream-${uuid.v4()}`;
+	const testStream = `TestStream-${generateEventId()}`;
 	const numberOfEvents = 10;
 
 	before(() => {
@@ -76,7 +76,7 @@ describe('Http Client - Read Events', () => {
 		this.timeout(10000);
 		const client = new EventStore.HTTPClient(httpConfig);
 
-		const testStream = `TestStream-${uuid.v4()}`;
+		const testStream = `TestStream-${generateEventId()}`;
 		const numberOfEvents = 5000;
 		const events = [];
 
@@ -138,7 +138,7 @@ describe('Http Client - Read Events', () => {
 	});
 
 	describe('Http Client - Get Events Failure', () => {
-		const testStream = `TestStream-${uuid.v4()}`;
+		const testStream = `TestStream-${generateEventId()}`;
 
 		it('Should return 404 when stream does not exist', () => {
 			const client = new EventStore.HTTPClient(httpConfig);

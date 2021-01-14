@@ -1,10 +1,10 @@
 import './_globalHooks';
 
+import generateEventId from '../lib/utilities/generateEventId';
 import tcpConfig from './support/tcpConfig';
 import sleep from './utilities/sleep';
 import EventStore from '../lib';
 import assert from 'assert';
-import uuid from 'uuid';
 
 const eventFactory = new EventStore.EventFactory();
 
@@ -12,7 +12,7 @@ describe('TCP Client - Subscribe To Stream', () => {
 	it('Should get all events written to a subscription stream after subscription is started', function (done) {
 		this.timeout(15 * 1000);
 		const client = new EventStore.TCPClient(tcpConfig);
-		const testStream = `TestStream-${uuid.v4()}`;
+		const testStream = `TestStream-${generateEventId()}`;
 		let processedEventCount = 0;
 		let hasPassed = false;
 
@@ -54,7 +54,7 @@ describe('TCP Client - Subscribe To Stream', () => {
 		this.timeout(15 * 1000);
 		const client = new EventStore.TCPClient(tcpConfig);
 
-		const testStream = `TestStream-${uuid.v4()}`;
+		const testStream = `TestStream-${generateEventId()}`;
 		const events = [];
 		for (let k = 0; k < 10; k++) events.push(eventFactory.newEvent('TestEventType', { id: k }));
 

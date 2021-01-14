@@ -1,9 +1,9 @@
 import './_globalHooks';
 
+import generateEventId from '../lib/utilities/generateEventId';
 import tcpConfig from './support/tcpConfig';
 import EventStore from '../lib';
 import assert from 'assert';
-import uuid from 'uuid';
 
 const eventFactory = new EventStore.EventFactory();
 
@@ -18,7 +18,7 @@ describe('TCP Client - Get All Stream Events', () => {
 			}));
 		}
 
-		const testStream = `TestStream-${uuid.v4()}`;
+		const testStream = `TestStream-${generateEventId()}`;
 		await client.writeEvents(testStream, events);
 
 		const evs = await client.getAllStreamEvents(testStream);
@@ -37,7 +37,7 @@ describe('TCP Client - Get All Stream Events', () => {
 			}));
 		}
 
-		const testStream = `TestStream-${uuid.v4()}`;
+		const testStream = `TestStream-${generateEventId()}`;
 		await client.writeEvents(testStream, events);
 
 		const evs = await client.getAllStreamEvents(testStream, 250, 500);
