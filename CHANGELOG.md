@@ -1,3 +1,9 @@
+# 3.2.5 (2021-01-29)
+
+#### Dependencies
+
+- Update packages
+
 # 3.2.4 (2020-11-04)
 
 #### Fix
