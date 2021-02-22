@@ -1,6 +1,5 @@
 import {
 	EventStoreSubscription,
-	EventStoreCatchUpSubscription,
 	WriteResult as TCPWriteResult,
 	DeleteResult as TCPDeleteResult,
 	LiveProcessingStartedCallback,
@@ -139,6 +138,11 @@ export interface PersistentSubscriptionAssertResult {
 	reason: string;
 	result: string;
 	msgTypeId: number;
+}
+
+export interface EventStoreCatchUpSubscription {
+	stop(): void;
+	close(): Promise<void>;
 }
 
 export interface SubscribeToStreamFromSettings {
