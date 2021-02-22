@@ -20,6 +20,8 @@ if (inMemConfig.testsUseDocker) {
 
 			const evs = await client.getEvents(testStream);
 			assert.equal(evs[0].data.something, '456');
+
+			await client.close();
 		});
 
 		it('Write and read events using DNS discovery', async () => {
@@ -31,6 +33,8 @@ if (inMemConfig.testsUseDocker) {
 
 			const evs = await client.getEvents(testStream);
 			assert.equal(evs[0].data.something, '456');
+
+			await client.close();
 		});
 	});
 }

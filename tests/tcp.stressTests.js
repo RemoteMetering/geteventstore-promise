@@ -8,7 +8,7 @@ import assert from 'assert';
 const eventFactory = new EventStore.EventFactory();
 
 describe('TCP Client - Stress Tests', () => {
-	it('Should handle parallel writes', async function() {
+	it('Should handle parallel writes', async function () {
 		this.timeout(20000);
 		const client = new EventStore.TCPClient(tcpConfig);
 
@@ -25,9 +25,11 @@ describe('TCP Client - Stress Tests', () => {
 		await Promise.all(events.map(ev => client.writeEvent(testStream, ev.eventType, ev.data)));
 		const evs = await client.getEvents(testStream, undefined, 5000);
 		assert.equal(evs.length, 4096);
+
+		await client.close();
 	});
 
-	it('Should handle parallel reads and writes', function(callback) {
+	it('Should handle parallel reads and writes', function (callback) {
 		this.timeout(60000);
 		const client = new EventStore.TCPClient(tcpConfig);
 
@@ -43,8 +45,11 @@ describe('TCP Client - Stress Tests', () => {
 			}));
 		}
 
-		const checkCounts = () => {
-			if (readCount === numberOfEvents && writeCount === numberOfEvents && writeCount === readCount) callback();
+		const checkCounts = async () => {
+			if (readCount === numberOfEvents && writeCount === numberOfEvents && writeCount === readCount) {
+				await client.close();
+				callback();
+			}
 		};
 
 		events.forEach(ev => {

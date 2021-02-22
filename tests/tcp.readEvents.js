@@ -12,7 +12,7 @@ describe('TCP Client - Get Events', () => {
 	const testStream = `TestStream-${generateEventId()}`;
 	const numberOfEvents = 10;
 
-	before(() => {
+	before(async () => {
 		const client = new EventStore.TCPClient(tcpConfig);
 
 		const events = [];
@@ -23,7 +23,9 @@ describe('TCP Client - Get Events', () => {
 			}));
 		}
 
-		return client.writeEvents(testStream, events);
+		await client.writeEvents(testStream, events);
+
+		await client.close();
 	});
 
 	it('Should read events reading forward', async () => {
@@ -38,6 +40,8 @@ describe('TCP Client - Get Events', () => {
 		assert(result.events[0].isJson !== undefined);
 		assert(result.events[0].isJson !== undefined);
 		assert(typeof result.events[0].eventNumber === 'number', 'event number should be a number');
+
+		await client.close();
 	});
 
 	it('Should read events reading backward', async () => {
@@ -47,6 +51,8 @@ describe('TCP Client - Get Events', () => {
 		assert.equal(result.events.length, 10);
 		assert.equal(result.events[0].data.something, 10);
 		assert(typeof result.events[0].eventNumber === 'number', 'event number should be a number');
+
+		await client.close();
 	});
 
 	it('Should read last event reading backward with larger size than events', async () => {
@@ -56,6 +62,8 @@ describe('TCP Client - Get Events', () => {
 		assert.equal(result.events.length, 1);
 		assert.equal(result.events[0].data.something, 1);
 		assert(typeof result.events[0].eventNumber === 'number', 'event number should be a number');
+
+		await client.close();
 	});
 
 	it('Should not get any events when start event is greater than the stream length', async () => {
@@ -63,6 +71,8 @@ describe('TCP Client - Get Events', () => {
 
 		const result = await client.readEventsForward(testStream, 11);
 		assert.equal(result.events.length, 0);
+
+		await client.close();
 	});
 
 	it('Should read events reading backward from a start position', async () => {
@@ -72,6 +82,8 @@ describe('TCP Client - Get Events', () => {
 		assert.equal(result.events.length, 3);
 		assert.equal(result.events[0].data.something, 3);
 		assert(typeof result.events[0].eventNumber === 'number', 'event number should be a number');
+
+		await client.close();
 	});
 
 	it('Should read events reading backward with a count greater than the stream length', async () => {
@@ -81,6 +93,8 @@ describe('TCP Client - Get Events', () => {
 		assert.equal(result.events.length, 10);
 		assert.equal(result.events[0].data.something, 10);
 		assert(typeof result.events[0].eventNumber === 'number', 'event number should be a number');
+
+		await client.close();
 	});
 
 	it('Should read events reading forward with a count greater than the stream length return a maximum of 4096', async function () {
@@ -102,6 +116,8 @@ describe('TCP Client - Get Events', () => {
 		assert.equal(result.events.length, 4096);
 		assert.equal(result.events[0].data.something, 1);
 		assert.equal(result.events[4095].data.something, 4096);
+
+		await client.close();
 	});
 
 	it('Should read linked to events and map correctly', async () => {
@@ -114,6 +130,8 @@ describe('TCP Client - Get Events', () => {
 		assert(typeof result.events[0].positionEventNumber === 'number', 'position event number should be a number');
 		assert.equal(0, result.events[0].positionEventNumber, 'Position event number should be a number');
 		assert.equal('$ce-TestStream', result.events[0].positionStreamId);
+
+		await client.close();
 	});
 
 	it('Should read system and deleted events without resolveLinkTos', async () => {
@@ -126,5 +144,7 @@ describe('TCP Client - Get Events', () => {
 
 		const result = await client.readEventsForward('$streams', 0, 4096, false);
 		assert(result.events.length > 0, 'More than 0 events expected');
+
+		await client.close();
 	});
 });
