@@ -18,15 +18,17 @@ describe('TCP Client - Test Connection', () => {
 		await Promise.all(events.map(ev => client.writeEvent(`TestStream-${generateEventId()}`, ev.eventType, ev.data)));
 	};
 
-	it('Should connect and write event on correct connection properties', () => {
+	it('Should connect and write event on correct connection properties', async () => {
 		const client = new EventStore.TCPClient(tcpConfig);
 		const testStream = `TestStream-${generateEventId()}`;
-		return client.writeEvent(testStream, 'TestEventType', {
+		await client.writeEvent(testStream, 'TestEventType', {
 			something: '123'
 		});
+
+		await client.close();
 	});
 
-	it('Should not connect on incorrect hostname', function() {
+	it('Should not connect on incorrect hostname', function () {
 		this.timeout(60 * 1000);
 		const config = JSON.parse(JSON.stringify(tcpConfig));
 		config.maxReconnections = 2;
@@ -41,10 +43,10 @@ describe('TCP Client - Test Connection', () => {
 			assert.fail('Should not have written event successfully');
 		}).catch(err => {
 			assert.notEqual(err.message, 'Should not have written event successfully');
-		});
+		}).finally(() => client.close());
 	});
 
-	it('Should not connect on incorrect port', function() {
+	it('Should not connect on incorrect port', function () {
 		this.timeout(60 * 1000);
 		const config = JSON.parse(JSON.stringify(tcpConfig));
 		config.maxReconnections = 2;
@@ -59,10 +61,10 @@ describe('TCP Client - Test Connection', () => {
 			assert.fail('Should not have written event successfully');
 		}).catch(err => {
 			assert.notEqual(err.message, 'Should not have written event successfully');
-		});
+		}).finally(() => client.close());
 	});
 
-	it('Should default to only one connection with no pool options provided', async function() {
+	it('Should default to only one connection with no pool options provided', async function () {
 		this.timeout(60 * 1000);
 		const config = JSON.parse(JSON.stringify(tcpConfig));
 		delete config.poolOptions;
@@ -73,9 +75,11 @@ describe('TCP Client - Test Connection', () => {
 
 		const pool = await client.getPool();
 		assert.equal(1, pool._allObjects.size);
+
+		await client.close();
 	});
 
-	it('Should fill up pool connections to provided max', async function() {
+	it('Should fill up pool connections to provided max', async function () {
 		this.timeout(60 * 1000);
 		const config = JSON.parse(JSON.stringify(tcpConfig));
 		config.poolOptions.max = 7;
@@ -86,9 +90,11 @@ describe('TCP Client - Test Connection', () => {
 
 		const pool = await client.getPool();
 		assert.equal(7, pool._allObjects.size);
+
+		await client.close();
 	});
 
-	it('Should close pool', async function() {
+	it('Should close pool', async function () {
 		this.timeout(60 * 1000);
 		const config = JSON.parse(JSON.stringify(tcpConfig));
 		const client = new EventStore.TCPClient(config);
@@ -109,7 +115,7 @@ describe('TCP Client - Test Connection', () => {
 		}
 	});
 
-	it('Should close all pools', async function() {
+	it('Should close all pools', async function () {
 		this.timeout(60 * 1000);
 		const config = JSON.parse(JSON.stringify(tcpConfig));
 		const client = new EventStore.TCPClient(config);

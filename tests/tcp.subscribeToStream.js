@@ -20,8 +20,11 @@ describe('TCP Client - Subscribe To Stream', () => {
 			processedEventCount++;
 		}
 
-		function onDropped() {
-			if (!hasPassed) done('should not drop');
+		async function onDropped() {
+			if (!hasPassed) {
+				await client.close();
+				done('should not drop');
+			}
 		}
 
 		const initialEvents = [];
@@ -33,12 +36,13 @@ describe('TCP Client - Subscribe To Stream', () => {
 		}
 
 		client.writeEvents(testStream, initialEvents).then(() => {
-			client.subscribeToStream(testStream, onEventAppeared, onDropped, false).then(subscription => sleep(3000).then(() => {
+			client.subscribeToStream(testStream, onEventAppeared, onDropped, false).then(subscription => sleep(3000).then(async () => {
 				assert.equal(10, processedEventCount, 'expect processed events to be 10');
 				assert(subscription, 'Subscription Expected');
 				hasPassed = true;
+				await subscription.close();
+				await client.close();
 				done();
-				client.close();
 			}));
 			const events = [];
 			for (let k = 0; k < 10; k++) {
@@ -63,13 +67,17 @@ describe('TCP Client - Subscribe To Stream', () => {
 		const onEv1 = () => processedEventCount1++;
 		const onEv2 = () => processedEventCount2++;
 
-		await client.subscribeToStream(testStream, onEv1, () => {});
-		await client.subscribeToStream(testStream, onEv2, () => {});
+		const sub1 = await client.subscribeToStream(testStream, onEv1, () => {});
+		const sub2 = await client.subscribeToStream(testStream, onEv2, () => {});
 		await sleep(1000);
 		await client.writeEvents(testStream, events);
 		await sleep(3000);
 
 		assert.equal(10, processedEventCount1, 'Expect processed events to be 10 for subscription 1');
 		assert.equal(10, processedEventCount2, 'Expect processed events to be 10 for subscription 2');
+
+		await sub1.close();
+		await sub2.close();
+		await client.close();
 	});
 });

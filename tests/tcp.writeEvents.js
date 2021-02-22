@@ -20,6 +20,8 @@ describe('TCP Client - Write Events', () => {
 
 		const evs = await client.getEvents(testStream);
 		assert.equal(evs[0].data.something, '456');
+
+		await client.close();
 	});
 
 	it('Write to a new stream and read the events by type', async () => {
@@ -38,14 +40,16 @@ describe('TCP Client - Write Events', () => {
 		assert.equal(evs.length, 1);
 		assert.equal(evs[0].eventType, 'TestEventType');
 		assert.equal(evs[0].data.something, '456');
+
+		await client.close();
 	});
 
-	it('Should not fail promise if no events provided', () => {
+	it('Should not fail promise if no events provided', async () => {
 		const client = new EventStore.TCPClient(tcpConfig);
 
 		const events = [];
 		const testStream = `TestStream-${generateEventId()}`;
-		return client.writeEvents(testStream, events);
+		await client.writeEvents(testStream, events);
 	});
 
 	it('Should fail promise if non array provided', () => {
@@ -56,7 +60,8 @@ describe('TCP Client - Write Events', () => {
 		};
 
 		const testStream = `TestStream-${generateEventId()}`;
-		return client.writeEvents(testStream, events).then(() => {
+		return client.writeEvents(testStream, events).then(async () => {
+			await client.close();
 			assert.fail('should not have succeeded');
 		}).catch(err => {
 			assert(err, 'error expected');
@@ -85,6 +90,10 @@ describe('TCP Client - Write Events to pre-populated stream', () => {
 		events2 = [eventFactory.newEvent('TestEventType', {
 			something: 'abc'
 		})];
+	});
+
+	afterEach(async () => {
+		await client.close();
 	});
 
 	it('Should fail promise if passed in wrong expectedVersion (covering edge case of expectedVersion=0)', async () => {

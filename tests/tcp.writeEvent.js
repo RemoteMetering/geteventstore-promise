@@ -16,13 +16,16 @@ describe('TCP Client - Write Event', () => {
 
 		const events = await client.getEvents(testStream);
 		assert.equal(events[0].data.something, '123');
+
+		await client.close();
 	});
 
 	it('Should fail promise if no event data provided', () => {
 		const client = new EventStore.TCPClient(tcpConfig);
 
 		const testStream = `TestStream-${generateEventId()}`;
-		return client.writeEvent(testStream, 'TestEventType').then(() => {
+		return client.writeEvent(testStream, 'TestEventType').then(async () => {
+			await client.close();
 			assert.fail('write should not have succeeded');
 		}).catch(err => {
 			assert(err, 'error should have been returned');
@@ -52,6 +55,10 @@ describe('TCP Client - Write Event to pre-populated stream', () => {
 		}, null, {
 			expectedVersion: 1
 		});
+	});
+
+	afterEach(async () => {
+		await client.close();
 	});
 
 	it('Should fail promise if passed in wrong expectedVersion (covering edge case of expectedVersion=0)', async () => {

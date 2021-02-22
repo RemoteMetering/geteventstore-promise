@@ -32,6 +32,8 @@ describe('TCP Client - Event Enumerator', () => {
 			assert.equal(result.events.length, 20);
 			assert.equal(result.events[0].data.id, 20);
 			assert.equal(result.events[19].data.id, 39);
+
+			await client.close();
 		});
 
 		it('Read first 10 events, next 20 events, previous 30 events', async() => {
@@ -62,6 +64,8 @@ describe('TCP Client - Event Enumerator', () => {
 			assert.equal(result.events.length, 30);
 			assert.equal(result.events[0].data.id, 0);
 			assert.equal(result.events[29].data.id, 29);
+
+			await client.close();
 		});
 
 		it('Read last 10 events, previous 30 events, next 30 events', async() => {
@@ -92,6 +96,8 @@ describe('TCP Client - Event Enumerator', () => {
 			assert.equal(result.events.length, 30);
 			assert.equal(result.events[0].data.id, 70);
 			assert.equal(result.events[29].data.id, 99);
+
+			await client.close();
 		});
 
 		it('Read first and last batch', async() => {
@@ -117,6 +123,8 @@ describe('TCP Client - Event Enumerator', () => {
 			assert.equal(result.events.length, 20);
 			assert.equal(result.events[0].data.id, 80);
 			assert.equal(result.events[19].data.id, 99);
+
+			await client.close();
 		});
 
 		it('Handle out of bounds Enumeration Request ', async() => {
@@ -152,6 +160,8 @@ describe('TCP Client - Event Enumerator', () => {
 			assert.equal(result.events.length, 10);
 			assert.equal(result.events[0].data.id, 0);
 			assert.equal(result.events[9].data.id, 9);
+
+			await client.close();
 		});
 	});
 
@@ -179,6 +189,8 @@ describe('TCP Client - Event Enumerator', () => {
 			assert.equal(result.events.length, 20);
 			assert.equal(result.events[0].data.id, 79);
 			assert.equal(result.events[19].data.id, 60);
+
+			await client.close();
 		});
 
 		it('Read first 10 events, next 20 events, previous 30 events', async() => {
@@ -209,6 +221,8 @@ describe('TCP Client - Event Enumerator', () => {
 			assert.equal(result.events.length, 30);
 			assert.equal(result.events[0].data.id, 99);
 			assert.equal(result.events[29].data.id, 70);
+
+			await client.close();
 		});
 
 		it('Read last 10 events, previous 20 events, next 30 events', async() => {
@@ -239,6 +253,8 @@ describe('TCP Client - Event Enumerator', () => {
 			assert.equal(result.events.length, 30);
 			assert.equal(result.events[0].data.id, 29);
 			assert.equal(result.events[29].data.id, 0);
+
+			await client.close();
 		});
 
 		it('Read first and last batch', async() => {
@@ -264,6 +280,8 @@ describe('TCP Client - Event Enumerator', () => {
 			assert.equal(result.events.length, 20);
 			assert.equal(result.events[0].data.id, 19);
 			assert.equal(result.events[19].data.id, 0);
+
+			await client.close();
 		});
 
 		it('Handle out of bounds Enumeration Request ', async() => {
@@ -298,6 +316,8 @@ describe('TCP Client - Event Enumerator', () => {
 			assert.equal(result.events.length, 10);
 			assert.equal(result.events[0].data.id, 99);
 			assert.equal(result.events[9].data.id, 90);
+
+			await client.close();
 		});
 	});
 });

@@ -15,6 +15,8 @@ describe('TCP Client - Check Stream Exist', () => {
 			something: '123'
 		});
 		assert.equal(await client.checkStreamExists(testStream), true);
+
+		await client.close();
 	});
 
 	it('Should return false when a stream does not exist', async function() {
@@ -22,5 +24,7 @@ describe('TCP Client - Check Stream Exist', () => {
 		const client = new EventStore.TCPClient(tcpConfig);
 
 		assert.equal(await client.checkStreamExists('Non_existentStream'), false);
+
+		await client.close();
 	});
 });
