@@ -1,3 +1,22 @@
+# 3.3.0 (2021-02-22)
+
+## TCP
+
+#### Changes
+
+- destroy connection on connection close
+- subscription connection pools now tracked uniquely
+- `close` connection pool will now drain pool first
+
+#### Fixes
+
+- `subscribeToStream` - `close` will now release and close subscription connection pool
+- `subscribeToStreamFrom` - added `close` function that will release and close subscription connection pool
+
+#### Dependencies
+
+- Update packages
+
 # 3.2.5 (2021-01-29)
 
 #### Dependencies

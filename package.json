@@ -1,6 +1,6 @@
 {
 	"name": "geteventstore-promise",
-	"version": "3.2.5",
+	"version": "3.3.0",
 	"description": "GetEventStore client wrapper using promises",
 	"main": "index.js",
 	"scripts": {
