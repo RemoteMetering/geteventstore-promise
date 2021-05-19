@@ -35,32 +35,30 @@ describe('TCP Client - Subscribe To Stream From', () => {
 				assert.equal(10, processedEventCount);
 				assert(sub, 'Subscription Expected');
 				hasPassed = true;
-				done();
-				client.close();
+				return sub.close().then(() => done());
 			}))
-		).catch(done);
+		).catch(done).finally(() => client.close());
 	});
 
-	it('Should get all resolved events read from a linked stream', function (done) {
+	it('Should get all resolved events read from middle of a linked stream', function (done) {
 		this.timeout(9 * 1000);
 
 		const client = new EventStore.TCPClient(tcpConfig);
 		const testStream = `TestStream-${generateEventId()}`;
-		let doDone = true;
+		let hasProcessedEvents = false;
 		let hasPassed = false;
+		let hasReachAssert = false;
 
 		function onEventAppeared(sub, ev) {
 			assert(ev.positionEventId, 'Position link event id expected');
-			if (doDone) {
-				hasPassed = true;
-				done();
-				client.close();
-			}
-			doDone = false;
+			hasProcessedEvents = true;
 		}
 
-		function onDropped() {
-			if (!hasPassed) done('should not drop during test');
+		async function onDropped() {
+			if (!hasPassed) {
+				await client.close();
+				if (!hasReachAssert) done('should not drop during test');
+			}
 		}
 
 		const events = [];
@@ -72,7 +70,14 @@ describe('TCP Client - Subscribe To Stream From', () => {
 			const settings = {
 				resolveLinkTos: true
 			};
-			return client.subscribeToStreamFrom('$ce-TestStream', 5, onEventAppeared, undefined, onDropped, settings);
-		}).catch(done);
+			return client.subscribeToStreamFrom(`$ce-TestStream`, 5, onEventAppeared, undefined, onDropped, settings)
+				.then(sub => sleep(3000).then(() => {
+					hasReachAssert = true;
+					assert(hasProcessedEvents, `Should have processed events`);
+					assert(sub, 'Subscription Expected');
+					hasPassed = true;
+					return sub.close().then(() => done());
+				}));
+		}).catch(done).finally(() => client.close());
 	});
 });
