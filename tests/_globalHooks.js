@@ -27,7 +27,7 @@ const addContainer = async () => {
 		`${esConfig.options.extHttpPort}:2113`,
 		'-p',
 		`${esConfig.options.extTcpPort}:${esConfig.options.extTcpPort}`,
-		'eventstore/eventstore:release-5.0.8'
+		'eventstore/eventstore:release-5.0.10'
 	];
 
 	eventstore = spawn('docker', dockerParameters, {

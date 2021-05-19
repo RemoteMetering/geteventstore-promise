@@ -17,7 +17,7 @@ Set the ES_EXECUTABLE environment variable to point to the eventstore executable
 
 #### Using docker (cluster tests will only run in this mode)
 
-> docker pull eventstore/eventstore:release-5.0.8
+> docker pull eventstore/eventstore:release-5.0.10
 
 > yarn test:docker
 
@@ -604,6 +604,26 @@ const client = new EventStore.TCPClient({
 		min: 0,
 		max: 10
 	}
+});
+```
+
+# Config example - Override connection name
+
+```javascript
+const { v4: generateId } = require('uuid');
+
+const client = new EventStore.TCPClient({
+	hostname: 'localhost',
+	port: 1113,
+	credentials: {
+		username: 'admin',
+		password: 'changeit'
+	},
+	poolOptions: {
+		min: 0,
+		max: 10
+	},
+	connectionNameGenerator: () => `APP_NAME_${generateId()}`
 });
 ```
 
