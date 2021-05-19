@@ -15,7 +15,7 @@ describe('Http Client - Delete stream', () => {
 			something: '123'
 		});
 		await client.deleteStream(testStream);
-
+		await sleep(100);
 		assert.equal(await client.checkStreamExists(testStream), false);
 	});
 
@@ -28,7 +28,7 @@ describe('Http Client - Delete stream', () => {
 		});
 		await sleep(150);
 		await client.deleteStream(`$ce-TestDeletedStream`);
-
+		await sleep(100);
 		assert.equal(await client.checkStreamExists(`$ce-TestDeletedStream`), false);
 	});
 
@@ -40,6 +40,7 @@ describe('Http Client - Delete stream', () => {
 			something: '123'
 		});
 		await client.deleteStream(testStream);
+		await sleep(100);
 		return client.writeEvent(testStream, 'TestEventType', {
 			something: '456'
 		});
