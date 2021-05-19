@@ -17,10 +17,10 @@ describe('TCP Client - Delete stream', () => {
 			assert.equal(false, exists);
 		})).catch(err => {
 			assert.fail(err.message);
-		}));
+		})).finally(() => client.close());
 	});
 
-	it('Should return successful on projected stream delete', async() => {
+	it('Should return successful on projected stream delete', async () => {
 		const client = new EventStore.TCPClient(tcpConfig);
 
 		const testStream = `TestDeletedStream-${generateEventId()}`;
@@ -31,6 +31,8 @@ describe('TCP Client - Delete stream', () => {
 		await sleep(150);
 		await client.deleteStream(`$ce-TestDeletedStream`);
 		assert.equal(await client.checkStreamExists(`$ce-TestDeletedStream`), false);
+
+		await client.close();
 	});
 
 	it('Should return successful on writing to a stream that has been soft deleted', () => {
@@ -44,7 +46,7 @@ describe('TCP Client - Delete stream', () => {
 			something: '456'
 		})).catch(err => {
 			assert.fail(err.message);
-		}));
+		})).finally(() => client.close());
 	});
 
 	it('Should return successful on stream delete hard delete', callback => {
@@ -60,7 +62,7 @@ describe('TCP Client - Delete stream', () => {
 			}).catch(err => {
 				assert(err.message.includes('hard deleted'), 'Expected "hard deleted"');
 				callback();
-			}).catch(callback)).catch(callback);
+			}).catch(callback)).catch(callback).finally(() => client.close());
 	});
 
 	it('Should fail when a stream does not exist', () => {
@@ -72,7 +74,7 @@ describe('TCP Client - Delete stream', () => {
 			assert.fail('Should have failed because stream does not exist');
 		}).catch(err => {
 			assert(err);
-		});
+		}).finally(() => client.close());
 	});
 
 	it('Should return "StreamDeletedError" when a writing to a stream that has been hard deleted', () => {
@@ -88,6 +90,6 @@ describe('TCP Client - Delete stream', () => {
 			assert.fail('Should have failed because stream does not exist');
 		})).catch(err => {
 			assert.equal('StreamDeletedError', err.name);
-		}));
+		})).finally(() => client.close());
 	});
 });
