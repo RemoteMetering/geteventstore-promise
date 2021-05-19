@@ -27,7 +27,7 @@ const addContainer = async () => {
 		`${esConfig.options.extHttpPort}:2113`,
 		'-p',
 		`${esConfig.options.extTcpPort}:${esConfig.options.extTcpPort}`,
-		'eventstore/eventstore:release-5.0.8'
+		'eventstore/eventstore:20.10.2-bionic'
 	];
 
 	eventstore = spawn('docker', dockerParameters, {
@@ -71,7 +71,6 @@ before(async function () {
 		if (esConfig.testsUseDocker) {
 			await removeContainer();
 			await removeClusterContainers();
-			await addContainer();
 			await addClusterContainers();
 		} else {
 			const intTcpPort = `--int-tcp-port=${esConfig.options.intTcpPort}`;
@@ -98,7 +97,7 @@ after(async function () {
 	if (eventstore) eventstore.kill();
 	eventstore = undefined;
 	if (esConfig.testsUseDocker) {
-		await removeContainer();
-		await removeClusterContainers();
+		// await removeContainer();
+		// await removeClusterContainers();
 	}
 });

@@ -4,6 +4,7 @@ import generateEventId from '../lib/utilities/generateEventId';
 import tcpConfig from './support/tcpConfig';
 import EventStore from '../lib';
 import assert from 'assert';
+import sleep from './utilities/sleep';
 
 describe('TCP Client - Write Event', () => {
 	it('Write to a new stream and read the event', async () => {
@@ -63,6 +64,7 @@ describe('TCP Client - Write Event to pre-populated stream', () => {
 
 	it('Should fail promise if passed in wrong expectedVersion (covering edge case of expectedVersion=0)', async () => {
 		try {
+			await sleep(5000);
 			await client.writeEvent(testStream, 'TestEventType', {
 				something: 'abc'
 			}, null, {
@@ -74,7 +76,7 @@ describe('TCP Client - Write Event to pre-populated stream', () => {
 			return;
 		}
 		assert.fail('Write should not have succeeded');
-	});
+	}).timeout(14000);
 
 	it('Should write event if expectedVersion=null', async () => {
 		try {
