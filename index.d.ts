@@ -63,6 +63,7 @@ export interface TCPConfig extends ConnectionSettings {
 	gossipSeeds?: GossipSeed[];
 	credentials: UserCredentials;
 	poolOptions?: TCPPoolOptions;
+	connectionNameGenerator?: () => string | Promise<string>;
 }
 
 export interface HTTPWriteEventOptions  {

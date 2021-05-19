@@ -1,5 +1,6 @@
 import './_globalHooks';
 
+import tcpConfigCustomConnectionName from './support/tcpConfigCustomConnectionName';
 import generateEventId from '../lib/utilities/generateEventId';
 import tcpConfig from './support/tcpConfig';
 import EventStore from '../lib';
@@ -24,6 +25,24 @@ describe('TCP Client - Test Connection', () => {
 		await client.writeEvent(testStream, 'TestEventType', {
 			something: '123'
 		});
+
+		await client.close();
+	});
+
+	it('Should connect and write event with custom connection name', async function () {
+		const client = new EventStore.TCPClient(tcpConfigCustomConnectionName);
+
+		const testStream = `TestStream-${generateEventId()}`;
+		await client.writeEvent(testStream, 'TestEventType', {
+			something: '123'
+		});
+
+		const pool = await client.getPool();
+		assert.equal(1, pool._allObjects.size);
+
+		const connection = await pool.acquire();
+		assert(connection._connectionName.startsWith('CUSTOM_TCP_CONNECTION_NAME_'), `Expected connection name to start with 'CUSTOM_TCP_CONNECTION_NAME_', got '${connection._connectionName}'`);
+		await pool.release(connection);
 
 		await client.close();
 	});
