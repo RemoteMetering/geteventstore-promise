@@ -32,6 +32,7 @@
 		"axios": "^0.21.1",
 		"debug": "^4.3.1",
 		"generic-pool": "^3.7.8",
+		"lodash.clonedeep": "^4.5.0",
 		"node-eventstore-client": "^0.2.18",
 		"uuid": "^8.3.2"
 	},

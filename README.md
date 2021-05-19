@@ -607,6 +607,26 @@ const client = new EventStore.TCPClient({
 });
 ```
 
+# Config example - Override connection name
+
+```javascript
+const { v4: generateId } = require('uuid');
+
+const client = new EventStore.TCPClient({
+	hostname: 'localhost',
+	port: 1113,
+	credentials: {
+		username: 'admin',
+		password: 'changeit'
+	},
+	poolOptions: {
+		min: 0,
+		max: 10
+	},
+	connectionNameGenerator: () => `APP_NAME_${generateId()}`
+});
+```
+
 # Config example - Clustering - Gossip Seeds
 
 ```javascript

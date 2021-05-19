@@ -1,6 +1,6 @@
 import './_globalHooks';
 
-import tcpConfigGenerateConnectionName from './support/tcpConfigGenerateConnectionName';
+import tcpConfigCustomConnectionName from './support/tcpConfigCustomConnectionName';
 import generateEventId from '../lib/utilities/generateEventId';
 import tcpConfig from './support/tcpConfig';
 import EventStore from '../lib';
@@ -19,7 +19,7 @@ describe('TCP Client - Test Connection', () => {
 		await Promise.all(events.map(ev => client.writeEvent(`TestStream-${generateEventId()}`, ev.eventType, ev.data)));
 	};
 
-	xit('Should connect and write event on correct connection properties', async () => {
+	it('Should connect and write event on correct connection properties', async () => {
 		const client = new EventStore.TCPClient(tcpConfig);
 		const testStream = `TestStream-${generateEventId()}`;
 		await client.writeEvent(testStream, 'TestEventType', {
@@ -29,17 +29,25 @@ describe('TCP Client - Test Connection', () => {
 		await client.close();
 	});
 
-	it('Should connect and write event on correct connection properties with custom connection name', async () => {
-		const client = new EventStore.TCPClient(tcpConfigGenerateConnectionName);
+	it('Should connect and write event with custom connection name', async function () {
+		const client = new EventStore.TCPClient(tcpConfigCustomConnectionName);
+
 		const testStream = `TestStream-${generateEventId()}`;
 		await client.writeEvent(testStream, 'TestEventType', {
 			something: '123'
 		});
 
+		const pool = await client.getPool();
+		assert.equal(1, pool._allObjects.size);
+
+		const connection = await pool.acquire();
+		assert(connection._connectionName.startsWith('CUSTOM_TCP_CONNECTION_NAME_'), `Expected connection name to start with 'CUSTOM_TCP_CONNECTION_NAME_', got '${connection._connectionName}'`);
+		await pool.release(connection);
+
 		await client.close();
 	});
 
-	xit('Should not connect on incorrect hostname', function () {
+	it('Should not connect on incorrect hostname', function () {
 		this.timeout(60 * 1000);
 		const config = JSON.parse(JSON.stringify(tcpConfig));
 		config.maxReconnections = 2;
@@ -57,7 +65,7 @@ describe('TCP Client - Test Connection', () => {
 		}).finally(() => client.close());
 	});
 
-	xit('Should not connect on incorrect port', function () {
+	it('Should not connect on incorrect port', function () {
 		this.timeout(60 * 1000);
 		const config = JSON.parse(JSON.stringify(tcpConfig));
 		config.maxReconnections = 2;
@@ -75,7 +83,7 @@ describe('TCP Client - Test Connection', () => {
 		}).finally(() => client.close());
 	});
 
-	xit('Should default to only one connection with no pool options provided', async function () {
+	it('Should default to only one connection with no pool options provided', async function () {
 		this.timeout(60 * 1000);
 		const config = JSON.parse(JSON.stringify(tcpConfig));
 		delete config.poolOptions;
@@ -90,7 +98,7 @@ describe('TCP Client - Test Connection', () => {
 		await client.close();
 	});
 
-	xit('Should fill up pool connections to provided max', async function () {
+	it('Should fill up pool connections to provided max', async function () {
 		this.timeout(60 * 1000);
 		const config = JSON.parse(JSON.stringify(tcpConfig));
 		config.poolOptions.max = 7;
@@ -105,7 +113,7 @@ describe('TCP Client - Test Connection', () => {
 		await client.close();
 	});
 
-	xit('Should close pool', async function () {
+	it('Should close pool', async function () {
 		this.timeout(60 * 1000);
 		const config = JSON.parse(JSON.stringify(tcpConfig));
 		const client = new EventStore.TCPClient(config);
@@ -126,7 +134,7 @@ describe('TCP Client - Test Connection', () => {
 		}
 	});
 
-	xit('Should close all pools', async function () {
+	it('Should close all pools', async function () {
 		this.timeout(60 * 1000);
 		const config = JSON.parse(JSON.stringify(tcpConfig));
 		const client = new EventStore.TCPClient(config);

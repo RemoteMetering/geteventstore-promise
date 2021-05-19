@@ -10,8 +10,5 @@ export default {
 		max: 10,
 		min: 0
 	},
-	generateConnectionName: (callingFile) => {
- console.log("callingFile ", callingFile);
-		return `${callingFile}_${new Date().getTime()}`;
-	}
+	connectionNameGenerator: () => `CUSTOM_TCP_CONNECTION_NAME_${new Date().getTime()}`
 };
