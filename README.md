@@ -17,7 +17,7 @@ Set the ES_EXECUTABLE environment variable to point to the eventstore executable
 
 #### Using docker (cluster tests will only run in this mode)
 
-> docker pull eventstore/eventstore:release-5.0.8
+> docker pull eventstore/eventstore:release-5.0.10
 
 > yarn test:docker
 
