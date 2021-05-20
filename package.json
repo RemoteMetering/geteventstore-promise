@@ -5,8 +5,7 @@
 	"main": "index.js",
 	"scripts": {
 		"test": "cross-env NODE_ENV=test mocha --exit --require @babel/register tests/",
-		"test:docker": "cross-env NODE_ENV=test TEST_USE_DOCKER=true mocha --exit --require @babel/register tests/",
-		"coverage": "nyc yarn test:docker",
+		"coverage": "nyc yarn test",
 		"build": "babel --delete-dir-on-start -d dist/ lib"
 	},
 	"repository": {

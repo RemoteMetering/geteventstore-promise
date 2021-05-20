@@ -16,9 +16,9 @@ services:
     volumes:
       - ./certs:/certs
 
-  node1.eventstore: &template
+  geteventstore_promise_test_node1.eventstore: &template
     image: eventstore/eventstore:20.10.2-bionic
-    container_name: node1.eventstore
+    container_name: geteventstore_promise_test_node1.eventstore
     env_file:
       - vars.env
     environment:
@@ -33,7 +33,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "curl --fail --insecure https://node1.eventstore:2113/health/live || exit 1",
+          "curl --fail --insecure https://geteventstore_promise_test_node1.eventstore:2113/health/live || exit 1",
         ]
       interval: 5s
       timeout: 5s
@@ -50,9 +50,9 @@ services:
       clusternetwork:
         ipv4_address: 172.30.240.11
 
-  node2.eventstore:
+  geteventstore_promise_test_node2.eventstore:
     <<: *template
-    container_name: node2.eventstore
+    container_name: geteventstore_promise_test_node2.eventstore
     env_file:
       - vars.env
     environment:
@@ -67,7 +67,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "curl --fail --insecure https://node2.eventstore:2113/health/live || exit 1",
+          "curl --fail --insecure https://geteventstore_promise_test_node2.eventstore:2113/health/live || exit 1",
         ]
       interval: 5s
       timeout: 5s
@@ -79,9 +79,9 @@ services:
       clusternetwork:
         ipv4_address: 172.30.240.12
 
-  node3.eventstore:
+  geteventstore_promise_test_node3.eventstore:
     <<: *template
-    container_name: node3.eventstore
+    container_name: geteventstore_promise_test_node3.eventstore
     environment:
       - EVENTSTORE_INT_IP=172.30.240.13
       - EVENTSTORE_ADVERTISE_HTTP_PORT_TO_CLIENT_AS=2173
@@ -94,7 +94,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "curl --fail --insecure https://node3.eventstore:2113/health/live || exit 1",
+          "curl --fail --insecure https://geteventstore_promise_test_node3.eventstore:2113/health/live || exit 1",
         ]
       interval: 5s
       timeout: 5s
