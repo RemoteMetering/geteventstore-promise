@@ -1,6 +1,6 @@
 export default {
 	hostname: process.env.ES_HOST || 'localhost',
-	port: 2116,
+	port: 1116,
 	credentials: {
 		username: 'admin',
 		password: 'changeit'

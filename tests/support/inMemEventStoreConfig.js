@@ -4,9 +4,9 @@ export default {
 	dockerContainerName: 'Test_EventStore',
 	options: {
 		host: process.env.ES_HOST || 'localhost',
-		intTcpPort: 1116,
-		extTcpPort: 2116,
-		intHttpPort: 1117,
+		intTcpPort: 1113,
+		extTcpPort: 1116,
+		intHttpPort: 2113,
 		extHttpPort: 2117
 	},
 	credentials: {

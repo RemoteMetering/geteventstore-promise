@@ -17,16 +17,22 @@ const addContainer = async () => {
 		'run',
 		'--name',
 		esConfig.dockerContainerName,
-		'--env=EVENTSTORE_MEM_DB=True',
+		'--env=EVENTSTORE_INSECURE=true',
+		'--env=EVENTSTORE_MEM_DB=true',
+		'--env=EVENTSTORE_CLUSTER_SIZE=1',
 		'--env=EVENTSTORE_RUN_PROJECTIONS=All',
-		'--env=EVENTSTORE_START_STANDARD_PROJECTIONS=True',
-		`--env=EVENTSTORE_EXT_HTTP_PORT_ADVERTISE_AS=${esConfig.options.extHttpPort}`,
-		`--env=EVENTSTORE_EXT_TCP_PORT=${esConfig.options.extTcpPort}`,
+		'--env=EVENTSTORE_START_STANDARD_PROJECTIONS=true',
+		`--env=EVENTSTORE_ADVERTISE_HTTP_PORT_TO_CLIENT_AS=${esConfig.options.extHttpPort}`,
+		`--env=EVENTSTORE_ADVERTISE_TCP_PORT_TO_CLIENT_AS=${esConfig.options.extTcpPort}`,
+		'--env=EVENTSTORE_DISCOVER_VIA_DNS=false',
+		'--env=EVENTSTORE_ENABLE_EXTERNAL_TCP=true',
+		'--env=EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP=true',
+		'--env=EVENTSTORE_ADVERTISE_HOST_TO_CLIENT_AS=127.0.0.1',
 		'-d',
 		'-p',
 		`${esConfig.options.extHttpPort}:2113`,
 		'-p',
-		`${esConfig.options.extTcpPort}:${esConfig.options.extTcpPort}`,
+		`${esConfig.options.extTcpPort}:1113`,
 		'eventstore/eventstore:20.10.2-bionic'
 	];
 
@@ -71,6 +77,7 @@ before(async function () {
 		if (esConfig.testsUseDocker) {
 			await removeContainer();
 			await removeClusterContainers();
+			await addContainer();
 			await addClusterContainers();
 		} else {
 			const intTcpPort = `--int-tcp-port=${esConfig.options.intTcpPort}`;
@@ -97,7 +104,7 @@ after(async function () {
 	if (eventstore) eventstore.kill();
 	eventstore = undefined;
 	if (esConfig.testsUseDocker) {
-		// await removeContainer();
-		// await removeClusterContainers();
+		await removeContainer();
+		await removeClusterContainers();
 	}
 });
