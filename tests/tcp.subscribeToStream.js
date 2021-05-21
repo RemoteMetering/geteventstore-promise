@@ -22,7 +22,7 @@ describe('TCP Client - Subscribe To Stream', () => {
 
 		async function onDropped() {
 			if (!hasPassed) {
-				await client.close();
+				await client.closeAllPools();
 				done('should not drop');
 			}
 		}
@@ -78,6 +78,6 @@ describe('TCP Client - Subscribe To Stream', () => {
 
 		await sub1.close();
 		await sub2.close();
-		await client.close();
+		await client.closeAllPools();
 	});
 });

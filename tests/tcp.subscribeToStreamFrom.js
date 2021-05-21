@@ -37,7 +37,7 @@ describe('TCP Client - Subscribe To Stream From', () => {
 				hasPassed = true;
 				return sub.close().then(() => done());
 			}))
-		).catch(done).finally(() => client.close());
+		).catch(done).finally(() => client.closeAllPools());
 	});
 
 	it('Should get all resolved events read from middle of a linked stream', function (done) {
@@ -78,6 +78,6 @@ describe('TCP Client - Subscribe To Stream From', () => {
 					hasPassed = true;
 					return sub.close().then(() => done());
 				}));
-		}).catch(done).finally(() => client.close());
+		}).catch(done).finally(() => client.closeAllPools());
 	});
 });
