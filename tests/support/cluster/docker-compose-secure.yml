@@ -22,6 +22,7 @@ services:
   geteventstore_promise_test_cluster_node1.eventstore: &template
     image: eventstore/eventstore:20.10.2-bionic
     container_name: geteventstore_promise_test_cluster_node1.eventstore
+    command: --node-priority 1
     env_file:
       - vars.env
     environment:
@@ -56,6 +57,7 @@ services:
   geteventstore_promise_test_cluster_node2.eventstore:
     <<: *template
     container_name: geteventstore_promise_test_cluster_node2.eventstore
+    command: --node-priority 2
     environment:
       - EVENTSTORE_INT_IP=172.30.240.12
       - EVENTSTORE_ADVERTISE_HTTP_PORT_TO_CLIENT_AS=2157
@@ -83,6 +85,7 @@ services:
   geteventstore_promise_test_cluster_node3.eventstore:
     <<: *template
     container_name: geteventstore_promise_test_cluster_node3.eventstore
+    command: --node-priority 3
     environment:
       - EVENTSTORE_INT_IP=172.30.240.13
       - EVENTSTORE_ADVERTISE_HTTP_PORT_TO_CLIENT_AS=2177
