@@ -1,7 +1,7 @@
 export default () => ({
 	hostname: process.env.ES_HOST || 'localhost',
 	port: 1116,
-	useSslConnection: !!global.runningTestsInSecureMode,
+	useSslConnection: global.runningTestsInSecureMode,
 	validateServer: !global.runningTestsInSecureMode,
 	credentials: {
 		username: 'admin',
