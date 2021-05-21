@@ -1,3 +1,26 @@
+# 4.0.0 (2021-05-22)
+
+#### Features
+
+- Added support for `v20` and `v21`
+- Added support for secured EventStoreDB clusters and single instances
+
+#### Breaking Changes
+
+- Removed deprecated legacy instance creation: `geteventstore.tcp(config)`, `geteventstore.http(config)` and `geteventstore.eventFactory`
+
+## TCP
+
+##### Features
+
+- Added `connectionNameGenerator` function to config that allows custom TCP connection names
+
+## Tests
+
+- Tests now solely uses docker
+- Added `test:secure` and `test:insecure` scripts
+- `test` will now run all tests with secured and insecure EventStoreDB's
+
 # 3.3.0 (2021-02-22)
 
 ## TCP
