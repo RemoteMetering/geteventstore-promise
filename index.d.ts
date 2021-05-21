@@ -227,11 +227,3 @@ export class TCPClient {
 	getPool(): Promise<TCPPool<object>>;
 	closeAllPools(): Promise<void>;
 }
-
-//Deprecated
-export class tcp extends TCPClient {}
-export class http extends HTTPClient {}
-
-export namespace eventFactory {
-	const NewEvent: (eventType: string, data: object, metadata: object, eventId: string) => NewEvent;
-}
