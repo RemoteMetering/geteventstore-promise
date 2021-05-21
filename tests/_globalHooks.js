@@ -17,10 +17,7 @@ const startStack = async (filePath) => new Promise((resolve, reject) => {
 		stdio: ['ignore', 'ignore', process.stderr]
 	});
 
-	proc.on('close', code => {
-		if (code === 0) resolve();
-		else reject();
-	});
+	proc.on('close', code => code === 0 ? resolve() : reject(code));
 });
 
 const removeStack = async (filePath) => new Promise((resolve, reject) => {
@@ -35,6 +32,12 @@ const removeStack = async (filePath) => new Promise((resolve, reject) => {
 	});
 });
 
+const isContainerReady = async (containerName, readyOutputMatch) => new Promise((resolve) => {
+	const proc = spawn('docker', ['logs', containerName], { cwd: undefined });
+	proc.stdout.on('data', line => line.toString().includes(readyOutputMatch) && resolve(true));
+	proc.on('close', () => resolve(false));
+});
+
 before(async function () {
 	this.timeout(60 * 1000);
 	if (eventstore) return;
@@ -44,7 +47,15 @@ before(async function () {
 	await Promise.all([removeStack(singleComposeFileLocation), removeStack(clusterComposeFileLocation)]);
 	await Promise.all([startStack(singleComposeFileLocation), startStack(clusterComposeFileLocation)]);
 
-	return sleep(10000);
+	while (true) {
+		const [isSingleReady, isClusterReady] = await Promise.all([
+			isContainerReady('geteventstore_promise_test_single.eventstore', `'"$streams"' projection source has been written`),
+			isContainerReady('geteventstore_promise_test_cluster_node1.eventstore', '<LIVE> [Leader')
+		]);
+		if (isSingleReady && isClusterReady) break;
+		await sleep(100);
+	}
+	await sleep(1000);
 });
 
 after(async function () {
