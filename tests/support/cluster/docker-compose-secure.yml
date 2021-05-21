@@ -1,7 +1,7 @@
 version: "3.5"
 
 services:
-  setup_cluster:
+  geteventstore_promise_test_setup_certs_cluster:
     image: eventstore/es-gencert-cli:1.0.2
     entrypoint: bash
     user: "0:0"
@@ -12,19 +12,19 @@ services:
       && es-gencert-cli create-node -out ./node2 -ip-addresses 127.0.0.1,172.30.240.12 -dns-names localhost
       && es-gencert-cli create-node -out ./node3 -ip-addresses 127.0.0.1,172.30.240.13 -dns-names localhost
       && find . -type f -print0 | xargs -0 chmod 666"
-    container_name: setup_cluster
+    container_name: geteventstore_promise_test_setup_certs_cluster
     volumes:
       - ./certs:/certs
 
-  geteventstore_promise_test_node1.eventstore: &template
+  geteventstore_promise_test_cluster_node1.eventstore: &template
     image: eventstore/eventstore:20.10.2-bionic
-    container_name: geteventstore_promise_test_node1.eventstore
+    container_name: geteventstore_promise_test_cluster_node1.eventstore
     env_file:
       - vars.env
     environment:
       - EVENTSTORE_INT_IP=172.30.240.11
-      - EVENTSTORE_ADVERTISE_HTTP_PORT_TO_CLIENT_AS=2133
-      - EVENTSTORE_ADVERTISE_TCP_PORT_TO_CLIENT_AS=1133
+      - EVENTSTORE_ADVERTISE_HTTP_PORT_TO_CLIENT_AS=2137
+      - EVENTSTORE_ADVERTISE_TCP_PORT_TO_CLIENT_AS=1136
       - EVENTSTORE_GOSSIP_SEED=172.30.240.12:2113,172.30.240.13:2113
       - EVENTSTORE_TRUSTED_ROOT_CERTIFICATES_PATH=/certs/ca
       - EVENTSTORE_CERTIFICATE_FILE=/certs/node1/node.crt
@@ -33,32 +33,30 @@ services:
       test:
         [
           "CMD-SHELL",
-          "curl --fail --insecure https://geteventstore_promise_test_node1.eventstore:2113/health/live || exit 1",
+          "curl --fail --insecure https://geteventstore_promise_test_cluster_node1.eventstore:2113/health/live || exit 1",
         ]
       interval: 5s
       timeout: 5s
       retries: 24
     ports:
-      - 1133:1113
-      - 2133:2113
+      - 1136:1113
+      - 2137:2113
     volumes:
       - ./certs:/certs
     depends_on:
-      - setup_cluster
+      - geteventstore_promise_test_setup_certs_cluster
     restart: always
     networks:
       clusternetwork:
         ipv4_address: 172.30.240.11
 
-  geteventstore_promise_test_node2.eventstore:
+  geteventstore_promise_test_cluster_node2.eventstore:
     <<: *template
-    container_name: geteventstore_promise_test_node2.eventstore
-    env_file:
-      - vars.env
+    container_name: geteventstore_promise_test_cluster_node2.eventstore
     environment:
       - EVENTSTORE_INT_IP=172.30.240.12
-      - EVENTSTORE_ADVERTISE_HTTP_PORT_TO_CLIENT_AS=2153
-      - EVENTSTORE_ADVERTISE_TCP_PORT_TO_CLIENT_AS=1152
+      - EVENTSTORE_ADVERTISE_HTTP_PORT_TO_CLIENT_AS=2157
+      - EVENTSTORE_ADVERTISE_TCP_PORT_TO_CLIENT_AS=1156
       - EVENTSTORE_GOSSIP_SEED=172.30.240.11:2113,172.30.240.13:2113
       - EVENTSTORE_TRUSTED_ROOT_CERTIFICATES_PATH=/certs/ca
       - EVENTSTORE_CERTIFICATE_FILE=/certs/node2/node.crt
@@ -67,25 +65,25 @@ services:
       test:
         [
           "CMD-SHELL",
-          "curl --fail --insecure https://geteventstore_promise_test_node2.eventstore:2113/health/live || exit 1",
+          "curl --fail --insecure https://geteventstore_promise_test_cluster_node2.eventstore:2113/health/live || exit 1",
         ]
       interval: 5s
       timeout: 5s
       retries: 24
     ports:
-      - 1152:1113
-      - 2153:2113
+      - 1156:1113
+      - 2157:2113
     networks:
       clusternetwork:
         ipv4_address: 172.30.240.12
 
-  geteventstore_promise_test_node3.eventstore:
+  geteventstore_promise_test_cluster_node3.eventstore:
     <<: *template
-    container_name: geteventstore_promise_test_node3.eventstore
+    container_name: geteventstore_promise_test_cluster_node3.eventstore
     environment:
       - EVENTSTORE_INT_IP=172.30.240.13
-      - EVENTSTORE_ADVERTISE_HTTP_PORT_TO_CLIENT_AS=2173
-      - EVENTSTORE_ADVERTISE_TCP_PORT_TO_CLIENT_AS=1173
+      - EVENTSTORE_ADVERTISE_HTTP_PORT_TO_CLIENT_AS=2177
+      - EVENTSTORE_ADVERTISE_TCP_PORT_TO_CLIENT_AS=1176
       - EVENTSTORE_GOSSIP_SEED=172.30.240.11:2113,172.30.240.12:2113
       - EVENTSTORE_TRUSTED_ROOT_CERTIFICATES_PATH=/certs/ca
       - EVENTSTORE_CERTIFICATE_FILE=/certs/node3/node.crt
@@ -94,21 +92,21 @@ services:
       test:
         [
           "CMD-SHELL",
-          "curl --fail --insecure https://geteventstore_promise_test_node3.eventstore:2113/health/live || exit 1",
+          "curl --fail --insecure https://geteventstore_promise_test_cluster_node3.eventstore:2113/health/live || exit 1",
         ]
       interval: 5s
       timeout: 5s
       retries: 24
     ports:
-      - 1173:1113
-      - 2173:2113
+      - 1176:1113
+      - 2177:2113
     networks:
       clusternetwork:
         ipv4_address: 172.30.240.13
 
 networks:
   clusternetwork:
-    name: geteventstore_promise_test_eventstoredb.local
+    name: geteventstore_promise_test_cluster_eventstoredb.local
     driver: bridge
     ipam:
       driver: default

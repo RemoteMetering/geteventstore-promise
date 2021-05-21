@@ -1,0 +1,63 @@
+version: "3.5"
+
+services:
+  geteventstore_promise_test_setup_certs_single:
+    image: eventstore/es-gencert-cli:1.0.2
+    entrypoint: bash
+    user: "0:0"
+    command: >
+      -c "mkdir -p ./certs && cd /certs
+      && es-gencert-cli create-ca
+      && es-gencert-cli create-node -out ./single -ip-addresses 127.0.0.1,172.30.239.11 -dns-names localhost
+      && find . -type f -print0 | xargs -0 chmod 666"
+    container_name: geteventstore_promise_test_setup_certs_single
+    volumes:
+      - ./certs:/certs
+
+  geteventstore_promise_test_single.eventstore:
+    image: eventstore/eventstore:20.10.2-bionic
+    container_name: geteventstore_promise_test_single.eventstore
+    environment:
+      - EVENTSTORE_MEM_DB=true
+      - EVENTSTORE_INT_IP=172.30.239.11
+      - EVENTSTORE_ADVERTISE_HTTP_PORT_TO_CLIENT_AS=2117
+      - EVENTSTORE_ADVERTISE_TCP_PORT_TO_CLIENT_AS=1116
+      - EVENTSTORE_TRUSTED_ROOT_CERTIFICATES_PATH=/certs/ca
+      - EVENTSTORE_CERTIFICATE_FILE=/certs/single/node.crt
+      - EVENTSTORE_CERTIFICATE_PRIVATE_KEY_FILE=/certs/single/node.key
+      - EVENTSTORE_CLUSTER_SIZE=1
+      - EVENTSTORE_RUN_PROJECTIONS=All
+      - EVENTSTORE_START_STANDARD_PROJECTIONS=true
+      - EVENTSTORE_DISCOVER_VIA_DNS=false
+      - EVENTSTORE_ENABLE_EXTERNAL_TCP=true
+      - EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP=true
+      - EVENTSTORE_ADVERTISE_HOST_TO_CLIENT_AS=127.0.0.1
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl --fail https://geteventstore_promise_test_single.eventstore:2113/health/live || exit 1",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+    ports:
+      - 1116:1113
+      - 2117:2113
+    volumes:
+      - ./certs:/certs
+    depends_on:
+      - geteventstore_promise_test_setup_certs_single
+    restart: always
+    networks:
+      clusternetwork:
+        ipv4_address: 172.30.239.11
+
+networks:
+  clusternetwork:
+    name: geteventstore_promise_test_single_eventstoredb.local
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.30.239.0/24
