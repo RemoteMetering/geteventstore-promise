@@ -1,7 +1,7 @@
 import './_globalHooks';
 
 import generateEventId from '../lib/utilities/generateEventId';
-import tcpConfig from './support/tcpConfig';
+import getTcpConfig from './support/getTcpConfig';
 import EventStore from '../lib';
 import assert from 'assert';
 
@@ -12,7 +12,7 @@ describe('TCP Client - Get Events', () => {
 	const numberOfEvents = 10;
 
 	before(async () => {
-		const client = new EventStore.TCPClient(tcpConfig);
+		const client = new EventStore.TCPClient(getTcpConfig());
 
 		const events = [];
 
@@ -28,7 +28,7 @@ describe('TCP Client - Get Events', () => {
 	});
 
 	it('Should get events reading forward', async () => {
-		const client = new EventStore.TCPClient(tcpConfig);
+		const client = new EventStore.TCPClient(getTcpConfig());
 
 		const events = await client.getEvents(testStream, undefined, undefined, 'forward');
 		assert.equal(events.length, 10);
@@ -44,7 +44,7 @@ describe('TCP Client - Get Events', () => {
 	});
 
 	it('Should get events reading backward', async () => {
-		const client = new EventStore.TCPClient(tcpConfig);
+		const client = new EventStore.TCPClient(getTcpConfig());
 
 		const events = await client.getEvents(testStream, undefined, undefined, 'backward');
 		assert.equal(events.length, 10);

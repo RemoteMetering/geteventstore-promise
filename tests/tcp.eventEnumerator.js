@@ -1,7 +1,7 @@
 import './_globalHooks';
 
 import generateEventId from '../lib/utilities/generateEventId';
-import tcpConfig from './support/tcpConfig';
+import getTcpConfig from './support/getTcpConfig';
 import EventStore from '../lib';
 import assert from 'assert';
 
@@ -10,7 +10,7 @@ const eventFactory = new EventStore.EventFactory();
 describe('TCP Client - Event Enumerator', () => {
 	describe('Forward: Reading events', () => {
 		it('Read next events', async() => {
-			const client = new EventStore.TCPClient(tcpConfig);
+			const client = new EventStore.TCPClient(getTcpConfig());
 
 			const events = [];
 			for (let k = 0; k < 100; k++) {
@@ -37,7 +37,7 @@ describe('TCP Client - Event Enumerator', () => {
 		});
 
 		it('Read first 10 events, next 20 events, previous 30 events', async() => {
-			const client = new EventStore.TCPClient(tcpConfig);
+			const client = new EventStore.TCPClient(getTcpConfig());
 
 			const events = [];
 			for (let k = 0; k < 100; k++) {
@@ -69,7 +69,7 @@ describe('TCP Client - Event Enumerator', () => {
 		});
 
 		it('Read last 10 events, previous 30 events, next 30 events', async() => {
-			const client = new EventStore.TCPClient(tcpConfig);
+			const client = new EventStore.TCPClient(getTcpConfig());
 
 			const events = [];
 			for (let k = 0; k < 100; k++) {
@@ -101,7 +101,7 @@ describe('TCP Client - Event Enumerator', () => {
 		});
 
 		it('Read first and last batch', async() => {
-			const client = new EventStore.TCPClient(tcpConfig);
+			const client = new EventStore.TCPClient(getTcpConfig());
 
 			const events = [];
 			for (let k = 0; k < 100; k++) {
@@ -128,7 +128,7 @@ describe('TCP Client - Event Enumerator', () => {
 		});
 
 		it('Handle out of bounds Enumeration Request ', async() => {
-			const client = new EventStore.TCPClient(tcpConfig);
+			const client = new EventStore.TCPClient(getTcpConfig());
 
 			const events = [];
 			for (let k = 0; k < 100; k++) {
@@ -167,7 +167,7 @@ describe('TCP Client - Event Enumerator', () => {
 
 	describe('Backward: Reading events', () => {
 		it('Read next events', async() => {
-			const client = new EventStore.TCPClient(tcpConfig);
+			const client = new EventStore.TCPClient(getTcpConfig());
 
 			const events = [];
 			for (let k = 0; k < 100; k++) {
@@ -194,7 +194,7 @@ describe('TCP Client - Event Enumerator', () => {
 		});
 
 		it('Read first 10 events, next 20 events, previous 30 events', async() => {
-			const client = new EventStore.TCPClient(tcpConfig);
+			const client = new EventStore.TCPClient(getTcpConfig());
 
 			const events = [];
 			for (let k = 0; k < 100; k++) {
@@ -226,7 +226,7 @@ describe('TCP Client - Event Enumerator', () => {
 		});
 
 		it('Read last 10 events, previous 20 events, next 30 events', async() => {
-			const client = new EventStore.TCPClient(tcpConfig);
+			const client = new EventStore.TCPClient(getTcpConfig());
 
 			const events = [];
 			for (let k = 0; k < 100; k++) {
@@ -258,7 +258,7 @@ describe('TCP Client - Event Enumerator', () => {
 		});
 
 		it('Read first and last batch', async() => {
-			const client = new EventStore.TCPClient(tcpConfig);
+			const client = new EventStore.TCPClient(getTcpConfig());
 
 			const events = [];
 			for (let k = 0; k < 100; k++) {
@@ -285,7 +285,7 @@ describe('TCP Client - Event Enumerator', () => {
 		});
 
 		it('Handle out of bounds Enumeration Request ', async() => {
-			const client = new EventStore.TCPClient(tcpConfig);
+			const client = new EventStore.TCPClient(getTcpConfig());
 
 			const events = [];
 			for (let k = 0; k < 100; k++) {

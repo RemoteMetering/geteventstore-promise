@@ -1,7 +1,7 @@
 import './_globalHooks';
 
 import generateEventId from '../lib/utilities/generateEventId';
-import tcpConfig from './support/tcpConfig';
+import getTcpConfig from './support/getTcpConfig';
 import EventStore from '../lib';
 import assert from 'assert';
 
@@ -9,7 +9,7 @@ const eventFactory = new EventStore.EventFactory();
 
 describe('TCP Client - Write Events', () => {
 	it('Write to a new stream and read the events', async () => {
-		const client = new EventStore.TCPClient(tcpConfig);
+		const client = new EventStore.TCPClient(getTcpConfig());
 
 		const events = [eventFactory.newEvent('TestEventType', {
 			something: '456'
@@ -25,7 +25,7 @@ describe('TCP Client - Write Events', () => {
 	});
 
 	it('Write to a new stream and read the events by type', async () => {
-		const client = new EventStore.TCPClient(tcpConfig);
+		const client = new EventStore.TCPClient(getTcpConfig());
 
 		const events = [eventFactory.newEvent('TestEventType', {
 			something: '456'
@@ -45,7 +45,7 @@ describe('TCP Client - Write Events', () => {
 	});
 
 	it('Should not fail promise if no events provided', async () => {
-		const client = new EventStore.TCPClient(tcpConfig);
+		const client = new EventStore.TCPClient(getTcpConfig());
 
 		const events = [];
 		const testStream = `TestStream-${generateEventId()}`;
@@ -53,7 +53,7 @@ describe('TCP Client - Write Events', () => {
 	});
 
 	it('Should fail promise if non array provided', () => {
-		const client = new EventStore.TCPClient(tcpConfig);
+		const client = new EventStore.TCPClient(getTcpConfig());
 
 		const events = {
 			something: 'here'
@@ -76,7 +76,7 @@ describe('TCP Client - Write Events to pre-populated stream', () => {
 		events2;
 
 	beforeEach(async () => {
-		client = new EventStore.TCPClient(tcpConfig);
+		client = new EventStore.TCPClient(getTcpConfig());
 
 		events = [eventFactory.newEvent('TestEventType', {
 			something: '456'

@@ -1,14 +1,14 @@
 import './_globalHooks';
 
 import generateEventId from '../lib/utilities/generateEventId';
-import tcpConfig from './support/tcpConfig';
+import getTcpConfig from './support/getTcpConfig';
 import sleep from './utilities/sleep';
 import EventStore from '../lib';
 import assert from 'assert';
 
 describe('TCP Client - Delete stream', () => {
 	it('Should return successful on stream delete', () => {
-		const client = new EventStore.TCPClient(tcpConfig);
+		const client = new EventStore.TCPClient(getTcpConfig());
 
 		const testStream = `TestStream-${generateEventId()}`;
 		return client.writeEvent(testStream, 'TestEventType', {
@@ -21,7 +21,7 @@ describe('TCP Client - Delete stream', () => {
 	});
 
 	it('Should return successful on projected stream delete', async () => {
-		const client = new EventStore.TCPClient(tcpConfig);
+		const client = new EventStore.TCPClient(getTcpConfig());
 
 		const testStream = `TestDeletedStream-${generateEventId()}`;
 		await client.writeEvent(testStream, 'TestEventType', {
@@ -36,7 +36,7 @@ describe('TCP Client - Delete stream', () => {
 	});
 
 	it('Should return successful on writing to a stream that has been soft deleted', () => {
-		const client = new EventStore.TCPClient(tcpConfig);
+		const client = new EventStore.TCPClient(getTcpConfig());
 
 		const testStream = `TestStream-${generateEventId()}`;
 
@@ -50,7 +50,7 @@ describe('TCP Client - Delete stream', () => {
 	});
 
 	it('Should return successful on stream delete hard delete', callback => {
-		const client = new EventStore.TCPClient(tcpConfig);
+		const client = new EventStore.TCPClient(getTcpConfig());
 
 		const testStream = `TestStream-${generateEventId()}`;
 		client.writeEvent(testStream, 'TestEventType', {
@@ -66,7 +66,7 @@ describe('TCP Client - Delete stream', () => {
 	});
 
 	it('Should fail when a stream does not exist', () => {
-		const client = new EventStore.TCPClient(tcpConfig);
+		const client = new EventStore.TCPClient(getTcpConfig());
 
 		const testStream = `TestStream-${generateEventId()}`;
 
@@ -78,7 +78,7 @@ describe('TCP Client - Delete stream', () => {
 	});
 
 	it('Should return "StreamDeletedError" when a writing to a stream that has been hard deleted', () => {
-		const client = new EventStore.TCPClient(tcpConfig);
+		const client = new EventStore.TCPClient(getTcpConfig());
 
 		const testStream = `TestStream-${generateEventId()}`;
 

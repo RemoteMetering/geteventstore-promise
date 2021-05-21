@@ -1,6 +1,8 @@
-export default {
+export default () => ({
 	hostname: process.env.ES_HOST || 'localhost',
-	port: 2116,
+	port: 1116,
+	useSslConnection: global.runningTestsInSecureMode,
+	validateServer: !global.runningTestsInSecureMode,
 	credentials: {
 		username: 'admin',
 		password: 'changeit'
@@ -11,4 +13,4 @@ export default {
 		min: 0
 	},
 	connectionNameGenerator: () => `CUSTOM_TCP_CONNECTION_NAME_${new Date().getTime()}`
-};
+});

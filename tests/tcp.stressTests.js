@@ -1,7 +1,7 @@
 import './_globalHooks';
 
 import generateEventId from '../lib/utilities/generateEventId';
-import tcpConfig from './support/tcpConfig';
+import getTcpConfig from './support/getTcpConfig';
 import EventStore from '../lib';
 import assert from 'assert';
 
@@ -10,7 +10,7 @@ const eventFactory = new EventStore.EventFactory();
 describe('TCP Client - Stress Tests', () => {
 	it('Should handle parallel writes', async function () {
 		this.timeout(20000);
-		const client = new EventStore.TCPClient(tcpConfig);
+		const client = new EventStore.TCPClient(getTcpConfig());
 
 		const testStream = `TestStream-${generateEventId()}`;
 		const numberOfEvents = 5000;
@@ -31,7 +31,7 @@ describe('TCP Client - Stress Tests', () => {
 
 	it('Should handle parallel reads and writes', function (callback) {
 		this.timeout(60000);
-		const client = new EventStore.TCPClient(tcpConfig);
+		const client = new EventStore.TCPClient(getTcpConfig());
 
 		const testStream = `TestStream-${generateEventId()}`;
 		const numberOfEvents = 5000;

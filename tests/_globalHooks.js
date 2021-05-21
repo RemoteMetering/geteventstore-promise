@@ -1,45 +1,27 @@
-import esConfig from './support/inMemEventStoreConfig';
 import sleep from './utilities/sleep';
 import { spawn } from 'child_process';
 import path from 'path';
 
-const clusterComposeFileLocation = path.join(__dirname, 'support', 'cluster', 'docker-compose.yml');
+global.runningTestsInSecureMode = process.env.TESTS_RUN_SECURE === 'true';
+const securityMode = global.runningTestsInSecureMode ? 'secure' : 'insecure';
+
+console.log(`Running tests in \x1b[36m${securityMode}\x1b[0m mode...`);
+
+const singleComposeFileLocation = path.join(__dirname, 'support', 'single', `docker-compose-${securityMode}.yml`);
+const clusterComposeFileLocation = path.join(__dirname, 'support', 'cluster', `docker-compose-${securityMode}.yml`);
 let eventstore;
 
-const removeContainer = async () => {
-	const removeProcess = spawn(`docker`, ['rm', '-f', esConfig.dockerContainerName], { detached: true });
-	removeProcess.unref();
-	await sleep(4000);
-};
-
-const addContainer = async () => {
-	const dockerParameters = [
-		'run',
-		'--name',
-		esConfig.dockerContainerName,
-		'--env=EVENTSTORE_MEM_DB=True',
-		'--env=EVENTSTORE_RUN_PROJECTIONS=All',
-		'--env=EVENTSTORE_START_STANDARD_PROJECTIONS=True',
-		`--env=EVENTSTORE_EXT_HTTP_PORT_ADVERTISE_AS=${esConfig.options.extHttpPort}`,
-		`--env=EVENTSTORE_EXT_TCP_PORT=${esConfig.options.extTcpPort}`,
-		'-d',
-		'-p',
-		`${esConfig.options.extHttpPort}:2113`,
-		'-p',
-		`${esConfig.options.extTcpPort}:${esConfig.options.extTcpPort}`,
-		'eventstore/eventstore:release-5.0.10'
-	];
-
-	eventstore = spawn('docker', dockerParameters, {
+const startStack = async (filePath) => new Promise((resolve, reject) => {
+	const proc = spawn('docker-compose', ['--file', filePath, 'up', '-d'], {
 		cwd: undefined,
 		stdio: ['ignore', 'ignore', process.stderr]
 	});
 
-	eventstore.on('exit', () => eventstore = undefined);
-};
+	proc.on('close', code => code === 0 ? resolve() : reject(code));
+});
 
-const addClusterContainers = async () => new Promise((resolve, reject) => {
-	const proc = spawn('docker-compose', ['--file', clusterComposeFileLocation, 'up', '-d'], {
+const removeStack = async (filePath) => new Promise((resolve, reject) => {
+	const proc = spawn('docker-compose', ['--file', filePath, 'down', '--remove-orphans'], {
 		cwd: undefined,
 		stdio: ['ignore', 'ignore', process.stderr]
 	});
@@ -50,55 +32,34 @@ const addClusterContainers = async () => new Promise((resolve, reject) => {
 	});
 });
 
-const removeClusterContainers = async () => new Promise((resolve, reject) => {
-	const proc = spawn('docker-compose', ['--file', clusterComposeFileLocation, 'down'], {
-		cwd: undefined,
-		stdio: ['ignore', 'ignore', process.stderr]
-	});
-
-	proc.on('close', code => {
-		if (code === 0) resolve();
-		else reject();
-	});
+const isContainerReady = async (containerName, readyOutputMatch) => new Promise((resolve) => {
+	const proc = spawn('docker', ['logs', containerName], { cwd: undefined });
+	proc.stdout.on('data', line => line.toString().includes(readyOutputMatch) && resolve(true));
+	proc.on('close', () => resolve(false));
 });
 
 before(async function () {
 	this.timeout(60 * 1000);
+	if (eventstore) return;
 
-	if (eventstore === undefined) {
-		console.log('Starting in-mem ES...');
+	console.log('Starting EventStoreDB stacks...');
 
-		if (esConfig.testsUseDocker) {
-			await removeContainer();
-			await removeClusterContainers();
-			await addContainer();
-			await addClusterContainers();
-		} else {
-			const intTcpPort = `--int-tcp-port=${esConfig.options.intTcpPort}`;
-			const extTcpPort = `--ext-tcp-port=${esConfig.options.extTcpPort}`;
-			const intHttpPort = `--int-http-port=${esConfig.options.intHttpPort}`;
-			const extHttpPort = `--ext-http-port=${esConfig.options.extHttpPort}`;
+	await Promise.all([removeStack(singleComposeFileLocation), removeStack(clusterComposeFileLocation)]);
+	await Promise.all([startStack(singleComposeFileLocation), startStack(clusterComposeFileLocation)]);
 
-			eventstore = spawn(esConfig.executable, ['--mem-db=True', intTcpPort, extTcpPort, intHttpPort, extHttpPort, '--run-projections=ALL', '--start-standard-projections=True'], {
-				cwd: undefined,
-				stdio: ['ignore', 'ignore', process.stderr]
-			});
-
-			eventstore.on('exit', () => eventstore = undefined);
-		}
-
-		return sleep(10000);
+	while (true) {
+		const [isSingleReady, isClusterReady] = await Promise.all([
+			isContainerReady('geteventstore_promise_test_single.eventstore', `'"$streams"' projection source has been written`),
+			isContainerReady('geteventstore_promise_test_cluster_node1.eventstore', '<LIVE> [Leader')
+		]);
+		if (isSingleReady && isClusterReady) break;
+		await sleep(100);
 	}
-	return Promise.resolve();
+	await sleep(1000);
 });
 
 after(async function () {
 	this.timeout(60 * 1000);
-	console.log('Killing in-mem ES...');
-	if (eventstore) eventstore.kill();
-	eventstore = undefined;
-	if (esConfig.testsUseDocker) {
-		await removeContainer();
-		await removeClusterContainers();
-	}
+	console.log('Killing EventStoreDB stacks...');
+	await Promise.all([removeStack(singleComposeFileLocation), removeStack(clusterComposeFileLocation)]);
 });

@@ -1,18 +1,18 @@
 import './_globalHooks';
 
-import httpConfig from './support/httpConfig';
+import getHttpConfig from './support/getHttpConfig';
 import EventStore from '../lib';
 import assert from 'assert';
 
 describe('Http Client - Ping', () => {
 	it('Should return successful when OK', () => {
-		const client = new EventStore.HTTPClient(httpConfig);
+		const client = new EventStore.HTTPClient(getHttpConfig());
 		return client.ping();
 	});
 
 	it('Should fail when not OK', function() {
 		this.timeout(30000);
-		const config = JSON.parse(JSON.stringify(httpConfig));
+		const config = getHttpConfig();
 		config.hostname = 'MadeToFailHostName';
 
 		const client = new EventStore.HTTPClient(config);

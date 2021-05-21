@@ -1,6 +1,6 @@
 import './_globalHooks';
 
-import tcpConfig from './support/tcpConfig';
+import getTcpConfig from './support/getTcpConfig';
 import EventStore from '../lib';
 import assert from 'assert';
 
@@ -51,7 +51,7 @@ describe('TCP Client - Config', () => {
 
 	it('Should return tcp client when config is complete', done => {
 		try {
-			const client = new EventStore.TCPClient(tcpConfig);
+			const client = new EventStore.TCPClient(getTcpConfig());
 			assert.equal(client !== undefined, true);
 			done();
 		} catch (err) {

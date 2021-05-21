@@ -1,8 +1,8 @@
 import './_globalHooks';
 
-import tcpConfigCustomConnectionName from './support/tcpConfigCustomConnectionName';
+import getTcpConfigCustomConnectionName from './support/getTcpConfigCustomConnectionName';
 import generateEventId from '../lib/utilities/generateEventId';
-import tcpConfig from './support/tcpConfig';
+import getTcpConfig from './support/getTcpConfig';
 import EventStore from '../lib';
 import assert from 'assert';
 
@@ -20,7 +20,7 @@ describe('TCP Client - Test Connection', () => {
 	};
 
 	it('Should connect and write event on correct connection properties', async () => {
-		const client = new EventStore.TCPClient(tcpConfig);
+		const client = new EventStore.TCPClient(getTcpConfig());
 		const testStream = `TestStream-${generateEventId()}`;
 		await client.writeEvent(testStream, 'TestEventType', {
 			something: '123'
@@ -30,7 +30,7 @@ describe('TCP Client - Test Connection', () => {
 	});
 
 	it('Should connect and write event with custom connection name', async function () {
-		const client = new EventStore.TCPClient(tcpConfigCustomConnectionName);
+		const client = new EventStore.TCPClient(getTcpConfigCustomConnectionName());
 
 		const testStream = `TestStream-${generateEventId()}`;
 		await client.writeEvent(testStream, 'TestEventType', {
@@ -49,7 +49,7 @@ describe('TCP Client - Test Connection', () => {
 
 	it('Should not connect on incorrect hostname', function () {
 		this.timeout(60 * 1000);
-		const config = JSON.parse(JSON.stringify(tcpConfig));
+		const config = getTcpConfig();
 		config.maxReconnections = 2;
 		config.hostname = 'madetofailhostname.fakedomain.af';
 
@@ -67,7 +67,7 @@ describe('TCP Client - Test Connection', () => {
 
 	it('Should not connect on incorrect port', function () {
 		this.timeout(60 * 1000);
-		const config = JSON.parse(JSON.stringify(tcpConfig));
+		const config = getTcpConfig();
 		config.maxReconnections = 2;
 		config.port = 9999;
 
@@ -85,7 +85,7 @@ describe('TCP Client - Test Connection', () => {
 
 	it('Should default to only one connection with no pool options provided', async function () {
 		this.timeout(60 * 1000);
-		const config = JSON.parse(JSON.stringify(tcpConfig));
+		const config = getTcpConfig();
 		delete config.poolOptions;
 		config.makeConfigUniqueWithThis = new Date().getTime();
 		const client = new EventStore.TCPClient(config);
@@ -100,7 +100,7 @@ describe('TCP Client - Test Connection', () => {
 
 	it('Should fill up pool connections to provided max', async function () {
 		this.timeout(60 * 1000);
-		const config = JSON.parse(JSON.stringify(tcpConfig));
+		const config = getTcpConfig();
 		config.poolOptions.max = 7;
 		config.makeConfigUniqueWithThis = new Date().getTime();
 		const client = new EventStore.TCPClient(config);
@@ -115,7 +115,7 @@ describe('TCP Client - Test Connection', () => {
 
 	it('Should close pool', async function () {
 		this.timeout(60 * 1000);
-		const config = JSON.parse(JSON.stringify(tcpConfig));
+		const config = getTcpConfig();
 		const client = new EventStore.TCPClient(config);
 
 		const testStream = `TestStream-${generateEventId()}`;
@@ -136,7 +136,7 @@ describe('TCP Client - Test Connection', () => {
 
 	it('Should close all pools', async function () {
 		this.timeout(60 * 1000);
-		const config = JSON.parse(JSON.stringify(tcpConfig));
+		const config = getTcpConfig();
 		const client = new EventStore.TCPClient(config);
 
 		await client.closeAllPools();

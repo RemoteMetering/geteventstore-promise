@@ -1,0 +1,89 @@
+version: "3.5"
+
+services:
+  geteventstore_promise_test_cluster_node1.eventstore: &template
+    image: eventstore/eventstore:20.10.2-bionic
+    command: --insecure --node-priority 1
+    container_name: geteventstore_promise_test_cluster_node1.eventstore
+    env_file:
+      - vars.env
+    environment:
+      - EVENTSTORE_INT_IP=172.30.240.11
+      - EVENTSTORE_ADVERTISE_HTTP_PORT_TO_CLIENT_AS=2137
+      - EVENTSTORE_ADVERTISE_TCP_PORT_TO_CLIENT_AS=1136
+      - EVENTSTORE_GOSSIP_SEED=172.30.240.12:2113,172.30.240.13:2113
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl --fail --insecure http://geteventstore_promise_test_cluster_node1.eventstore:2113/health/live || exit 1",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+    ports:
+      - 1136:1113
+      - 2137:2113
+    restart: always
+    networks:
+      clusternetwork:
+        ipv4_address: 172.30.240.11
+
+  geteventstore_promise_test_cluster_node2.eventstore:
+    <<: *template
+    container_name: geteventstore_promise_test_cluster_node2.eventstore
+    command: --insecure --node-priority 2
+    environment:
+      - EVENTSTORE_INT_IP=172.30.240.12
+      - EVENTSTORE_ADVERTISE_HTTP_PORT_TO_CLIENT_AS=2157
+      - EVENTSTORE_ADVERTISE_TCP_PORT_TO_CLIENT_AS=1156
+      - EVENTSTORE_GOSSIP_SEED=172.30.240.11:2113,172.30.240.13:2113
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl --fail --insecure http://geteventstore_promise_test_cluster_node2.eventstore:2113/health/live || exit 1",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+    ports:
+      - 1156:1113
+      - 2157:2113
+    networks:
+      clusternetwork:
+        ipv4_address: 172.30.240.12
+
+  geteventstore_promise_test_cluster_node3.eventstore:
+    <<: *template
+    container_name: geteventstore_promise_test_cluster_node3.eventstore
+    command: --insecure --node-priority 3
+    environment:
+      - EVENTSTORE_INT_IP=172.30.240.13
+      - EVENTSTORE_ADVERTISE_HTTP_PORT_TO_CLIENT_AS=2177
+      - EVENTSTORE_ADVERTISE_TCP_PORT_TO_CLIENT_AS=1176
+      - EVENTSTORE_GOSSIP_SEED=172.30.240.11:2113,172.30.240.12:2113
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl --fail --insecure http://geteventstore_promise_test_cluster_node3.eventstore:2113/health/live || exit 1",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+    ports:
+      - 1176:1113
+      - 2177:2113
+    networks:
+      clusternetwork:
+        ipv4_address: 172.30.240.13
+
+networks:
+  clusternetwork:
+    name: geteventstore_promise_test_cluster_eventstoredb.local
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.30.240.0/24

@@ -1,11 +1,11 @@
 import './_globalHooks';
 
-import httpConfig from './support/httpConfig';
+import getHttpConfig from './support/getHttpConfig';
 import EventStore from '../lib';
 
 describe('Http Client - Send Scavenge Command', () => {
 	it('Should send scavenge command', () => {
-		const client = new EventStore.HTTPClient(httpConfig);
+		const client = new EventStore.HTTPClient(getHttpConfig());
 		return client.admin.scavenge();
 	});
 });

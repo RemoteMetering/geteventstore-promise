@@ -9,20 +9,39 @@ A Node.js Event Store client API wrapper using promises
 In your Node.js application:
 > const EventStore = require('geteventstore-promise');
 
-# Running Tests
-#### Using executable
-
-Set the ES_EXECUTABLE environment variable to point to the eventstore executable
-> ES_EXECUTABLE=/usr/bin/eventstored yarn test
-
-#### Using docker (cluster tests will only run in this mode)
-
-> docker pull eventstore/eventstore:release-5.0.10
-
-> yarn test:docker
-
-
 # HTTP Client
+
+# Config example
+
+```javascript
+const EventStore = require('geteventstore-promise');
+
+const client = new EventStore.HTTPClient({
+	hostname: 'localhost',
+	port: 2113,
+	credentials: {
+		username: 'admin',
+		password: 'changeit'
+	}
+});
+```
+
+# Config example - Secure
+
+```javascript
+const EventStore = require('geteventstore-promise');
+
+const client = new EventStore.HTTPClient({
+	protocol: 'https',
+	hostname: 'localhost',
+	port: 2113,
+	validateServer: true, //defaults to `true` when `protocol` is `https`, set to `false` when using self-signed certs
+	credentials: {
+		username: 'admin',
+		password: 'changeit'
+	}
+});
+```
 
 # Supported Methods
 
@@ -596,6 +615,25 @@ Github: [https://github.com/nicdex/node-eventstore-client](https://github.com/ni
 const client = new EventStore.TCPClient({
 	hostname: 'localhost',
 	port: 1113,
+	credentials: {
+		username: 'admin',
+		password: 'changeit'
+	},
+	poolOptions: {
+		min: 0,
+		max: 10
+	}
+});
+```
+
+# Config example - Secure
+
+```javascript
+const client = new EventStore.TCPClient({
+	hostname: 'localhost',
+	port: 1113,
+	useSslConnection: true,
+	validateServer: true, //defaults to `true` when `useSslConnection` is `true`, set to `false` when using self-signed certs
 	credentials: {
 		username: 'admin',
 		password: 'changeit'
