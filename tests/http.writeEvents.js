@@ -1,7 +1,7 @@
 import './_globalHooks';
 
 import generateEventId from '../lib/utilities/generateEventId';
-import httpConfig from './support/httpConfig';
+import getHttpConfig from './support/getHttpConfig';
 import EventStore from '../lib';
 import assert from 'assert';
 
@@ -9,7 +9,7 @@ const eventFactory = new EventStore.EventFactory();
 
 describe('Http Client - Write Events', () => {
 	it('Write to a new stream and read the events', async () => {
-		const client = new EventStore.HTTPClient(httpConfig);
+		const client = new EventStore.HTTPClient(getHttpConfig());
 
 		const events = [eventFactory.newEvent('TestEventType', {
 			something: '456'
@@ -22,7 +22,7 @@ describe('Http Client - Write Events', () => {
 	});
 
 	it('Write to a new stream and read the events by type', async () => {
-		const client = new EventStore.HTTPClient(httpConfig);
+		const client = new EventStore.HTTPClient(getHttpConfig());
 
 		const events = [eventFactory.newEvent('TestEventType', {
 			something: '456'
@@ -40,7 +40,7 @@ describe('Http Client - Write Events', () => {
 	});
 
 	it('Should not fail promise if no events provided', () => {
-		const client = new EventStore.HTTPClient(httpConfig);
+		const client = new EventStore.HTTPClient(getHttpConfig());
 
 		const events = [];
 
@@ -49,7 +49,7 @@ describe('Http Client - Write Events', () => {
 	});
 
 	it('Should fail promise if non array provided', () => {
-		const client = new EventStore.HTTPClient(httpConfig);
+		const client = new EventStore.HTTPClient(getHttpConfig());
 
 		const events = {
 			something: 'here'
@@ -72,7 +72,7 @@ describe('Http Client - Write Events to pre-populated stream', () => {
 		events2;
 
 	beforeEach(async () => {
-		client = new EventStore.HTTPClient(httpConfig);
+		client = new EventStore.HTTPClient(getHttpConfig());
 
 		events = [eventFactory.newEvent('TestEventType', {
 			something: '456'

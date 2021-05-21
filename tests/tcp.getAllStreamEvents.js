@@ -1,7 +1,7 @@
 import './_globalHooks';
 
 import generateEventId from '../lib/utilities/generateEventId';
-import tcpConfig from './support/tcpConfig';
+import getTcpConfig from './support/getTcpConfig';
 import EventStore from '../lib';
 import assert from 'assert';
 
@@ -9,7 +9,7 @@ const eventFactory = new EventStore.EventFactory();
 
 describe('TCP Client - Get All Stream Events', () => {
 	it('Should write events and read back all stream events', async () => {
-		const client = new EventStore.TCPClient(tcpConfig);
+		const client = new EventStore.TCPClient(getTcpConfig());
 
 		const events = [];
 		for (let k = 0; k < 1000; k++) {
@@ -30,7 +30,7 @@ describe('TCP Client - Get All Stream Events', () => {
 	}).timeout(5000);
 
 	it('Should write events and read back all events from start event', async () => {
-		const client = new EventStore.TCPClient(tcpConfig);
+		const client = new EventStore.TCPClient(getTcpConfig());
 
 		const events = [];
 		for (let k = 0; k < 1000; k++) {

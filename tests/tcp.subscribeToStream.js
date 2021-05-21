@@ -1,7 +1,7 @@
 import './_globalHooks';
 
 import generateEventId from '../lib/utilities/generateEventId';
-import tcpConfig from './support/tcpConfig';
+import getTcpConfig from './support/getTcpConfig';
 import sleep from './utilities/sleep';
 import EventStore from '../lib';
 import assert from 'assert';
@@ -11,7 +11,7 @@ const eventFactory = new EventStore.EventFactory();
 describe('TCP Client - Subscribe To Stream', () => {
 	it('Should get all events written to a subscription stream after subscription is started', function (done) {
 		this.timeout(15 * 1000);
-		const client = new EventStore.TCPClient(tcpConfig);
+		const client = new EventStore.TCPClient(getTcpConfig());
 		const testStream = `TestStream-${generateEventId()}`;
 		let processedEventCount = 0;
 		let hasPassed = false;
@@ -56,7 +56,7 @@ describe('TCP Client - Subscribe To Stream', () => {
 
 	it('Should be able to start multiple subscriptions from single client instance', async function () {
 		this.timeout(15 * 1000);
-		const client = new EventStore.TCPClient(tcpConfig);
+		const client = new EventStore.TCPClient(getTcpConfig());
 
 		const testStream = `TestStream-${generateEventId()}`;
 		const events = [];

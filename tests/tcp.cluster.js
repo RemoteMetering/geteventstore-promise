@@ -1,7 +1,7 @@
 import './_globalHooks';
 
-import tcpConfigDNSDiscoveryCluster from './support/tcpConfigDNSDiscoveryCluster';
-import tcpConfigGossipCluster from './support/tcpConfigGossipCluster';
+import getTcpConfigDNSDiscoveryCluster from './support/getTcpConfigDNSDiscoveryCluster';
+import getTcpConfigGossipCluster from './support/getTcpConfigGossipCluster';
 import generateEventId from '../lib/utilities/generateEventId';
 import EventStore from '../lib';
 import assert from 'assert';
@@ -11,7 +11,7 @@ const eventFactory = new EventStore.EventFactory();
 describe('TCP Client - Cluster', () => {
 	it('Write and read events using gossip seeds', async function () {
 		this.timeout(5 * 1000);
-		const client = new EventStore.TCPClient(tcpConfigGossipCluster);
+		const client = new EventStore.TCPClient(getTcpConfigGossipCluster());
 
 		const events = [eventFactory.newEvent('TestEventType', { something: '456' })];
 		const testStream = `TestStream-${generateEventId()}`;
@@ -25,7 +25,7 @@ describe('TCP Client - Cluster', () => {
 
 	it('Write and read events using DNS discovery', async function () {
 		this.timeout(5 * 1000);
-		const client = new EventStore.TCPClient(tcpConfigDNSDiscoveryCluster);
+		const client = new EventStore.TCPClient(getTcpConfigDNSDiscoveryCluster());
 
 		const events = [eventFactory.newEvent('TestEventType', { something: '456' })];
 		const testStream = `TestStream-${generateEventId()}`;

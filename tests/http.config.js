@@ -1,6 +1,6 @@
 import './_globalHooks';
 
-import httpConfig from './support/httpConfig';
+import getHttpConfig from './support/getHttpConfig';
 import EventStore from '../lib';
 import assert from 'assert';
 
@@ -51,7 +51,7 @@ describe('Http Client - Config', () => {
 
 	it('Should return http client when config is complete', done => {
 		try {
-			const client = new EventStore.HTTPClient(httpConfig);
+			const client = new EventStore.HTTPClient(getHttpConfig());
 			assert.equal(client !== undefined, true);
 			done();
 		} catch (err) {

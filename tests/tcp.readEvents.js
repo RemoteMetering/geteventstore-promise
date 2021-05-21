@@ -1,7 +1,7 @@
 import './_globalHooks';
 
 import generateEventId from '../lib/utilities/generateEventId';
-import tcpConfig from './support/tcpConfig';
+import getTcpConfig from './support/getTcpConfig';
 import sleep from './utilities/sleep';
 import EventStore from '../lib';
 import assert from 'assert';
@@ -13,7 +13,7 @@ describe('TCP Client - Get Events', () => {
 	const numberOfEvents = 10;
 
 	before(async () => {
-		const client = new EventStore.TCPClient(tcpConfig);
+		const client = new EventStore.TCPClient(getTcpConfig());
 
 		const events = [];
 
@@ -29,7 +29,7 @@ describe('TCP Client - Get Events', () => {
 	});
 
 	it('Should read events reading forward', async () => {
-		const client = new EventStore.TCPClient(tcpConfig);
+		const client = new EventStore.TCPClient(getTcpConfig());
 
 		const result = await client.readEventsForward(testStream);
 		assert.equal(result.events.length, 10);
@@ -45,7 +45,7 @@ describe('TCP Client - Get Events', () => {
 	});
 
 	it('Should read events reading backward', async () => {
-		const client = new EventStore.TCPClient(tcpConfig);
+		const client = new EventStore.TCPClient(getTcpConfig());
 
 		const result = await client.readEventsBackward(testStream);
 		assert.equal(result.events.length, 10);
@@ -56,7 +56,7 @@ describe('TCP Client - Get Events', () => {
 	});
 
 	it('Should read last event reading backward with larger size than events', async () => {
-		const client = new EventStore.TCPClient(tcpConfig);
+		const client = new EventStore.TCPClient(getTcpConfig());
 
 		const result = await client.readEventsBackward(testStream, 0, 250);
 		assert.equal(result.events.length, 1);
@@ -67,7 +67,7 @@ describe('TCP Client - Get Events', () => {
 	});
 
 	it('Should not get any events when start event is greater than the stream length', async () => {
-		const client = new EventStore.TCPClient(tcpConfig);
+		const client = new EventStore.TCPClient(getTcpConfig());
 
 		const result = await client.readEventsForward(testStream, 11);
 		assert.equal(result.events.length, 0);
@@ -76,7 +76,7 @@ describe('TCP Client - Get Events', () => {
 	});
 
 	it('Should read events reading backward from a start position', async () => {
-		const client = new EventStore.TCPClient(tcpConfig);
+		const client = new EventStore.TCPClient(getTcpConfig());
 
 		const result = await client.readEventsBackward(testStream, 2);
 		assert.equal(result.events.length, 3);
@@ -87,7 +87,7 @@ describe('TCP Client - Get Events', () => {
 	});
 
 	it('Should read events reading backward with a count greater than the stream length', async () => {
-		const client = new EventStore.TCPClient(tcpConfig);
+		const client = new EventStore.TCPClient(getTcpConfig());
 
 		const result = await client.readEventsBackward(testStream, undefined, 10000);
 		assert.equal(result.events.length, 10);
@@ -99,7 +99,7 @@ describe('TCP Client - Get Events', () => {
 
 	it('Should read events reading forward with a count greater than the stream length return a maximum of 4096', async function () {
 		this.timeout(40000);
-		const client = new EventStore.TCPClient(tcpConfig);
+		const client = new EventStore.TCPClient(getTcpConfig());
 
 		const testStream = `TestStream-${generateEventId()}`;
 		const numberOfEvents = 5000;
@@ -121,7 +121,7 @@ describe('TCP Client - Get Events', () => {
 	});
 
 	it('Should read linked to events and map correctly', async () => {
-		const client = new EventStore.TCPClient(tcpConfig);
+		const client = new EventStore.TCPClient(getTcpConfig());
 
 		const result = await client.readEventsForward('$ce-TestStream', 0, 1);
 		assert.equal(result.events.length, 1);
@@ -135,7 +135,7 @@ describe('TCP Client - Get Events', () => {
 	});
 
 	it('Should read system and deleted events without resolveLinkTos', async () => {
-		const client = new EventStore.TCPClient(tcpConfig);
+		const client = new EventStore.TCPClient(getTcpConfig());
 
 		const deletedStream = 'TestStreamDeleted';
 		await client.writeEvent(deletedStream, 'TestEventType', { something: 1 });

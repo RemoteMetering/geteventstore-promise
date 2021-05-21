@@ -4,7 +4,9 @@
 	"description": "GetEventStore client wrapper using promises",
 	"main": "index.js",
 	"scripts": {
-		"test": "cross-env NODE_ENV=test mocha --exit --require @babel/register tests/",
+		"test": "yarn test:insecure && yarn test:secure",
+		"test:insecure": "cross-env NODE_ENV=test mocha --exit --require @babel/register tests/",
+		"test:secure": "cross-env NODE_ENV=test RUN_TESTS_SECURE=true mocha --exit --require @babel/register tests/",
 		"coverage": "nyc yarn test",
 		"build": "babel --delete-dir-on-start -d dist/ lib"
 	},

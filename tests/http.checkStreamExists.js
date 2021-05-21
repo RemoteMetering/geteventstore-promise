@@ -1,13 +1,13 @@
 import './_globalHooks';
 
 import generateEventId from '../lib/utilities/generateEventId';
-import httpConfig from './support/httpConfig';
+import getHttpConfig from './support/getHttpConfig';
 import EventStore from '../lib';
 import assert from 'assert';
 
 describe('Http Client - Check Stream Exist', () => {
 	it('Should return true when a stream exists', async () => {
-		const client = new EventStore.HTTPClient(httpConfig);
+		const client = new EventStore.HTTPClient(getHttpConfig());
 
 		const testStream = `TestStream-${generateEventId()}`;
 		await client.writeEvent(testStream, 'TestEventType', {
@@ -18,14 +18,14 @@ describe('Http Client - Check Stream Exist', () => {
 	}).timeout(5000);
 
 	it('Should return false when a stream does not exist', async () => {
-		const client = new EventStore.HTTPClient(httpConfig);
+		const client = new EventStore.HTTPClient(getHttpConfig());
 		assert.equal(await client.checkStreamExists('Non_existentStream'), false);
 	});
 
 	it('Should return rejected promise when the request error is anything other than a 404', callback => {
-		const clonedConfig = JSON.parse(JSON.stringify(httpConfig));
-		clonedConfig.port = 1;
-		const client = new EventStore.HTTPClient(clonedConfig);
+		const httpConfig = getHttpConfig();
+		httpConfig.port = 1;
+		const client = new EventStore.HTTPClient(httpConfig);
 
 		client.checkStreamExists('Non_existentStream_wrong_port_config').then(() => {
 			callback('Should not have returned successful promise');
@@ -37,10 +37,10 @@ describe('Http Client - Check Stream Exist', () => {
 	}).timeout(5000);
 
 	it('Should throw an exception when timeout is reached', callback => {
-		const clonedConfig = JSON.parse(JSON.stringify(httpConfig));
-		clonedConfig.timeout = 0.00001;
+		const httpConfig = getHttpConfig();
+		httpConfig.timeout = 0.00001;
 
-		const client = new EventStore.HTTPClient(clonedConfig);
+		const client = new EventStore.HTTPClient(httpConfig);
 		const testStream = `TestStream-${generateEventId()}`;
 		client.writeEvent(testStream, 'TestEventType', {
 			something: '123'
