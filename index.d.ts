@@ -51,15 +51,19 @@ export interface GossipSeed {
 }
 
 export interface HTTPConfig {
+	protocol?: string;
 	hostname: string;
 	port: number;
+	validateServer?: boolean;
 	credentials: UserCredentials;
 }
 
 export interface TCPConfig extends ConnectionSettings {
+	protocol?: string;
 	hostname?: string;
 	port?: number;
-	protocol?: string;
+	useSslConnection?: boolean;
+	validateServer?: boolean;
 	gossipSeeds?: GossipSeed[];
 	credentials: UserCredentials;
 	poolOptions?: TCPPoolOptions;
