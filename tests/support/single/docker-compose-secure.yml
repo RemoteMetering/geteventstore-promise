@@ -13,6 +13,9 @@ services:
     container_name: geteventstore_promise_test_setup_certs_single
     volumes:
       - ./certs:/certs
+    networks:
+      clusternetwork:
+        ipv4_address: 172.30.239.10
 
   geteventstore_promise_test_single.eventstore:
     image: eventstore/eventstore:20.10.2-bionic
