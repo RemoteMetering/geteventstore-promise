@@ -35,7 +35,7 @@ const client = new EventStore.HTTPClient({
 	protocol: 'https',
 	hostname: 'localhost',
 	port: 2113,
-	allowInsecureSslCerts: false, //defaults to `false`, set to `true` when using self-signed certs
+	validateServer: true, //defaults to `true` when `protocol` is `https`, set to `false` when using self-signed certs
 	credentials: {
 		username: 'admin',
 		password: 'changeit'
@@ -633,7 +633,7 @@ const client = new EventStore.TCPClient({
 	hostname: 'localhost',
 	port: 1113,
 	useSslConnection: true,
-	validateServer: true, //defaults to `true`, set to `false` when using self-signed certs
+	validateServer: true, //defaults to `true` when `useSslConnection` is `true`, set to `false` when using self-signed certs
 	credentials: {
 		username: 'admin',
 		password: 'changeit'

@@ -4,7 +4,6 @@ export default () => ({
 	port: 2137,
 	useSslConnection: global.runningTestsInSecureMode,
 	validateServer: !global.runningTestsInSecureMode,
-	allowInsecureSslCerts: global.runningTestsInSecureMode,
 	credentials: {
 		username: 'admin',
 		password: 'changeit'
