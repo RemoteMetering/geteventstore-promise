@@ -2,7 +2,8 @@ import sleep from './utilities/sleep';
 import { spawn } from 'child_process';
 import path from 'path';
 
-const securityMode = process.env.RUN_TESTS_SECURE === 'true' ? 'secure' : 'insecure';
+global.runningTestsInSecureMode = process.env.RUN_TESTS_SECURE === 'true';
+const securityMode = global.runningTestsInSecureMode ? 'secure' : 'insecure';
 
 console.log(`Running tests in \x1b[36m${securityMode}\x1b[0m mode...`);
 
@@ -49,5 +50,5 @@ before(async function () {
 after(async function () {
 	this.timeout(60 * 1000);
 	console.log('Killing EventStoreDB stacks...');
-	// await Promise.all([removeStack(singleComposeFileLocation), removeStack(clusterComposeFileLocation)]);
+	await Promise.all([removeStack(singleComposeFileLocation), removeStack(clusterComposeFileLocation)]);
 });

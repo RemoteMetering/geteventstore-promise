@@ -1,6 +1,6 @@
 export default () => ({
-	useSslConnection: !!process.env.RUN_TESTS_SECURE,
-	validateServer: !process.env.RUN_TESTS_SECURE,
+	useSslConnection: !!global.runningTestsInSecureMode,
+	validateServer: !global.runningTestsInSecureMode,
 	gossipSeeds: [
 		{ hostname: process.env.ES_HOST || 'localhost', port: 2137 },
 		{ hostname: process.env.ES_HOST || 'localhost', port: 2157 },
