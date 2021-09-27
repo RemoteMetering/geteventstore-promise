@@ -2,7 +2,7 @@ version: "3.5"
 
 services:
   geteventstore_promise_test_single.eventstore:
-    image: eventstore/eventstore:20.10.2-bionic
+    image: eventstore/eventstore:20.10.4-bionic
     container_name: geteventstore_promise_test_single.eventstore
     environment:
       - EVENTSTORE_MEM_DB=true
