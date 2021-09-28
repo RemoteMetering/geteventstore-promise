@@ -1,3 +1,13 @@
+# 4.0.1 (2021-09-28)
+
+## TCP
+
+- Fix - handle closed connection when `closed` event never emitted
+
+#### Dependencies
+
+- Update packages
+
 # 4.0.0 (2021-05-22)
 
 #### Features
@@ -27,8 +37,8 @@
 
 #### Changes
 
-- destroy connection on connection close
-- subscription connection pools now tracked uniquely
+- Destroy connection on connection close
+- Subscription connection pools now tracked uniquely
 - `close` connection pool will now drain pool first
 
 #### Fixes
