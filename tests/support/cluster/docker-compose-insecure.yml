@@ -2,15 +2,15 @@ version: "3.5"
 
 services:
   geteventstore_promise_test_cluster_node1.eventstore: &template
-    image: eventstore/eventstore:20.10.4-bionic
-    command: --insecure --node-priority 1
+    image: eventstore/eventstore:21.10.0-buster-slim
     container_name: geteventstore_promise_test_cluster_node1.eventstore
     env_file:
       - vars.env
     environment:
+      - EVENTSTORE_INSECURE=true
       - EVENTSTORE_INT_IP=172.30.240.11
-      - EVENTSTORE_ADVERTISE_HTTP_PORT_TO_CLIENT_AS=2137
-      - EVENTSTORE_ADVERTISE_TCP_PORT_TO_CLIENT_AS=1136
+      - EVENTSTORE_ADVERTISE_HTTP_PORT_TO_CLIENT_AS=22137
+      - EVENTSTORE_ADVERTISE_TCP_PORT_TO_CLIENT_AS=11136
       - EVENTSTORE_GOSSIP_SEED=172.30.240.12:2113,172.30.240.13:2113
     healthcheck:
       test:
@@ -22,8 +22,8 @@ services:
       timeout: 5s
       retries: 24
     ports:
-      - 1136:1113
-      - 2137:2113
+      - "11136:1113"
+      - "22137:2113"
     restart: always
     networks:
       clusternetwork:
@@ -32,11 +32,11 @@ services:
   geteventstore_promise_test_cluster_node2.eventstore:
     <<: *template
     container_name: geteventstore_promise_test_cluster_node2.eventstore
-    command: --insecure --node-priority 2
     environment:
+      - EVENTSTORE_INSECURE=true
       - EVENTSTORE_INT_IP=172.30.240.12
-      - EVENTSTORE_ADVERTISE_HTTP_PORT_TO_CLIENT_AS=2157
-      - EVENTSTORE_ADVERTISE_TCP_PORT_TO_CLIENT_AS=1156
+      - EVENTSTORE_ADVERTISE_HTTP_PORT_TO_CLIENT_AS=22157
+      - EVENTSTORE_ADVERTISE_TCP_PORT_TO_CLIENT_AS=11156
       - EVENTSTORE_GOSSIP_SEED=172.30.240.11:2113,172.30.240.13:2113
     healthcheck:
       test:
@@ -48,8 +48,8 @@ services:
       timeout: 5s
       retries: 24
     ports:
-      - 1156:1113
-      - 2157:2113
+      - "11156:1113"
+      - "22157:2113"
     networks:
       clusternetwork:
         ipv4_address: 172.30.240.12
@@ -57,11 +57,11 @@ services:
   geteventstore_promise_test_cluster_node3.eventstore:
     <<: *template
     container_name: geteventstore_promise_test_cluster_node3.eventstore
-    command: --insecure --node-priority 3
     environment:
+      - EVENTSTORE_INSECURE=true
       - EVENTSTORE_INT_IP=172.30.240.13
-      - EVENTSTORE_ADVERTISE_HTTP_PORT_TO_CLIENT_AS=2177
-      - EVENTSTORE_ADVERTISE_TCP_PORT_TO_CLIENT_AS=1176
+      - EVENTSTORE_ADVERTISE_HTTP_PORT_TO_CLIENT_AS=22177
+      - EVENTSTORE_ADVERTISE_TCP_PORT_TO_CLIENT_AS=11176
       - EVENTSTORE_GOSSIP_SEED=172.30.240.11:2113,172.30.240.12:2113
     healthcheck:
       test:
@@ -73,8 +73,8 @@ services:
       timeout: 5s
       retries: 24
     ports:
-      - 1176:1113
-      - 2177:2113
+      - "11176:1113"
+      - "22177:2113"
     networks:
       clusternetwork:
         ipv4_address: 172.30.240.13
