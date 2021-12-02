@@ -1,7 +1,7 @@
 export default () => ({
 	protocol: 'discover',
 	hostname: process.env.ES_HOST || 'localhost',
-	port: 2137,
+	port: 22137,
 	useSslConnection: global.runningTestsInSecureMode,
 	validateServer: !global.runningTestsInSecureMode,
 	credentials: {

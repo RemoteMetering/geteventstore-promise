@@ -11,7 +11,8 @@ const eventFactory = new EventStore.EventFactory();
 describe('TCP Client - Cluster', () => {
 	it('Write and read events using gossip seeds', async function () {
 		this.timeout(5 * 1000);
-		const client = new EventStore.TCPClient(getTcpConfigGossipCluster());
+		const config = getTcpConfigGossipCluster();
+		const client = new EventStore.TCPClient(config);
 
 		const events = [eventFactory.newEvent('TestEventType', { something: '456' })];
 		const testStream = `TestStream-${generateEventId()}`;
@@ -25,7 +26,8 @@ describe('TCP Client - Cluster', () => {
 
 	it('Write and read events using DNS discovery', async function () {
 		this.timeout(5 * 1000);
-		const client = new EventStore.TCPClient(getTcpConfigDNSDiscoveryCluster());
+		const config = getTcpConfigDNSDiscoveryCluster();
+		const client = new EventStore.TCPClient(config);
 
 		const events = [eventFactory.newEvent('TestEventType', { something: '456' })];
 		const testStream = `TestStream-${generateEventId()}`;
