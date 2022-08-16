@@ -30,6 +30,7 @@
 	"homepage": "https://github.com/RemoteMetering/geteventstore-promise",
 	"dependencies": {
 		"@babel/runtime": "^7.18.3",
+		"@eventstore/db-client": "^3.4.0",
 		"axios": "^0.27.2",
 		"debug": "^4.3.4",
 		"generic-pool": "^3.8.2",
