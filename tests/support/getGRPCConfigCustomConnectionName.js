@@ -1,8 +1,10 @@
+import path from 'path';
+
 export default () => ({
 	hostname: process.env.ES_HOST || 'localhost',
 	port: 22117,
 	useSslConnection: global.runningTestsInSecureMode,
-	validateServer: !global.runningTestsInSecureMode,
+	tlsCAFile: global.runningTestsInSecureMode ? path.resolve(__dirname, './single/certs/ca/ca.crt') : undefined,
 	credentials: {
 		username: 'admin',
 		password: 'changeit'
