@@ -8,8 +8,14 @@ import {
 } from "node-eventstore-client";
 
 import {
-	Options as TCPPoolOptions,
-	Pool as TCPPool
+	AppendResult as GRPCAppendResult,
+	DeleteResult as GRPCDeleteResult,
+	StreamSubscription
+} from '@eventstore/db-client'
+
+import {
+	Options as ConnectionPoolOptions,
+	Pool as ConnectionPool
 } from "generic-pool";
 
 export interface NewEvent {
@@ -66,7 +72,7 @@ export interface TCPConfig extends ConnectionSettings {
 	validateServer?: boolean;
 	gossipSeeds?: GossipSeed[];
 	credentials: UserCredentials;
-	poolOptions?: TCPPoolOptions;
+	poolOptions?: ConnectionPoolOptions;
 	connectionNameGenerator?: () => string | Promise<string>;
 }
 
@@ -76,6 +82,11 @@ export interface HTTPWriteEventOptions  {
 
 export interface TCPWriteEventOptions {
 	expectedVersion?: number;
+}
+
+export interface GRPCWriteEventOptions {
+	expectedVersion?: number;
+	batchAppendSizeInBytes? : number;
 }
 
 export interface TCPWriteEventsOptions extends TCPWriteEventOptions {
@@ -91,6 +102,10 @@ export interface TCPReadResult {
 	nextEventNumber: Long;
 	lastEventNumber: Long;
 	isEndOfStream: boolean;
+}
+
+export interface GRPCReadResult {
+	events: Event[];
 }
 
 export interface HTTPReadResultAuthor {
@@ -156,7 +171,14 @@ export interface SubscribeToStreamFromSettings {
 }
 
 export interface MappedEventAppearedCallback<TSubscription> {
-    (subscription: TSubscription, event: Event): void | Promise<void>;
+	(subscription: TSubscription, event: Event): void | Promise<void>;
+}
+
+export interface GRPCMappedEventAppearedCallback {
+	(subscription: StreamSubscription, event: Event): void | Promise<void>;
+}
+export interface GRPCSubscriptionDroppedCallback {
+	(subscription: StreamSubscription): void | Promise<void>;
 }
 
 export interface EventEnumeratorResult {
@@ -228,24 +250,24 @@ export class TCPClient {
 	subscribeToStream(streamName: string, onEventAppeared?: MappedEventAppearedCallback<EventStoreSubscription>, onDropped?: SubscriptionDroppedCallback<EventStoreSubscription>, resolveLinkTos?: boolean): Promise<EventStoreSubscription>;
 	subscribeToStreamFrom(streamName: string, fromEventNumber?: number, onEventAppeared?: MappedEventAppearedCallback<EventStoreCatchUpSubscription>, onLiveProcessingStarted?: LiveProcessingStartedCallback, onDropped?: SubscriptionDroppedCallback<EventStoreCatchUpSubscription>, settings?: SubscribeToStreamFromSettings): Promise<EventStoreCatchUpSubscription>;
 	close(): Promise<void>;
-	getPool(): Promise<TCPPool<object>>;
+	getPool(): Promise<ConnectionPool<object>>;
 	closeAllPools(): Promise<void>;
 }
 
 export class GRPCClient {
 	constructor(config: GRPCConfig);
 	checkStreamExists(streamName: string): Promise<boolean>;
-	writeEvent(streamName: string, eventType: string, data: object, metaData?: object, options?: TCPWriteEventOptions): Promise<TCPWriteResult>;
-	writeEvents(streamName: string, events: NewEvent[], options?: TCPWriteEventsOptions): Promise<TCPWriteResult>;
+	writeEvent(streamName: string, eventType: string, data: object, metaData?: object, options?: GRPCWriteEventOptions): Promise<GRPCAppendResult>;
+	writeEvents(streamName: string, events: NewEvent[], options?: GRPCWriteEventOptions): Promise<AppendResult>;
 	getAllStreamEvents(streamName: string, chunkSize?: number, startPosition?: number, resolveLinkTos?: boolean): Promise<Event[]>;
 	getEvents(streamName: string, startPosition?: number, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): Promise<Event[]>;
 	getEventsByType(streamName: string, eventTypes: string[], startPosition?: number, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): Promise<Event[]>;
-	readEventsForward(streamName: string, startPosition?: number, count?: number, resolveLinkTos?: boolean): Promise<TCPReadResult>;
-	readEventsBackward(streamName: string, startPosition?: number, count?: number, resolveLinkTos?: boolean): Promise<TCPReadResult>;
-	deleteStream(streamName: string, hardDelete?: boolean): Promise<TCPDeleteResult>;
-	subscribeToStream(streamName: string, onEventAppeared?: MappedEventAppearedCallback<EventStoreSubscription>, onDropped?: SubscriptionDroppedCallback<EventStoreSubscription>, resolveLinkTos?: boolean): Promise<EventStoreSubscription>;
-	subscribeToStreamFrom(streamName: string, fromEventNumber?: number, onEventAppeared?: MappedEventAppearedCallback<EventStoreCatchUpSubscription>, onDropped?: SubscriptionDroppedCallback<EventStoreCatchUpSubscription>, settings?: SubscribeToStreamFromSettings): Promise<EventStoreCatchUpSubscription>;
+	readEventsForward(streamName: string, startPosition?: number, count?: number, resolveLinkTos?: boolean): Promise<GRPCReadResult>;
+	readEventsBackward(streamName: string, startPosition?: number, count?: number, resolveLinkTos?: boolean): Promise<GRPCReadResult>;
+	deleteStream(streamName: string, hardDelete?: boolean): Promise<GRPCDeleteResult>;
+	subscribeToStream(streamName: string, onEventAppeared?: GRPCMappedEventAppearedCallback<StreamSubscription>, onDropped?: GRPCSubscriptionDroppedCallback<StreamSubscription>, resolveLinkTos?: boolean): Promise<StreamSubscription>;
+	subscribeToStreamFrom(streamName: string, fromEventNumber?: number, onEventAppeared?: GRPCMappedEventAppearedCallback<StreamSubscription>, onDropped?: GRPCSubscriptionDroppedCallback<StreamSubscription>, settings?: SubscribeToStreamFromSettings): Promise<StreamSubscription>;
 	close(): Promise<void>;
-	getPool(): Promise<TCPPool<object>>;
+	getPool(): Promise<ConnectionPool<object>>;
 	closeAllPools(): Promise<void>;
 }
