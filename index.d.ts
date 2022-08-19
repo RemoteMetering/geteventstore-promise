@@ -11,7 +11,8 @@ import {
 	AppendResult as GRPCAppendResult,
 	DeleteResult as GRPCDeleteResult,
 	StreamSubscription,
-	GetStreamMetadataResult
+	GetStreamMetadataResult,
+	ReadPosition
 } from '@eventstore/db-client'
 
 import {
@@ -39,6 +40,8 @@ export interface Event {
 	positionEventId?: string;
 	positionEventNumber?: number;
 	positionCreated?: string;
+	positionCausedBy?: string;
+	positionCorrelationId?: string
 }
 
 export type ProjectionMode = "onetime" | "continuous";
@@ -266,6 +269,9 @@ export class GRPCClient {
 	getEventsByType(streamName: string, eventTypes: string[], startPosition?: number, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): Promise<Event[]>;
 	readEventsForward(streamName: string, startPosition?: number, count?: number, resolveLinkTos?: boolean): Promise<GRPCReadResult>;
 	readEventsBackward(streamName: string, startPosition?: number, count?: number, resolveLinkTos?: boolean): Promise<GRPCReadResult>;
+	readAllEvents(startPosition?: ReadPosition, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): Promise<Event[]>;
+	readAllEventsForward(startPosition?: ReadPosition, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): Promise<GRPCReadResult>;
+	readAllEventsBackward(startPosition?: ReadPosition, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): Promise<GRPCReadResult>;
 	deleteStream(streamName: string, hardDelete?: boolean): Promise<GRPCDeleteResult>;
 	subscribeToStream(streamName: string, onEventAppeared?: GRPCMappedEventAppearedCallback<StreamSubscription>, onDropped?: GRPCSubscriptionDroppedCallback<StreamSubscription>, resolveLinkTos?: boolean): Promise<StreamSubscription>;
 	subscribeToStreamFrom(streamName: string, fromEventNumber?: number, onEventAppeared?: GRPCMappedEventAppearedCallback<StreamSubscription>, onDropped?: GRPCSubscriptionDroppedCallback<StreamSubscription>, settings?: SubscribeToStreamFromSettings): Promise<StreamSubscription>;
