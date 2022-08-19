@@ -10,7 +10,8 @@ import {
 import {
 	AppendResult as GRPCAppendResult,
 	DeleteResult as GRPCDeleteResult,
-	StreamSubscription
+	StreamSubscription,
+	GetStreamMetadataResult
 } from '@eventstore/db-client'
 
 import {
@@ -256,6 +257,7 @@ export class TCPClient {
 
 export class GRPCClient {
 	constructor(config: GRPCConfig);
+	checkStreamMetadata(streamName: string): Promise<GetStreamMetadataResult>;
 	checkStreamExists(streamName: string): Promise<boolean>;
 	writeEvent(streamName: string, eventType: string, data: object, metaData?: object, options?: GRPCWriteEventOptions): Promise<GRPCAppendResult>;
 	writeEvents(streamName: string, events: NewEvent[], options?: GRPCWriteEventOptions): Promise<AppendResult>;
