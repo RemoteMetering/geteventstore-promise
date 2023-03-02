@@ -2,7 +2,7 @@ version: "3.5"
 
 services:
   geteventstore_promise_test_cluster_node1.eventstore: &template
-    image: eventstore/eventstore:21.10.0-buster-slim
+    image: eventstore/eventstore:22.10.1-buster-slim
     container_name: geteventstore_promise_test_cluster_node1.eventstore
     env_file:
       - vars.env
