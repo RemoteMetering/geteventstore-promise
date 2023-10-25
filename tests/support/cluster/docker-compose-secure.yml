@@ -20,7 +20,7 @@ services:
         ipv4_address: 172.30.240.10
 
   geteventstore_promise_test_cluster_node1.eventstore: &template
-    image: eventstore/eventstore:22.10.1-buster-slim
+    image: eventstore/eventstore:22.10.3-buster-slim
     container_name: geteventstore_promise_test_cluster_node1.eventstore
     command: --node-priority=1
     env_file:

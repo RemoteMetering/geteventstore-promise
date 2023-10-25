@@ -2,7 +2,7 @@ version: "3.5"
 
 services:
   geteventstore_promise_test_single.eventstore:
-    image: eventstore/eventstore:22.10.1-buster-slim
+    image: eventstore/eventstore:22.10.3-buster-slim
     container_name: geteventstore_promise_test_single.eventstore
     environment:
       - EVENTSTORE_INSECURE=true
