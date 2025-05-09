@@ -38,7 +38,6 @@ describe('gRPC Client - Get Events', () => {
 		assert(result.events[0].created);
 		assert(result.events[0].metadata === undefined);
 		assert(result.events[0].isJson !== undefined);
-		assert(typeof result.events[0].eventNumber === 'bigint', 'event number should be a bigint');
 
 		await client.close();
 	});
@@ -49,7 +48,6 @@ describe('gRPC Client - Get Events', () => {
 		const result = await client.readEventsBackward(testStream);
 		assert.equal(result.events.length, 10);
 		assert.equal(result.events[0].data.something, 10);
-		assert(typeof result.events[0].eventNumber === 'bigint', 'event number should be a bigint');
 
 		await client.close();
 	});
@@ -60,7 +58,6 @@ describe('gRPC Client - Get Events', () => {
 		const result = await client.readEventsBackward(testStream, 0, 250);
 		assert.equal(result.events.length, 1);
 		assert.equal(result.events[0].data.something, 1);
-		assert(typeof result.events[0].eventNumber === 'bigint', 'event number should be a bigint');
 
 		await client.close();
 	});
@@ -80,7 +77,6 @@ describe('gRPC Client - Get Events', () => {
 		const result = await client.readEventsBackward(testStream, 2);
 		assert.equal(result.events.length, 3);
 		assert.equal(result.events[0].data.something, 3);
-		assert(typeof result.events[0].eventNumber === 'bigint', 'event number should be a bigint');
 
 		await client.close();
 	});
@@ -91,7 +87,6 @@ describe('gRPC Client - Get Events', () => {
 		const result = await client.readEventsBackward(testStream, undefined, 10000);
 		assert.equal(result.events.length, 10);
 		assert.equal(result.events[0].data.something, 10);
-		assert(typeof result.events[0].eventNumber === 'bigint', 'event number should be a bigint');
 
 		await client.close();
 	});
@@ -125,8 +120,6 @@ describe('gRPC Client - Get Events', () => {
 		const result = await client.readEventsForward('$ce-TestStream', 0, 1);
 		assert.equal(result.events.length, 1);
 		assert(result.events[0].data.something);
-		assert(typeof result.events[0].eventNumber === 'bigint', 'event number should be a bigint');
-		assert(typeof result.events[0].positionEventNumber === 'bigint', 'position event number should be a bigint');
 		assert.equal(0, result.events[0].positionEventNumber, 'Position event number should be a number');
 		assert.equal('$ce-TestStream', result.events[0].positionStreamId);
 

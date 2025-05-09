@@ -1216,31 +1216,18 @@
     "@babel/helper-validator-identifier" "^7.24.5"
     to-fast-properties "^2.0.0"
 
-"@eventstore/db-client@^6.1.0":
-  version "6.1.0"
-  resolved "https://registry.npmjs.org/@eventstore/db-client/-/db-client-6.1.0.tgz#7071bf750129ab180a228354ebdb6b188c26522a"
-  integrity sha512-zn3hGPL3J7+ofVupKvpdtNS16w7BjWFDGtx0rQfMi5a68tluXcj2MCpFTD3VihTCBbCrEMxw7VUlOoRqtwj32A==
-  dependencies:
-    "@grpc/grpc-js" "^1.9.12"
-    "@types/debug" "^4.1.12"
-    "@types/google-protobuf" "^3.15.12"
-    "@types/node" "^16.18.67"
-    debug "^4.3.2"
-    google-protobuf "^3.21.2"
-    uuid "^8.3.2"
-
-"@grpc/grpc-js@^1.9.12":
-  version "1.10.7"
-  resolved "https://registry.npmjs.org/@grpc/grpc-js/-/grpc-js-1.10.7.tgz#1abce1a8c4c90b79dbbe57d7e4310f3b0ce72899"
-  integrity sha512-ZMBVjSeDAz3tFSehyO6Pd08xZT1HfIwq3opbeM4cDlBh52gmwp0wVIPcQur53NN0ac68HMZ/7SF2rGRD5KmVmg==
+"@grpc/grpc-js@^1.12.4":
+  version "1.13.3"
+  resolved "https://registry.npmjs.org/@grpc/grpc-js/-/grpc-js-1.13.3.tgz#6ad08d186c2a8651697085f790c5c68eaca45904"
+  integrity sha512-FTXHdOoPbZrBjlVLHuKbDZnsTxXv2BlHF57xw6LuThXacXvtkahEPED0CKMk6obZDf65Hv4k3z62eyPNpvinIg==
   dependencies:
     "@grpc/proto-loader" "^0.7.13"
     "@js-sdsl/ordered-map" "^4.4.2"
 
 "@grpc/proto-loader@^0.7.13":
-  version "0.7.13"
-  resolved "https://registry.npmjs.org/@grpc/proto-loader/-/proto-loader-0.7.13.tgz#f6a44b2b7c9f7b609f5748c6eac2d420e37670cf"
-  integrity sha512-AiXO/bfe9bmxBjxxtYxFAXGZvMaN5s8kO+jBHAJCON8rJoB5YS/D6X7ZNc6XQkuHNmyl4CYaMI1fJ/Gn27RGGw==
+  version "0.7.15"
+  resolved "https://registry.npmjs.org/@grpc/proto-loader/-/proto-loader-0.7.15.tgz#4cdfbf35a35461fc843abe8b9e2c0770b5095e60"
+  integrity sha512-tMXdRCfYVixjuFK+Hk0Q1s38gV9zDiDJfWL3h1rv4Qc39oILCu1TRTDt7+fGUI8K4G1Fj125Hx/ru3azECWTyQ==
   dependencies:
     lodash.camelcase "^4.3.0"
     long "^5.0.0"
@@ -1340,6 +1327,63 @@
   resolved "https://registry.npmjs.org/@js-sdsl/ordered-map/-/ordered-map-4.4.2.tgz#9299f82874bab9e4c7f9c48d865becbfe8d6907c"
   integrity sha512-iUKgm52T8HOE/makSxjqoWhe95ZJA1/G1sYsGev2JDKUSS14KAgg1LHb+Ba+IPow0xflbnSkOsZcO08C7w1gYw==
 
+"@kurrent/bridge-darwin-arm64@0.1.1":
+  version "0.1.1"
+  resolved "https://registry.npmjs.org/@kurrent/bridge-darwin-arm64/-/bridge-darwin-arm64-0.1.1.tgz#931eebc6c66cbb1bb5551fdd79bee6630bf3484e"
+  integrity sha512-vGBCkDLNjozqCn5fIEPDJBo5tSqmV/J78sskJ7wFzVneHRhEZkI4t3M/yu2Yz10ooyEnKzaJ5RnrZYPBplq1pg==
+
+"@kurrent/bridge-darwin-x64@0.1.1":
+  version "0.1.1"
+  resolved "https://registry.npmjs.org/@kurrent/bridge-darwin-x64/-/bridge-darwin-x64-0.1.1.tgz#ec0643271979f86feef940642fd6e327ac8f8998"
+  integrity sha512-6GICehReyvpjsg8mOCO4H/6anNHMg02yNWUXo4+3iyeBEybvSvCcWDHq8N7mlJtAlScwlsPYVuq+E8ZcprheKQ==
+
+"@kurrent/bridge-linux-arm64-gnu@0.1.1":
+  version "0.1.1"
+  resolved "https://registry.npmjs.org/@kurrent/bridge-linux-arm64-gnu/-/bridge-linux-arm64-gnu-0.1.1.tgz#a0170e23e895a268d17959305fc5aff2f79de8f1"
+  integrity sha512-/qwp9/UoboJtZehglbvsHl/u82gn0RTj+JckrN97+0R2LTPmhe5K45iaSe+ysyb4+KHk3B1pZEbkLl9PHjZxuQ==
+
+"@kurrent/bridge-linux-x64-gnu@0.1.1":
+  version "0.1.1"
+  resolved "https://registry.npmjs.org/@kurrent/bridge-linux-x64-gnu/-/bridge-linux-x64-gnu-0.1.1.tgz#fb6dfd24652e6886e0ebbd64a86a43792769be73"
+  integrity sha512-g7pGS/ZJd8NGA5DlC20Fh/Z/jvaOBC++BM/eSTr85UBwhG0/Pgk1AP9xbLY0N/sOCjKOXgxDqx9iFy54Q/vYoQ==
+
+"@kurrent/bridge-win32-x64-msvc@0.1.1":
+  version "0.1.1"
+  resolved "https://registry.npmjs.org/@kurrent/bridge-win32-x64-msvc/-/bridge-win32-x64-msvc-0.1.1.tgz#a6b910dfe020ae2d1a10d29f7139a43852eac930"
+  integrity sha512-BZ9bUu3jS+ikeR3Y9bip+Md3usR+Q4fILDhesFvDYFrh8YwcsVjFydZvFklC9DCf7QmogJqNY35dj3Xs6nAPsw==
+
+"@kurrent/bridge@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.npmjs.org/@kurrent/bridge/-/bridge-0.1.1.tgz#8fd34f0baf86bc4cd6f813cbaa1fdb31369bbb2d"
+  integrity sha512-01oJEoA/L/cBr2QXZD00cabvflv/JrSg3eYS/NOkHib7uRaxm/qEsjEX2q98Pf5HhVaduFaRaVKwJ0E+wEhfdg==
+  dependencies:
+    "@neon-rs/load" "^0.1.82"
+  optionalDependencies:
+    "@kurrent/bridge-darwin-arm64" "0.1.1"
+    "@kurrent/bridge-darwin-x64" "0.1.1"
+    "@kurrent/bridge-linux-arm64-gnu" "0.1.1"
+    "@kurrent/bridge-linux-x64-gnu" "0.1.1"
+    "@kurrent/bridge-win32-x64-msvc" "0.1.1"
+
+"@kurrent/kurrentdb-client@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.npmjs.org/@kurrent/kurrentdb-client/-/kurrentdb-client-1.0.1.tgz#4ad52ca65c872ff14c8ef1f458bd8a786dee6539"
+  integrity sha512-i/UNqNNXt6ju23h3B5LGypq6azwV8t3WJaAfQSFzPmhu3QkNkTAoacpCKLSHxs3/cbKOcb4tehsgs2I7fNU5qg==
+  dependencies:
+    "@grpc/grpc-js" "^1.12.4"
+    "@kurrent/bridge" "^0.1.1"
+    "@types/debug" "^4.1.12"
+    "@types/google-protobuf" "^3.15.12"
+    "@types/node" "^22.10.2"
+    debug "^4.4.0"
+    google-protobuf "^3.21.4"
+    uuid "11.0.3"
+
+"@neon-rs/load@^0.1.82":
+  version "0.1.82"
+  resolved "https://registry.npmjs.org/@neon-rs/load/-/load-0.1.82.tgz#7066547b5899ea2c5f40ff81b3939df0a4f6ce64"
+  integrity sha512-H4Gu2o5kPp+JOEhRrOQCnJnf7X6sv9FBLttM/wSbb4efsgFWeHzfU/ItZ01E5qqEk+U6QGdeVO7lxXIAtYHr5A==
+
 "@nicolo-ribaudo/chokidar-2@2.1.8-no-fsevents.3":
   version "2.1.8-no-fsevents.3"
   resolved "https://registry.npmjs.org/@nicolo-ribaudo/chokidar-2/-/chokidar-2-2.1.8-no-fsevents.3.tgz#323d72dd25103d0c4fbdce89dadf574a787b1f9b"
@@ -1421,19 +1465,21 @@
   integrity sha512-MqTGEo5bj5t157U6fA/BiDynNkn0YknVdh48CMPkTSpFTVmvao5UQmm7uEF6xBEo7qIMAlY/JSleYaE6VOdpaA==
 
 "@types/ms@*":
-  version "0.7.31"
-  resolved "https://registry.npmjs.org/@types/ms/-/ms-0.7.31.tgz#31b7ca6407128a3d2bbc27fe2d21b345397f6197"
-  integrity sha512-iiUgKzV9AuaEkZqkOLDIvlQiL6ltuZd9tGcW3gwpnX8JbuiuhFlEGmmFXEXkN50Cvq7Os88IY2v0dkDqXYWVgA==
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/@types/ms/-/ms-2.1.0.tgz#052aa67a48eccc4309d7f0191b7e41434b90bb78"
+  integrity sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA==
 
 "@types/node@>=13.7.0", "@types/node@>=5.10":
   version "18.7.6"
   resolved "https://registry.npmjs.org/@types/node/-/node-18.7.6.tgz#31743bc5772b6ac223845e18c3fc26f042713c83"
   integrity sha512-EdxgKRXgYsNITy5mjjXjVE/CS8YENSdhiagGrLqjG0pvA2owgJ6i4l7wy/PFZGC0B1/H20lWKN7ONVDNYDZm7A==
 
-"@types/node@^16.18.67":
-  version "16.18.97"
-  resolved "https://registry.npmjs.org/@types/node/-/node-16.18.97.tgz#d7926a8030f0d714d555b4550c0cc7731495cfe5"
-  integrity sha512-4muilE1Lbfn57unR+/nT9AFjWk0MtWi5muwCEJqnOvfRQDbSfLCUdN7vCIg8TYuaANfhLOV85ve+FNpiUsbSRg==
+"@types/node@^22.10.2":
+  version "22.15.17"
+  resolved "https://registry.npmjs.org/@types/node/-/node-22.15.17.tgz#355ccec95f705b664e4332bb64a7f07db30b7055"
+  integrity sha512-wIX2aSZL5FE+MR0JlvF87BNVrtFWf6AE6rxSE9X7OwnVvoyCQjpzSRJ+M87se/4QCkCiebQAqrJ0y6fwIyi7nw==
+  dependencies:
+    undici-types "~6.21.0"
 
 aggregate-error@^3.0.0:
   version "3.1.0"
@@ -1873,12 +1919,19 @@ data-view-byte-offset@^1.0.0:
     es-errors "^1.3.0"
     is-data-view "^1.0.1"
 
-debug@4.3.4, debug@^4.1.0, debug@^4.1.1, debug@^4.3.1, debug@^4.3.2, debug@^4.3.4:
+debug@4.3.4, debug@^4.1.0, debug@^4.1.1, debug@^4.3.1, debug@^4.3.4:
   version "4.3.4"
   resolved "https://registry.npmjs.org/debug/-/debug-4.3.4.tgz#1319f6579357f2338d3337d2cdd4914bb5dcc865"
   integrity sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==
   dependencies:
     ms "2.1.2"
+
+debug@^4.4.0:
+  version "4.4.0"
+  resolved "https://registry.npmjs.org/debug/-/debug-4.4.0.tgz#2b3f2aea2ffeb776477460267377dc8710faba8a"
+  integrity sha512-6WTZ/IxCY/T6BALoZHaE4ctp9xm+Z5kY/pzYaCHRFeyVhojxlrm+46y68HA6hr0TcwEssoxNiDEUJQjfPZ/RYA==
+  dependencies:
+    ms "^2.1.3"
 
 decamelize@^1.2.0:
   version "1.2.0"
@@ -2279,10 +2332,10 @@ globalthis@^1.0.3:
     define-properties "^1.2.1"
     gopd "^1.0.1"
 
-google-protobuf@^3.21.2:
-  version "3.21.2"
-  resolved "https://registry.npmjs.org/google-protobuf/-/google-protobuf-3.21.2.tgz#4580a2bea8bbb291ee579d1fefb14d6fa3070ea4"
-  integrity sha512-3MSOYFO5U9mPGikIYCzK0SaThypfGgS6bHqrUGXG3DPHCrb+txNqeEcns1W0lkGfk0rCyNXm7xB9rMxnCiZOoA==
+google-protobuf@^3.21.4:
+  version "3.21.4"
+  resolved "https://registry.npmjs.org/google-protobuf/-/google-protobuf-3.21.4.tgz#2f933e8b6e5e9f8edde66b7be0024b68f77da6c9"
+  integrity sha512-MnG7N936zcKTco4Jd2PX2U96Kf9PxygAPKBug+74LHzmHXmceN16MmRcdgZv+DGef/S9YvQAfRsNCn4cjf9yyQ==
 
 gopd@^1.0.1:
   version "1.0.1"
@@ -2716,7 +2769,7 @@ locate-path@^6.0.0:
 lodash.camelcase@^4.3.0:
   version "4.3.0"
   resolved "https://registry.npmjs.org/lodash.camelcase/-/lodash.camelcase-4.3.0.tgz#b28aa6288a2b9fc651035c7711f65ab6190331a6"
-  integrity sha512-TwuEnCnxbc3rAvhf/LbG7tJUDzhqXyFnv3dtzLOPgCG/hODL7WFnsbwktkD7yUV0RrreP/l1PALq/YSg6VvjlA==
+  integrity sha1-soqmKIorn8ZRA1x3EfZathkDMaY=
 
 lodash.clonedeep@^4.5.0:
   version "4.5.0"
@@ -2752,9 +2805,9 @@ long@^4.0.0:
   integrity sha512-XsP+KhQif4bjX1kbuSiySJFNAehNxgLb6hPRGJ9QsUr8ajHkuXGdrHmFUTUUXhDwVX2R5bY4JNZEwbUiMhV+MA==
 
 long@^5.0.0:
-  version "5.2.0"
-  resolved "https://registry.npmjs.org/long/-/long-5.2.0.tgz#2696dadf4b4da2ce3f6f6b89186085d94d52fd61"
-  integrity sha512-9RTUNjK60eJbx3uz+TEGF7fUr29ZDxR5QzXcyDpeSfeH28S9ycINflOgOlppit5U+4kNTe83KQnMEerw7GmE8w==
+  version "5.3.2"
+  resolved "https://registry.npmjs.org/long/-/long-5.3.2.tgz#1d84463095999262d7d7b7f8bfd4a8cc55167f83"
+  integrity sha512-mNAgZ1GmyNhD7AuqnTG3/VQ26o760+ZYBPKjPvugO8+nLbYfX6TVpJPseBvopbdY+qpZ/lKUnmEc1LeZYS3QAA==
 
 lru-cache@^5.1.1:
   version "5.1.1"
@@ -2842,7 +2895,7 @@ ms@2.1.2:
   resolved "https://registry.npmjs.org/ms/-/ms-2.1.2.tgz#d09d1f357b443f493382a8eb3ccd183872ae6009"
   integrity sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
 
-ms@2.1.3:
+ms@2.1.3, ms@^2.1.3:
   version "2.1.3"
   resolved "https://registry.npmjs.org/ms/-/ms-2.1.3.tgz#574c8138ce1d2b5861f0b44579dbadd60c6615b2"
   integrity sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==
@@ -3115,9 +3168,9 @@ protobufjs@^6.8.8:
     long "^4.0.0"
 
 protobufjs@^7.2.5:
-  version "7.2.6"
-  resolved "https://registry.npmjs.org/protobufjs/-/protobufjs-7.2.6.tgz#4a0ccd79eb292717aacf07530a07e0ed20278215"
-  integrity sha512-dgJaEDDL6x8ASUZ1YqWciTRrdOuYNzoOf27oHNfdyvKqHr5i0FV7FSLU+aIeFjyFgVxrpTOtQUi0BLLBymZaBw==
+  version "7.5.1"
+  resolved "https://registry.npmjs.org/protobufjs/-/protobufjs-7.5.1.tgz#0567c329db2868672a91438d1b1d3fc011628729"
+  integrity sha512-3qx3IRjR9WPQKagdwrKjO3Gu8RgQR2qqw+1KnigWhoVjFqegIj1K3bP11sGqhxrO46/XL7lekuG4jmjL+4cLsw==
   dependencies:
     "@protobufjs/aspromise" "^1.1.2"
     "@protobufjs/base64" "^1.1.2"
@@ -3602,6 +3655,11 @@ unbox-primitive@^1.0.2:
     has-symbols "^1.0.3"
     which-boxed-primitive "^1.0.2"
 
+undici-types@~6.21.0:
+  version "6.21.0"
+  resolved "https://registry.npmjs.org/undici-types/-/undici-types-6.21.0.tgz#691d00af3909be93a7faa13be61b3a5b50ef12cb"
+  integrity sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==
+
 unicode-canonical-property-names-ecmascript@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/unicode-canonical-property-names-ecmascript/-/unicode-canonical-property-names-ecmascript-2.0.0.tgz#301acdc525631670d39f6146e0e77ff6bbdebddc"
@@ -3645,6 +3703,11 @@ update-browserslist-db@^1.0.5:
   dependencies:
     escalade "^3.1.1"
     picocolors "^1.0.0"
+
+uuid@11.0.3:
+  version "11.0.3"
+  resolved "https://registry.npmjs.org/uuid/-/uuid-11.0.3.tgz#248451cac9d1a4a4128033e765d137e2b2c49a3d"
+  integrity sha512-d0z310fCWv5dJwnX1Y/MncBAqGMKEzlBb1AOf7z9K8ALnd0utBX/msg/fA0+sbyN1ihbMsLhrBlnl1ak7Wa0rg==
 
 uuid@^3.0.1:
   version "3.4.0"

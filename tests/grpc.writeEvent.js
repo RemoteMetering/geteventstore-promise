@@ -33,7 +33,7 @@ describe('gRPC Client - Write Event', () => {
 	});
 });
 
-describe('TCP Client - Write Event to pre-populated stream', () => {
+describe('gRPC Client - Write Event to pre-populated stream', () => {
 	let client;
 	let testStream;
 	beforeEach(async () => {

@@ -1,7 +1,7 @@
 import path from 'path';
 
 export default () => ({
-	protocol: 'esdb+discover',
+	protocol: 'kurrentdb+discover',
 	hostname: process.env.ES_HOST || 'localhost',
 	port: 22137,
 	useSslConnection: global.runningTestsInSecureMode,

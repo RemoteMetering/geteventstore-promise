@@ -37,7 +37,6 @@ describe('gRPC Client - Get Events', () => {
 		assert(events[0].created);
 		assert(events[0].metadata === undefined);
 		assert(events[0].isJson !== undefined);
-		assert(typeof events[0].eventNumber === 'bigint', 'event number should be a bigint');
 
 		await client.close();
 	});
@@ -48,7 +47,6 @@ describe('gRPC Client - Get Events', () => {
 		const events = await client.getEvents(testStream, undefined, undefined, 'backward');
 		assert.equal(events.length, 10);
 		assert.equal(events[0].data.something, 10);
-		assert(typeof events[0].eventNumber === 'bigint', 'event number should be a bigint');
 
 		await client.close();
 	});

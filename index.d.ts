@@ -13,7 +13,7 @@ import {
 	StreamSubscription,
 	GetStreamMetadataResult,
 	ReadPosition
-} from '@eventstore/db-client'
+} from '@kurrent/kurrentdb-client'
 
 import {
 	Options as ConnectionPoolOptions,
