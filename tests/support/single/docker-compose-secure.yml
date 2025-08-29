@@ -1,6 +1,14 @@
 version: "3.5"
 
 services:
+  volumes-provisioner:
+    image: hasnat/volumes-provisioner
+    environment:
+      PROVISION_DIRECTORIES: "1000:1000:0755:/tmp/certs"
+    volumes:
+      - certs:/tmp/certs
+    network_mode: none
+
   geteventstore_promise_test_setup_certs_single:
     image: eventstore/es-gencert-cli:1.0.2
     entrypoint: bash
@@ -13,29 +21,30 @@ services:
     container_name: geteventstore_promise_test_setup_certs_single
     volumes:
       - ./certs:/certs
+    depends_on:
+      - volumes-provisioner
     networks:
       singleclusternetwork:
         ipv4_address: 172.30.239.10
 
   geteventstore_promise_test_single.eventstore:
-    image: eventstore/eventstore:21.10.0-buster-slim
+    image: kurrentplatform/kurrentdb:25.0
     container_name: geteventstore_promise_test_single.eventstore
     environment:
-      - EVENTSTORE_MEM_DB=true
-      - EVENTSTORE_CLUSTER_SIZE=1
-      - EVENTSTORE_RUN_PROJECTIONS=All
-      - EVENTSTORE_START_STANDARD_PROJECTIONS=true
-      - EVENTSTORE_INT_IP=172.30.239.11
-      - EVENTSTORE_ENABLE_EXTERNAL_TCP=true
-      - EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP=true
-      - EVENTSTORE_DISCOVER_VIA_DNS=false
-      - EVENTSTORE_ADVERTISE_HOST_TO_CLIENT_AS=127.0.0.1
-      - EVENTSTORE_HTTP_PORT_ADVERTISE_AS=22117
-      - EVENTSTORE_TRUSTED_ROOT_CERTIFICATES_PATH=/certs/ca
-      - EVENTSTORE_CERTIFICATE_FILE=/certs/single/node.crt
-      - EVENTSTORE_CERTIFICATE_PRIVATE_KEY_FILE=/certs/single/node.key
+      - KURRENTDB_MEM_DB=true
+      - KURRENTDB_CLUSTER_SIZE=1
+      - KURRENTDB_RUN_PROJECTIONS=All
+      - KURRENTDB_START_STANDARD_PROJECTIONS=true
+      - KURRENTDB_REPLICATION_IP=172.30.239.11
+      - KURRENTDB_ENABLE_ATOM_PUB_OVER_HTTP=true
+      - KURRENTDB_DISCOVER_VIA_DNS=false
+      - KURRENTDB_ADVERTISE_HOST_TO_CLIENT_AS=127.0.0.1
+      - KURRENTDB_NODE_PORT_ADVERTISE_AS=22117
+      - KURRENTDB_TRUSTED_ROOT_CERTIFICATES_PATH=/certs/ca
+      - KURRENTDB_CERTIFICATE_FILE=/certs/single/node.crt
+      - KURRENTDB_CERTIFICATE_PRIVATE_KEY_FILE=/certs/single/node.key
       # Added for when testing v5
-    #   - EVENTSTORE_EXT_HTTP_PORT_ADVERTISE_AS=2117
+      - KURRENTDB_EXT_NODE_PORT_ADVERTISE_AS=2117
     ports:
       - "11116:1113"
       - "22117:2113"

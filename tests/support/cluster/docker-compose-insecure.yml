@@ -2,16 +2,15 @@ version: "3.5"
 
 services:
   geteventstore_promise_test_cluster_node1.eventstore: &template
-    image: eventstore/eventstore:21.10.0-buster-slim
+    image: kurrentplatform/kurrentdb:25.0
     container_name: geteventstore_promise_test_cluster_node1.eventstore
     env_file:
       - vars.env
     environment:
-      - EVENTSTORE_INSECURE=true
-      - EVENTSTORE_INT_IP=172.30.240.11
-      - EVENTSTORE_ADVERTISE_HTTP_PORT_TO_CLIENT_AS=22137
-      - EVENTSTORE_ADVERTISE_TCP_PORT_TO_CLIENT_AS=11136
-      - EVENTSTORE_GOSSIP_SEED=172.30.240.12:2113,172.30.240.13:2113
+      - KURRENTDB_INSECURE=true
+      - KURRENTDB_REPLICATION_IP=172.30.240.11
+      - KURRENTDB_ADVERTISE_NODE_PORT_TO_CLIENT_AS=22137
+      - KURRENTDB_GOSSIP_SEED=172.30.240.12:2113,172.30.240.13:2113
     healthcheck:
       test:
         [
@@ -33,11 +32,10 @@ services:
     <<: *template
     container_name: geteventstore_promise_test_cluster_node2.eventstore
     environment:
-      - EVENTSTORE_INSECURE=true
-      - EVENTSTORE_INT_IP=172.30.240.12
-      - EVENTSTORE_ADVERTISE_HTTP_PORT_TO_CLIENT_AS=22157
-      - EVENTSTORE_ADVERTISE_TCP_PORT_TO_CLIENT_AS=11156
-      - EVENTSTORE_GOSSIP_SEED=172.30.240.11:2113,172.30.240.13:2113
+      - KURRENTDB_INSECURE=true
+      - KURRENTDB_REPLICATION_IP=172.30.240.12
+      - KURRENTDB_ADVERTISE_NODE_PORT_TO_CLIENT_AS=22157
+      - KURRENTDB_GOSSIP_SEED=172.30.240.11:2113,172.30.240.13:2113
     healthcheck:
       test:
         [
@@ -58,11 +56,10 @@ services:
     <<: *template
     container_name: geteventstore_promise_test_cluster_node3.eventstore
     environment:
-      - EVENTSTORE_INSECURE=true
-      - EVENTSTORE_INT_IP=172.30.240.13
-      - EVENTSTORE_ADVERTISE_HTTP_PORT_TO_CLIENT_AS=22177
-      - EVENTSTORE_ADVERTISE_TCP_PORT_TO_CLIENT_AS=11176
-      - EVENTSTORE_GOSSIP_SEED=172.30.240.11:2113,172.30.240.12:2113
+      - KURRENTDB_INSECURE=true
+      - KURRENTDB_REPLICATION_IP=172.30.240.13
+      - KURRENTDB_ADVERTISE_NODE_PORT_TO_CLIENT_AS=22177
+      - KURRENTDB_GOSSIP_SEED=172.30.240.11:2113,172.30.240.12:2113
     healthcheck:
       test:
         [

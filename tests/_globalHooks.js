@@ -49,7 +49,7 @@ before(async function () {
 
 	while (true) {
 		const [isSingleReady, isClusterReady] = await Promise.all([
-			isContainerReady('geteventstore_promise_test_single.eventstore', `'"$streams"' projection source has been written`),
+			isContainerReady('geteventstore_promise_test_single.eventstore', `InaugurationManager in state (Leader`),
 			isContainerReady('geteventstore_promise_test_cluster_node1.eventstore', '<LIVE> [Leader')
 		]);
 		if (isSingleReady && isClusterReady) break;
