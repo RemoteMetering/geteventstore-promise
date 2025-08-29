@@ -5,8 +5,8 @@
 	"main": "index.js",
 	"scripts": {
 		"test": "yarn test:insecure && yarn test:secure",
-		"test:insecure": "cross-env NODE_ENV=test mocha --exit --require @babel/register tests/",
-		"test:secure": "cross-env NODE_ENV=test TESTS_RUN_SECURE=true mocha --exit --require @babel/register tests/",
+		"test:insecure": "NODE_ENV=test mocha --exit --require @babel/register tests/",
+		"test:secure": "NODE_ENV=test TESTS_RUN_SECURE=true mocha --exit --require @babel/register tests/",
 		"coverage": "nyc yarn test",
 		"build": "babel --delete-dir-on-start -d dist/ lib"
 	},
@@ -29,26 +29,25 @@
 	},
 	"homepage": "https://github.com/RemoteMetering/geteventstore-promise",
 	"dependencies": {
-		"@babel/runtime": "^7.24.5",
+		"@babel/runtime": "^7.28.3",
 		"@kurrent/kurrentdb-client": "^1.0.1",
-		"axios": "^1.6.8",
-		"debug": "^4.3.4",
+		"axios": "^1.11.0",
+		"debug": "^4.4.1",
 		"generic-pool": "^3.9.0",
 		"lodash.clonedeep": "^4.5.0",
-		"node-eventstore-client": "^0.2.18",
-		"uuid": "^9.0.1"
+		"node-eventstore-client": "^23.10.1",
+		"uuid": "^11.1.0"
 	},
 	"devDependencies": {
-		"@babel/cli": "^7.24.5",
-		"@babel/core": "^7.24.5",
-		"@babel/node": "^7.23.9",
-		"@babel/plugin-transform-runtime": "^7.24.3",
-		"@babel/preset-env": "^7.24.5",
-		"@babel/register": "^7.23.7",
+		"@babel/cli": "^7.28.3",
+		"@babel/core": "^7.28.3",
+		"@babel/node": "^7.28.0",
+		"@babel/plugin-transform-runtime": "^7.28.3",
+		"@babel/preset-env": "^7.28.3",
+		"@babel/register": "^7.28.3",
 		"babel-plugin-add-module-exports": "^1.0.4",
-		"cross-env": "^7.0.3",
-		"mocha": "^10.4.0",
-		"nyc": "^15.1.0"
+		"mocha": "^11.7.1",
+		"nyc": "^17.1.0"
 	},
 	"nyc": {
 		"reporter": [
