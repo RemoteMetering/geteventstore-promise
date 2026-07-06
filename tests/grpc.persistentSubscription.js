@@ -96,7 +96,6 @@ describe('gRPC Client - Persistent Subscription', () => {
 		try {
 			await client.subscribeToPersistentSubscriptionToStream(`DOES_NOT_EXISTS_FOR_SUB`, 'NO_GROUP', () => {});
 		} catch (err) {
-			console.log("err.message ", err.message);
 			assert.equal(err.message, `Subscription group NO_GROUP on stream DOES_NOT_EXISTS_FOR_SUB does not exist`);
 			return;
 		} finally {
