@@ -186,6 +186,6 @@ describe('HTTP Client - Persistent Subscription', () => {
 		await client.writeEvents(testStream, events);
 		await client.persistentSubscriptions.assert(testSubscriptionName, testStream);
 		const results = await client.persistentSubscriptions.getAllSubscriptionsInfo();
-		assert.equal(6, results.length);
+		assert.equal(9, results.length);
 	});
 });

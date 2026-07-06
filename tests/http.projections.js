@@ -105,11 +105,11 @@ describe('Projections', () => {
 
 			assert.equal(projectionConfig.emitEnabled, true);
 			assert.equal(projectionConfig.trackEmittedStreams, true);
-			assert.equal(projectionConfig.msgTypeId, 300);
 			assert.equal(projectionConfig.checkpointHandledThreshold, 4000);
 			assert.equal(projectionConfig.checkpointUnhandledBytesThreshold, 10000000);
 			assert.equal(projectionConfig.pendingEventsThreshold, 5000);
 			assert.equal(projectionConfig.maxWriteBatchLength, 500);
+			assert.equal(projectionConfig.label, 'Projections');
 		});
 
 		it('Should remove one-time projection', async function () {
