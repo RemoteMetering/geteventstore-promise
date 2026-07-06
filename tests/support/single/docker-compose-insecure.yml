@@ -2,7 +2,7 @@ version: "3.5"
 
 services:
   geteventstore_promise_test_single.eventstore:
-    image: kurrentplatform/kurrentdb:25.0
+    image: kurrentplatform/kurrentdb:26.1
     container_name: geteventstore_promise_test_single.eventstore
     environment:
       - KURRENTDB_INSECURE=true

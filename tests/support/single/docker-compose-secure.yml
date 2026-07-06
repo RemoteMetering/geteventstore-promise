@@ -28,7 +28,7 @@ services:
         ipv4_address: 172.30.239.10
 
   geteventstore_promise_test_single.eventstore:
-    image: kurrentplatform/kurrentdb:25.0
+    image: kurrentplatform/kurrentdb:26.1
     container_name: geteventstore_promise_test_single.eventstore
     environment:
       - KURRENTDB_MEM_DB=true
