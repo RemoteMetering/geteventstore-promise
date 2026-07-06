@@ -8,7 +8,7 @@ import assert from 'assert';
 
 const eventFactory = new EventStore.EventFactory();
 
-xdescribe('gRPC Client - Persistent Subscription', () => {
+describe('gRPC Client - Persistent Subscription', () => {
 	it('Should get all events written to a persistent subscription stream after subscription is started', function (done) {
 		this.timeout(15 * 1000);
 		const client = new EventStore.GRPCClient(getGRPCConfig());
