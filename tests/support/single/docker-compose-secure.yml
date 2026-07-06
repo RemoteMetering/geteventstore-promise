@@ -1,12 +1,10 @@
-version: "3.5"
-
 services:
   volumes-provisioner:
     image: hasnat/volumes-provisioner
     environment:
       PROVISION_DIRECTORIES: "1000:1000:0755:/tmp/certs"
     volumes:
-      - certs:/tmp/certs
+      - certs_single:/tmp/certs
     network_mode: none
 
   geteventstore_promise_test_setup_certs_single:
@@ -43,8 +41,6 @@ services:
       - KURRENTDB_TRUSTED_ROOT_CERTIFICATES_PATH=/certs/ca
       - KURRENTDB_CERTIFICATE_FILE=/certs/single/node.crt
       - KURRENTDB_CERTIFICATE_PRIVATE_KEY_FILE=/certs/single/node.key
-      # Added for when testing v5
-      - KURRENTDB_EXT_NODE_PORT_ADVERTISE_AS=2117
     ports:
       - "11116:1113"
       - "22117:2113"
@@ -65,3 +61,6 @@ networks:
       driver: default
       config:
         - subnet: 172.30.239.0/24
+
+volumes:
+  certs_single:
