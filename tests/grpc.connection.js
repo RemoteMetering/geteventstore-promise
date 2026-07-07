@@ -83,7 +83,7 @@ describe('gRPC Client - Test Connection', () => {
 		}).finally(() => client.close());
 	});
 
-	it('Should default to only one connection with no pool options provided', async function () {
+	it('Should default to 5 connections with no pool options provided', async function () {
 		this.timeout(60 * 1000);
 		const config = getGRPCConfig();
 		delete config.poolOptions;
@@ -93,7 +93,7 @@ describe('gRPC Client - Test Connection', () => {
 		await writeEventsInParallel(client);
 
 		const pool = await client.getPool();
-		assert.equal(1, pool._allObjects.size);
+		assert.equal(5, pool._allObjects.size);
 
 		await client.close();
 	});
