@@ -7,7 +7,7 @@ services:
       - certs:/tmp/certs
     network_mode: none
 
-  setup:
+  geteventstore_promise_test_setup:
     image: eventstore/es-gencert-cli:1.0.2
     entrypoint: bash
     user: "1000:1000"
@@ -18,7 +18,7 @@ services:
       && es-gencert-cli create-node -out ./node2 -ip-addresses 127.0.0.1,172.30.240.12 -dns-names localhost
       && es-gencert-cli create-node -out ./node3 -ip-addresses 127.0.0.1,172.30.240.13 -dns-names localhost
       && find . -type f -print0 | xargs -0 chmod 666"
-    container_name: setup
+    container_name: geteventstore_promise_test_setup
     volumes:
       - certs:/certs
     depends_on:
@@ -27,7 +27,7 @@ services:
   geteventstore_promise_test_setup_certs_cluster:
     image: eventstore/es-gencert-cli:1.0.2
     entrypoint: bash
-    user: "0:0"
+    user: "1000:1000"
     command: >
       -c "mkdir -p ./certs && cd /certs
       && es-gencert-cli create-ca

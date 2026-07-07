@@ -10,7 +10,7 @@ services:
   geteventstore_promise_test_setup_certs_single:
     image: eventstore/es-gencert-cli:1.0.2
     entrypoint: bash
-    user: "0:0"
+    user: "1000:1000"
     command: >
       -c "mkdir -p ./certs && cd /certs
       && es-gencert-cli create-ca
