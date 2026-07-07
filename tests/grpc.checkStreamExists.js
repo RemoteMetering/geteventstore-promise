@@ -5,7 +5,7 @@ import getGRPCConfig from './support/getGRPCConfig';
 import EventStore from '../lib';
 import assert from 'assert';
 
-describe('GRPC Client - Check Stream Exist', () => {
+describe('gRPC Client - Check Stream Exist', () => {
 	it('Should return true when a stream exists', async function () {
 		this.timeout(5000);
 		const client = new EventStore.GRPCClient(getGRPCConfig());

@@ -5,7 +5,7 @@ import getGRPCConfig from './support/getGRPCConfig';
 import EventStore from '../lib';
 import assert from 'assert';
 
-describe('GRPC Client - Get steam metadata', () => {
+describe('gRPC Client - Get steam metadata', () => {
 	it('Should return stream metadata', async function () {
 		this.timeout(5000);
 		const client = new EventStore.GRPCClient(getGRPCConfig());
