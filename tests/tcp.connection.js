@@ -1,5 +1,3 @@
-import './_globalHooks.js';
-
 import getTcpConfigCustomConnectionName from './support/getTcpConfigCustomConnectionName.js';
 import generateEventId from '../lib/utilities/generateEventId.js';
 import getTcpConfig from './support/getTcpConfig.js';

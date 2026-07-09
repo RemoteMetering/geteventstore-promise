@@ -1,5 +1,3 @@
-import './_globalHooks.js';
-
 import generateEventId from '../lib/utilities/generateEventId.js';
 import chunkArray from '../lib/utilities/chunkArray.js';
 import getHttpConfig from './support/getHttpConfig.js';

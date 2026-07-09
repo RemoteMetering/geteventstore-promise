@@ -1,5 +1,3 @@
-import './_globalHooks.js';
-
 import generateEventId from '../lib/utilities/generateEventId.js';
 import getTcpConfig from './support/getTcpConfig.js';
 import sleep from './utilities/sleep.js';

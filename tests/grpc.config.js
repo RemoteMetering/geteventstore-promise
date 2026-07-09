@@ -1,5 +1,3 @@
-import './_globalHooks.js';
-
 import getGRPCConfig from './support/getGRPCConfig.js';
 import EventStore from '../lib/index.js';
 import assert from 'assert';

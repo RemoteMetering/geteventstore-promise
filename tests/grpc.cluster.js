@@ -1,5 +1,3 @@
-import './_globalHooks.js';
-
 import getGRPCConfigDNSDiscoveryCluster from './support/getGRPCConfigDNSDiscoveryCluster.js';
 import getGRPCConfigGossipCluster from './support/getGRPCConfigGossipCluster.js';
 import generateEventId from '../lib/utilities/generateEventId.js';

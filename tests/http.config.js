@@ -1,5 +1,3 @@
-import './_globalHooks.js';
-
 import getHttpConfig from './support/getHttpConfig.js';
 import EventStore from '../lib/index.js';
 import assert from 'assert';

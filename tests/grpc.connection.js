@@ -1,5 +1,3 @@
-import './_globalHooks.js';
-
 import getGRPCConfigCustomConnectionName from './support/getGRPCConfigCustomConnectionName.js';
 import generateEventId from '../lib/utilities/generateEventId.js';
 import getGRPCConfig from './support/getGRPCConfig.js';

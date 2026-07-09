@@ -1,5 +1,3 @@
-import './_globalHooks.js';
-
 import assert from 'assert';
 import fs from 'fs';
 

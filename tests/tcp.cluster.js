@@ -1,5 +1,3 @@
-import './_globalHooks.js';
-
 import getTcpConfigDNSDiscoveryCluster from './support/getTcpConfigDNSDiscoveryCluster.js';
 import getTcpConfigGossipCluster from './support/getTcpConfigGossipCluster.js';
 import generateEventId from '../lib/utilities/generateEventId.js';
