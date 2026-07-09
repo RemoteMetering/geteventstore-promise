@@ -11,6 +11,8 @@ import {
 	AppendResult as GRPCAppendResult,
 	DeleteResult as GRPCDeleteResult,
 	StreamSubscription,
+	PersistentSubscriptionToStream,
+	ProjectionDetails,
 	GetStreamMetadataResult,
 	ReadPosition
 } from '@kurrent/kurrentdb-client'
@@ -77,6 +79,19 @@ export interface TCPConfig extends ConnectionSettings {
 	gossipSeeds?: GossipSeed[];
 	credentials: UserCredentials;
 	poolOptions?: ConnectionPoolOptions;
+	connectionNameGenerator?: () => string | Promise<string>;
+}
+
+export interface GRPCConfig {
+	protocol?: string;
+	hostname?: string;
+	port?: number;
+	useSslConnection?: boolean;
+	tlsCAFile?: string;
+	gossipSeeds?: GossipSeed[];
+	credentials: UserCredentials;
+	poolOptions?: ConnectionPoolOptions;
+	connectionName?: string;
 	connectionNameGenerator?: () => string | Promise<string>;
 }
 
@@ -164,6 +179,40 @@ export interface PersistentSubscriptionAssertResult {
 	msgTypeId: number;
 }
 
+// Projection config as returned by the HTTP client. emitEnabled and
+// trackEmittedStreams are always present, the rest are server-defined.
+export interface ProjectionConfig {
+	emitEnabled: boolean;
+	trackEmittedStreams: boolean;
+	[key: string]: any;
+}
+
+// A single projection's details from the HTTP client. Server-defined stats
+// fields vary by projection, so the shape is left extensible.
+export interface HTTPProjectionDetail {
+	name: string;
+	[key: string]: any;
+}
+
+export interface HTTPProjectionsInfo {
+	projections: HTTPProjectionDetail[];
+}
+
+// Persistent subscription stats. Server-defined fields vary, so extensible.
+export interface PersistentSubscriptionInfo {
+	eventStreamId?: string;
+	groupName?: string;
+	status?: string;
+	[key: string]: any;
+}
+
+// Result of persistentSubscriptions.getEvents. entries carry the events plus
+// dynamically named ack/nack/link functions.
+export interface PersistentSubscriptionEvents {
+	entries: object[];
+	[link: string]: any;
+}
+
 export interface EventStoreCatchUpSubscription {
 	stop(): void;
 	close(): Promise<void>;
@@ -178,11 +227,11 @@ export interface MappedEventAppearedCallback<TSubscription> {
 	(subscription: TSubscription, event: Event): void | Promise<void>;
 }
 
-export interface GRPCMappedEventAppearedCallback {
-	(subscription: StreamSubscription, event: Event): void | Promise<void>;
+export interface GRPCMappedEventAppearedCallback<TSubscription> {
+	(subscription: TSubscription, event: Event): void | Promise<void>;
 }
-export interface GRPCSubscriptionDroppedCallback {
-	(subscription: StreamSubscription): void | Promise<void>;
+export interface GRPCSubscriptionDroppedCallback<TSubscription> {
+	(subscription: TSubscription): void | Promise<void>;
 }
 
 export interface EventEnumeratorResult {
@@ -204,6 +253,11 @@ export class HTTPClient {
 	getEventsByType(streamName: string, eventTypes: string[], startPosition?: number, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): Promise<Event[]>;
 	readEventsForward(streamName: string, startPosition?: number, count?: number, resolveLinkTos?: boolean, embed?: EmbedType): Promise<HTTPReadResult>;
 	readEventsBackward(streamName: string, startPosition?: number, count?: number, resolveLinkTos?: boolean, embed?: EmbedType): Promise<HTTPReadResult>;
+	iterateAllStreamEvents(streamName: string, chunkSize?: number, startPosition?: number, resolveLinkTos?: boolean, embed?: EmbedType): AsyncIterableIterator<Event>;
+	iterateEvents(streamName: string, startPosition?: number, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean, embed?: EmbedType): AsyncIterableIterator<Event>;
+	iterateEventsForward(streamName: string, startPosition?: number, count?: number, resolveLinkTos?: boolean, embed?: EmbedType): AsyncIterableIterator<Event>;
+	iterateEventsBackward(streamName: string, startPosition?: number, count?: number, resolveLinkTos?: boolean, embed?: EmbedType): AsyncIterableIterator<Event>;
+	iterateEventsByType(streamName: string, eventTypes: string[], startPosition?: number, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): AsyncIterableIterator<Event>;
 	deleteStream(streamName: string, hardDelete?: boolean): Promise<void>;
 	ping(): Promise<void>;
 	admin: {
@@ -216,21 +270,21 @@ export class HTTPClient {
 		reset(name: string): Promise<void>;
 		assert(name: string, projectionContent: string, mode?: ProjectionMode, enabled?: boolean, checkpointsEnabled?: boolean, emitEnabled?: boolean, trackEmittedStreams?: boolean): Promise<void>;
 		remove(name: string, deleteCheckpointStream?: boolean, deleteStateStream?: boolean): Promise<void>;
-		config(name: string): Promise<object>;
+		config(name: string): Promise<ProjectionConfig>;
 		getState(name: string, options?: ProjectionStateOptions): Promise<object>;
 		getResult(name: string, options?: ProjectionStateOptions): Promise<object>;
-		getInfo(name: string, includeConfig?: boolean): Promise<object>;
-		getAllProjectionsInfo(): Promise<object>;
-		disableAll(): Promise<void>;
-		enableAll(): Promise<void>;
+		getInfo(name: string, includeConfig?: boolean): Promise<HTTPProjectionDetail | undefined>;
+		getAllProjectionsInfo(): Promise<HTTPProjectionsInfo>;
+		disableAll(): Promise<void[]>;
+		enableAll(): Promise<void[]>;
 	};
 	persistentSubscriptions: {
 		assert(name: string, streamName: string, options?: PersistentSubscriptionOptions): Promise<PersistentSubscriptionAssertResult>;
 		remove(name: string, streamName: string): Promise<void>;
-		getEvents(name: string, streamName: string, count?: number, embed?: EmbedType): Promise<object>;
-		getSubscriptionInfo(name: string, streamName: string): Promise<object>;
-		getAllSubscriptionsInfo(): Promise<object>;
-		getStreamSubscriptionsInfo(streamName: string): Promise<object>;
+		getEvents(name: string, streamName: string, count?: number, embed?: EmbedType): Promise<PersistentSubscriptionEvents>;
+		getSubscriptionInfo(name: string, streamName: string): Promise<PersistentSubscriptionInfo>;
+		getAllSubscriptionsInfo(): Promise<PersistentSubscriptionInfo[]>;
+		getStreamSubscriptionsInfo(streamName: string): Promise<PersistentSubscriptionInfo[]>;
 	};
 }
 
@@ -244,6 +298,11 @@ export class TCPClient {
 	getEventsByType(streamName: string, eventTypes: string[], startPosition?: number, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): Promise<Event[]>;
 	readEventsForward(streamName: string, startPosition?: number, count?: number, resolveLinkTos?: boolean): Promise<TCPReadResult>;
 	readEventsBackward(streamName: string, startPosition?: number, count?: number, resolveLinkTos?: boolean): Promise<TCPReadResult>;
+	iterateAllStreamEvents(streamName: string, chunkSize?: number, startPosition?: number, resolveLinkTos?: boolean): AsyncIterableIterator<Event>;
+	iterateEvents(streamName: string, startPosition?: number, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): AsyncIterableIterator<Event>;
+	iterateEventsForward(streamName: string, startPosition?: number, count?: number, resolveLinkTos?: boolean): AsyncIterableIterator<Event>;
+	iterateEventsBackward(streamName: string, startPosition?: number, count?: number, resolveLinkTos?: boolean): AsyncIterableIterator<Event>;
+	iterateEventsByType(streamName: string, eventTypes: string[], startPosition?: number, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): AsyncIterableIterator<Event>;
 	deleteStream(streamName: string, hardDelete?: boolean): Promise<TCPDeleteResult>;
 	eventEnumerator(streamName: string, direction?: ReadDirection, resolveLinkTos?: boolean): {
 		first(count: number): Promise<EventEnumeratorResult>;
@@ -260,10 +319,10 @@ export class TCPClient {
 
 export class GRPCClient {
 	constructor(config: GRPCConfig);
-	checkStreamMetadata(streamName: string): Promise<GetStreamMetadataResult>;
+	getStreamMetadata(streamName: string): Promise<GetStreamMetadataResult>;
 	checkStreamExists(streamName: string): Promise<boolean>;
 	writeEvent(streamName: string, eventType: string, data: object, metaData?: object, options?: GRPCWriteEventOptions): Promise<GRPCAppendResult>;
-	writeEvents(streamName: string, events: NewEvent[], options?: GRPCWriteEventOptions): Promise<AppendResult>;
+	writeEvents(streamName: string, events: NewEvent[], options?: GRPCWriteEventOptions): Promise<GRPCAppendResult>;
 	getAllStreamEvents(streamName: string, chunkSize?: number, startPosition?: number, resolveLinkTos?: boolean): Promise<Event[]>;
 	getEvents(streamName: string, startPosition?: number, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): Promise<Event[]>;
 	getEventsByType(streamName: string, eventTypes: string[], startPosition?: number, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): Promise<Event[]>;
@@ -272,9 +331,39 @@ export class GRPCClient {
 	readAllEvents(startPosition?: ReadPosition, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): Promise<Event[]>;
 	readAllEventsForward(startPosition?: ReadPosition, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): Promise<GRPCReadResult>;
 	readAllEventsBackward(startPosition?: ReadPosition, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): Promise<GRPCReadResult>;
+	iterateAllStreamEvents(streamName: string, chunkSize?: number, startPosition?: number, resolveLinkTos?: boolean): AsyncIterableIterator<Event>;
+	iterateEvents(streamName: string, startPosition?: number, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): AsyncIterableIterator<Event>;
+	iterateEventsForward(streamName: string, startPosition?: number, count?: number, resolveLinkTos?: boolean): AsyncIterableIterator<Event>;
+	iterateEventsBackward(streamName: string, startPosition?: number, count?: number, resolveLinkTos?: boolean): AsyncIterableIterator<Event>;
+	iterateEventsByType(streamName: string, eventTypes: string[], startPosition?: number, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): AsyncIterableIterator<Event>;
+	iterateAllEvents(startPosition?: ReadPosition, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): AsyncIterableIterator<Event>;
+	iterateAllEventsForward(startPosition?: ReadPosition, count?: number, resolveLinkTos?: boolean): AsyncIterableIterator<Event>;
+	iterateAllEventsBackward(startPosition?: ReadPosition, count?: number, resolveLinkTos?: boolean): AsyncIterableIterator<Event>;
 	deleteStream(streamName: string, hardDelete?: boolean): Promise<GRPCDeleteResult>;
 	subscribeToStream(streamName: string, onEventAppeared?: GRPCMappedEventAppearedCallback<StreamSubscription>, onDropped?: GRPCSubscriptionDroppedCallback<StreamSubscription>, resolveLinkTos?: boolean): Promise<StreamSubscription>;
 	subscribeToStreamFrom(streamName: string, fromEventNumber?: number, onEventAppeared?: GRPCMappedEventAppearedCallback<StreamSubscription>, onDropped?: GRPCSubscriptionDroppedCallback<StreamSubscription>, settings?: SubscribeToStreamFromSettings): Promise<StreamSubscription>;
+	createPersistentSubscriptionToStream(streamName: string, groupName: string, settings?: PersistentSubscriptionOptions): Promise<void>;
+	subscribeToPersistentSubscriptionToStream(streamName: string, groupName: string, onEventAppeared?: GRPCMappedEventAppearedCallback<PersistentSubscriptionToStream>, onDropped?: GRPCSubscriptionDroppedCallback<PersistentSubscriptionToStream>, settings?: PersistentSubscriptionOptions, duplexOptions?: object): Promise<PersistentSubscriptionToStream>;
+	projections: {
+		start(name: string): Promise<void>;
+		stop(name: string): Promise<void>;
+		reset(name: string): Promise<void>;
+		remove(name: string, deleteCheckpointStream?: boolean, deleteStateStream?: boolean): Promise<void>;
+		getAllProjectionsInfo(): Promise<ProjectionDetails[]>;
+		getState(name: string, options?: ProjectionStateOptions): Promise<object>;
+		getResult(name: string, options?: ProjectionStateOptions): Promise<object>;
+		getInfo(name: string): Promise<ProjectionDetails | undefined>;
+		assert(name: string, projectionContent: string, mode?: ProjectionMode, enabled?: boolean, checkpointsEnabled?: boolean, emitEnabled?: boolean, trackEmittedStreams?: boolean): Promise<void>;
+		disableAll(): Promise<void[]>;
+		enableAll(): Promise<void[]>;
+	};
+	persistentSubscriptions: {
+		assert(name: string, streamName: string, options?: PersistentSubscriptionOptions): Promise<void>;
+		remove(name: string, streamName: string): Promise<void>;
+		getSubscriptionInfo(name: string, streamName: string): Promise<PersistentSubscriptionInfo>;
+		getAllSubscriptionsInfo(): Promise<PersistentSubscriptionInfo[]>;
+		getStreamSubscriptionsInfo(streamName: string): Promise<PersistentSubscriptionInfo[]>;
+	};
 	close(): Promise<void>;
 	getPool(): Promise<ConnectionPool<object>>;
 	closeAllPools(): Promise<void>;
