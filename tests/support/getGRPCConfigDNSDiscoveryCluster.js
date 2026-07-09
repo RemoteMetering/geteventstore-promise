@@ -5,7 +5,7 @@ export default () => ({
 	hostname: process.env.ES_HOST || 'localhost',
 	port: 22137,
 	useSslConnection: global.runningTestsInSecureMode,
-	tlsCAFile: global.runningTestsInSecureMode ? path.resolve(__dirname, './cluster/certs/ca/ca.crt') : undefined,
+	tlsCAFile: global.runningTestsInSecureMode ? path.resolve(import.meta.dirname, './cluster/certs/ca/ca.crt') : undefined,
 	credentials: {
 		username: 'admin',
 		password: 'changeit'

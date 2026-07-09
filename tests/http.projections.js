@@ -1,17 +1,17 @@
-import './_globalHooks';
+import './_globalHooks.js';
 
 import assert from 'assert';
 import fs from 'fs';
 
-import EventStore from '../lib';
-import generateEventId from '../lib/utilities/generateEventId';
-import getHttpConfig from './support/getHttpConfig';
-import sleep from './utilities/sleep';
+import EventStore from '../lib/index.js';
+import generateEventId from '../lib/utilities/generateEventId.js';
+import getHttpConfig from './support/getHttpConfig.js';
+import sleep from './utilities/sleep.js';
 
 describe('Projections', () => {
 	describe('Default Settings', () => {
 		const assertionProjection = generateEventId();
-		const assertionProjectionContent = fs.readFileSync(`${__dirname}/support/testProjection.js`, {
+		const assertionProjectionContent = fs.readFileSync(`${import.meta.dirname}/support/testProjection.js`, {
 			encoding: 'utf8'
 		});
 
@@ -80,7 +80,7 @@ describe('Projections', () => {
 
 	describe('Custom Settings', () => {
 		const assertionProjection = generateEventId();
-		const assertionProjectionContent = fs.readFileSync(`${__dirname}/support/testProjection.js`, {
+		const assertionProjectionContent = fs.readFileSync(`${import.meta.dirname}/support/testProjection.js`, {
 			encoding: 'utf8'
 		});
 
@@ -183,7 +183,7 @@ describe('Projections', () => {
 			const client = new EventStore.HTTPClient(getHttpConfig());
 
 			const projectionName = 'TestProjection';
-			const projectionContent = fs.readFileSync(`${__dirname}/support/testProjection.js`, {
+			const projectionContent = fs.readFileSync(`${import.meta.dirname}/support/testProjection.js`, {
 				encoding: 'utf8'
 			});
 
@@ -210,7 +210,7 @@ describe('Projections', () => {
 			const client = new EventStore.HTTPClient(getHttpConfig());
 
 			const projectionName = `TestProjection${generateEventId()}`;
-			const projectionContent = fs.readFileSync(`${__dirname}/support/testPartitionedProjection.js`, {
+			const projectionContent = fs.readFileSync(`${import.meta.dirname}/support/testPartitionedProjection.js`, {
 				encoding: 'utf8'
 			});
 
@@ -247,7 +247,7 @@ describe('Projections', () => {
 			const client = new EventStore.HTTPClient(getHttpConfig());
 
 			const projectionName = 'TestProjection';
-			const projectionContent = fs.readFileSync(`${__dirname}/support/testProjection.js`, {
+			const projectionContent = fs.readFileSync(`${import.meta.dirname}/support/testProjection.js`, {
 				encoding: 'utf8'
 			});
 
@@ -274,7 +274,7 @@ describe('Projections', () => {
 			const client = new EventStore.HTTPClient(getHttpConfig());
 
 			const projectionName = `TestProjection${generateEventId()}`;
-			const projectionContent = fs.readFileSync(`${__dirname}/support/testPartitionedProjection.js`, {
+			const projectionContent = fs.readFileSync(`${import.meta.dirname}/support/testPartitionedProjection.js`, {
 				encoding: 'utf8'
 			});
 

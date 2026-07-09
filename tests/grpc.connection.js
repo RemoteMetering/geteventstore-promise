@@ -1,9 +1,9 @@
-import './_globalHooks';
+import './_globalHooks.js';
 
-import getGRPCConfigCustomConnectionName from './support/getGRPCConfigCustomConnectionName';
-import generateEventId from '../lib/utilities/generateEventId';
-import getGRPCConfig from './support/getGRPCConfig';
-import EventStore from '../lib';
+import getGRPCConfigCustomConnectionName from './support/getGRPCConfigCustomConnectionName.js';
+import generateEventId from '../lib/utilities/generateEventId.js';
+import getGRPCConfig from './support/getGRPCConfig.js';
+import EventStore from '../lib/index.js';
 import assert from 'assert';
 
 const eventFactory = new EventStore.EventFactory();

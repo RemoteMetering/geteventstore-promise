@@ -1,9 +1,9 @@
-import './_globalHooks';
+import './_globalHooks.js';
 
-import getGRPCConfigDNSDiscoveryCluster from './support/getGRPCConfigDNSDiscoveryCluster';
-import getGRPCConfigGossipCluster from './support/getGRPCConfigGossipCluster';
-import generateEventId from '../lib/utilities/generateEventId';
-import EventStore from '../lib';
+import getGRPCConfigDNSDiscoveryCluster from './support/getGRPCConfigDNSDiscoveryCluster.js';
+import getGRPCConfigGossipCluster from './support/getGRPCConfigGossipCluster.js';
+import generateEventId from '../lib/utilities/generateEventId.js';
+import EventStore from '../lib/index.js';
 import assert from 'assert';
 
 const eventFactory = new EventStore.EventFactory();

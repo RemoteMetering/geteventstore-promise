@@ -1,8 +1,8 @@
-import './_globalHooks';
+import './_globalHooks.js';
 
-import generateEventId from '../lib/utilities/generateEventId';
-import getTcpConfig from './support/getTcpConfig';
-import EventStore from '../lib';
+import generateEventId from '../lib/utilities/generateEventId.js';
+import getTcpConfig from './support/getTcpConfig.js';
+import EventStore from '../lib/index.js';
 import assert from 'assert';
 
 describe('TCP Client - Check Stream Exist', () => {

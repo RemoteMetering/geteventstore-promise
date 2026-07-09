@@ -1,9 +1,9 @@
-import './_globalHooks';
+import './_globalHooks.js';
 
-import getTcpConfigDNSDiscoveryCluster from './support/getTcpConfigDNSDiscoveryCluster';
-import getTcpConfigGossipCluster from './support/getTcpConfigGossipCluster';
-import generateEventId from '../lib/utilities/generateEventId';
-import EventStore from '../lib';
+import getTcpConfigDNSDiscoveryCluster from './support/getTcpConfigDNSDiscoveryCluster.js';
+import getTcpConfigGossipCluster from './support/getTcpConfigGossipCluster.js';
+import generateEventId from '../lib/utilities/generateEventId.js';
+import EventStore from '../lib/index.js';
 import assert from 'assert';
 
 const eventFactory = new EventStore.EventFactory();

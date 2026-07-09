@@ -1,9 +1,9 @@
-import './_globalHooks';
+import './_globalHooks.js';
 
-import generateEventId from '../lib/utilities/generateEventId';
-import getGRPCConfig from './support/getGRPCConfig';
-import sleep from './utilities/sleep';
-import EventStore from '../lib';
+import generateEventId from '../lib/utilities/generateEventId.js';
+import getGRPCConfig from './support/getGRPCConfig.js';
+import sleep from './utilities/sleep.js';
+import EventStore from '../lib/index.js';
 import assert from 'assert';
 
 describe('gRPC Client - Delete stream', () => {

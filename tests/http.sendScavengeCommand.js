@@ -1,7 +1,7 @@
-import './_globalHooks';
+import './_globalHooks.js';
 
-import getHttpConfig from './support/getHttpConfig';
-import EventStore from '../lib';
+import getHttpConfig from './support/getHttpConfig.js';
+import EventStore from '../lib/index.js';
 
 // Set KURRENTDB_MEM_DB=false to test on compose files 
 xdescribe('Http Client - Send Scavenge Command', () => {

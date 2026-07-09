@@ -1,4 +1,4 @@
-import sleep from './utilities/sleep';
+import sleep from './utilities/sleep.js';
 import { spawn } from 'child_process';
 import path from 'path';
 
@@ -7,8 +7,8 @@ const securityMode = global.runningTestsInSecureMode ? 'secure' : 'insecure';
 
 console.log(`Running tests in \x1b[36m${securityMode}\x1b[0m mode...`);
 
-const singleComposeFileLocation = path.join(__dirname, 'support', 'single', `docker-compose-${securityMode}.yml`);
-const clusterComposeFileLocation = path.join(__dirname, 'support', 'cluster', `docker-compose-${securityMode}.yml`);
+const singleComposeFileLocation = path.join(import.meta.dirname, 'support', 'single', `docker-compose-${securityMode}.yml`);
+const clusterComposeFileLocation = path.join(import.meta.dirname, 'support', 'cluster', `docker-compose-${securityMode}.yml`);
 let eventstore;
 
 const startStack = async (filePath) => new Promise((resolve, reject) => {
@@ -49,7 +49,7 @@ before(async function () {
 
 	while (true) {
 		const [isSingleReady, isClusterReady] = await Promise.all([
-			isContainerReady('geteventstore_promise_test_single.eventstore', `InaugurationManager in state (Leader`),
+			isContainerReady('geteventstore_promise_test_single.eventstore', `"InaugurationManager" in state (Leader`),
 			isContainerReady('geteventstore_promise_test_cluster_node1.eventstore', '<LIVE> [Leader')
 		]);
 		if (isSingleReady && isClusterReady) break;

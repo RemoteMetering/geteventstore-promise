@@ -1,8 +1,8 @@
-import './_globalHooks';
+import './_globalHooks.js';
 
-import generateEventId from '../lib/utilities/generateEventId';
-import getHttpConfig from './support/getHttpConfig';
-import EventStore from '../lib';
+import generateEventId from '../lib/utilities/generateEventId.js';
+import getHttpConfig from './support/getHttpConfig.js';
+import EventStore from '../lib/index.js';
 import assert from 'assert';
 
 describe('Http Client - Check Stream Exist', () => {
