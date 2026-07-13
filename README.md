@@ -1,4 +1,4 @@
-# geteventstore-promise
+# @metronomic/kurrentdb-client
 A Node.js KurrentDB(previously EventStoreDB) client API wrapper.
 
 The package ships three clients over three transports:
@@ -10,10 +10,10 @@ The package ships three clients over three transports:
 All three expose the same core methods, so you can switch transport through configuration alone.
 
 # Installation
-> yarn add geteventstore-promise
+> yarn add @metronomic/kurrentdb-client
 
 In your application:
-> import EventStore from 'geteventstore-promise';
+> import EventStore from '@metronomic/kurrentdb-client';
 
 # Common methods
 

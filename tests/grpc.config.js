@@ -9,7 +9,7 @@ describe('gRPC Client - Config', () => {
 			done('Config should not pass assertion');
 		} catch (err) {
 			assert.equal(err === undefined, false);
-			assert.equal(err.message, 'geteventstore-promise - gRPC client - config not provided');
+			assert.equal(err.message, 'gRPC client - config not provided');
 			done();
 		}
 	});
@@ -27,7 +27,7 @@ describe('gRPC Client - Config', () => {
 			done();
 		} catch (err) {
 			assert.equal(err === undefined, false);
-			assert.equal(err.message, 'geteventstore-promise - gRPC client - hostname property not provided');
+			assert.equal(err.message, 'gRPC client - hostname property not provided');
 			done();
 		}
 	});
@@ -42,7 +42,7 @@ describe('gRPC Client - Config', () => {
 			done();
 		} catch (err) {
 			assert.equal(err === undefined, false);
-			assert.equal(err.message, 'geteventstore-promise - gRPC client - credentials property not provided');
+			assert.equal(err.message, 'gRPC client - credentials property not provided');
 			done();
 		}
 	});

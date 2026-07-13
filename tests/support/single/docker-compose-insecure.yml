@@ -1,9 +1,9 @@
 version: "3.5"
 
 services:
-  geteventstore_promise_test_single.eventstore:
+  metronomic_kurrentdb_client_test_single.eventstore:
     image: kurrentplatform/kurrentdb:26.1
-    container_name: geteventstore_promise_test_single.eventstore
+    container_name: metronomic_kurrentdb_client_test_single.eventstore
     environment:
       - KURRENTDB_INSECURE=true
       - KURRENTDB_MEM_DB=true
@@ -24,7 +24,7 @@ services:
 
 networks:
   singleclusternetwork:
-    name: geteventstore_promise_test_single_eventstoredb.local
+    name: metronomic_kurrentdb_client_test_single_eventstoredb.local
     driver: bridge
     ipam:
       driver: default

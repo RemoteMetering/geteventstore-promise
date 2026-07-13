@@ -7,7 +7,7 @@ services:
       - certs:/tmp/certs
     network_mode: none
 
-  geteventstore_promise_test_setup:
+  metronomic_kurrentdb_client_test_setup:
     image: eventstore/es-gencert-cli:1.0.2
     entrypoint: bash
     user: "1000:1000"
@@ -18,13 +18,13 @@ services:
       && es-gencert-cli create-node -out ./node2 -ip-addresses 127.0.0.1,172.30.240.12 -dns-names localhost
       && es-gencert-cli create-node -out ./node3 -ip-addresses 127.0.0.1,172.30.240.13 -dns-names localhost
       && find . -type f -print0 | xargs -0 chmod 666"
-    container_name: geteventstore_promise_test_setup
+    container_name: metronomic_kurrentdb_client_test_setup
     volumes:
       - certs:/certs
     depends_on:
       - volumes-provisioner
 
-  geteventstore_promise_test_setup_certs_cluster:
+  metronomic_kurrentdb_client_test_setup_certs_cluster:
     image: eventstore/es-gencert-cli:1.0.2
     entrypoint: bash
     user: "1000:1000"
@@ -35,16 +35,16 @@ services:
       && es-gencert-cli create-node -out ./node2 -ip-addresses 127.0.0.1,172.30.240.12 -dns-names localhost
       && es-gencert-cli create-node -out ./node3 -ip-addresses 127.0.0.1,172.30.240.13 -dns-names localhost
       && find . -type f -print0 | xargs -0 chmod 666"
-    container_name: geteventstore_promise_test_setup_certs_cluster
+    container_name: metronomic_kurrentdb_client_test_setup_certs_cluster
     volumes:
       - ./certs:/certs
     networks:
       clusternetwork:
         ipv4_address: 172.30.240.10
 
-  geteventstore_promise_test_cluster_node1.eventstore: &template
+  metronomic_kurrentdb_client_test_cluster_node1.eventstore: &template
     image: kurrentplatform/kurrentdb:26.1
-    container_name: geteventstore_promise_test_cluster_node1.eventstore
+    container_name: metronomic_kurrentdb_client_test_cluster_node1.eventstore
     command: --node-priority=1
     env_file:
       - vars.env
@@ -59,7 +59,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "curl --fail --insecure http://geteventstore_promise_test_cluster_node1.eventstore:2113/health/live || exit 1",
+          "curl --fail --insecure http://metronomic_kurrentdb_client_test_cluster_node1.eventstore:2113/health/live || exit 1",
         ]
       interval: 5s
       timeout: 5s
@@ -76,9 +76,9 @@ services:
       clusternetwork:
         ipv4_address: 172.30.240.11
 
-  geteventstore_promise_test_cluster_node2.eventstore:
+  metronomic_kurrentdb_client_test_cluster_node2.eventstore:
     <<: *template
-    container_name: geteventstore_promise_test_cluster_node2.eventstore
+    container_name: metronomic_kurrentdb_client_test_cluster_node2.eventstore
     command: --node-priority=2
     environment:
       - KURRENTDB_REPLICATION_IP=172.30.240.12
@@ -91,7 +91,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "curl --fail --insecure http://geteventstore_promise_test_cluster_node2.eventstore:2113/health/live || exit 1",
+          "curl --fail --insecure http://metronomic_kurrentdb_client_test_cluster_node2.eventstore:2113/health/live || exit 1",
         ]
       interval: 5s
       timeout: 5s
@@ -103,9 +103,9 @@ services:
       clusternetwork:
         ipv4_address: 172.30.240.12
 
-  geteventstore_promise_test_cluster_node3.eventstore:
+  metronomic_kurrentdb_client_test_cluster_node3.eventstore:
     <<: *template
-    container_name: geteventstore_promise_test_cluster_node3.eventstore
+    container_name: metronomic_kurrentdb_client_test_cluster_node3.eventstore
     command: --node-priority=3
     environment:
       - KURRENTDB_REPLICATION_IP=172.30.240.13
@@ -118,7 +118,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "curl --fail --insecure http://geteventstore_promise_test_cluster_node3.eventstore:2113/health/live || exit 1",
+          "curl --fail --insecure http://metronomic_kurrentdb_client_test_cluster_node3.eventstore:2113/health/live || exit 1",
         ]
       interval: 5s
       timeout: 5s
@@ -132,7 +132,7 @@ services:
 
 networks:
   clusternetwork:
-    name: geteventstore_promise_test_cluster_eventstoredb.local
+    name: metronomic_kurrentdb_client_test_cluster_eventstoredb.local
     driver: bridge
     ipam:
       driver: default

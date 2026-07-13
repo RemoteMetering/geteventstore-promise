@@ -49,8 +49,8 @@ before(async function () {
 
 	while (true) {
 		const [isSingleReady, isClusterReady] = await Promise.all([
-			isContainerReady('geteventstore_promise_test_single.eventstore', `InaugurationManager in state (Leader`),
-			isContainerReady('geteventstore_promise_test_cluster_node1.eventstore', '<LIVE> [Leader')
+			isContainerReady('metronomic_kurrentdb_client_test_single.eventstore', `InaugurationManager in state (Leader`),
+			isContainerReady('metronomic_kurrentdb_client_test_cluster_node1.eventstore', '<LIVE> [Leader')
 		]);
 		if (isSingleReady && isClusterReady) break;
 		await sleep(100);

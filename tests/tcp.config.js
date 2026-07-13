@@ -9,7 +9,7 @@ describe('TCP Client - Config', () => {
 			done('Config should not pass assertion');
 		} catch (err) {
 			assert.equal(err === undefined, false);
-			assert.equal(err.message, 'geteventstore-promise - TCP client - config not provided');
+			assert.equal(err.message, 'TCP client - config not provided');
 			done();
 		}
 	});
@@ -27,7 +27,7 @@ describe('TCP Client - Config', () => {
 			done();
 		} catch (err) {
 			assert.equal(err === undefined, false);
-			assert.equal(err.message, 'geteventstore-promise - TCP client - hostname property not provided');
+			assert.equal(err.message, 'TCP client - hostname property not provided');
 			done();
 		}
 	});
@@ -42,7 +42,7 @@ describe('TCP Client - Config', () => {
 			done();
 		} catch (err) {
 			assert.equal(err === undefined, false);
-			assert.equal(err.message, 'geteventstore-promise - TCP client - credentials property not provided');
+			assert.equal(err.message, 'TCP client - credentials property not provided');
 			done();
 		}
 	});

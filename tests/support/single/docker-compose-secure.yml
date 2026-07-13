@@ -7,7 +7,7 @@ services:
       - certs_single:/tmp/certs
     network_mode: none
 
-  geteventstore_promise_test_setup_certs_single:
+  metronomic_kurrentdb_client_test_setup_certs_single:
     image: eventstore/es-gencert-cli:1.0.2
     entrypoint: bash
     user: "1000:1000"
@@ -16,7 +16,7 @@ services:
       && es-gencert-cli create-ca
       && es-gencert-cli create-node -out ./single -ip-addresses 127.0.0.1,172.30.239.11 -dns-names localhost
       && find . -type f -print0 | xargs -0 chmod 666"
-    container_name: geteventstore_promise_test_setup_certs_single
+    container_name: metronomic_kurrentdb_client_test_setup_certs_single
     volumes:
       - ./certs:/certs
     depends_on:
@@ -25,9 +25,9 @@ services:
       singleclusternetwork:
         ipv4_address: 172.30.239.10
 
-  geteventstore_promise_test_single.eventstore:
+  metronomic_kurrentdb_client_test_single.eventstore:
     image: kurrentplatform/kurrentdb:26.1
-    container_name: geteventstore_promise_test_single.eventstore
+    container_name: metronomic_kurrentdb_client_test_single.eventstore
     environment:
       - KURRENTDB_MEM_DB=true
       - KURRENTDB_CLUSTER_SIZE=1
@@ -47,7 +47,7 @@ services:
     volumes:
       - ./certs:/certs
     depends_on:
-      - geteventstore_promise_test_setup_certs_single
+      - metronomic_kurrentdb_client_test_setup_certs_single
     restart: always
     networks:
       singleclusternetwork:
@@ -55,7 +55,7 @@ services:
 
 networks:
   singleclusternetwork:
-    name: geteventstore_promise_test_single_eventstoredb.local
+    name: metronomic_kurrentdb_client_test_single_eventstoredb.local
     driver: bridge
     ipam:
       driver: default
