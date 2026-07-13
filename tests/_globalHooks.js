@@ -37,6 +37,19 @@ const removeStack = async (filePath) => new Promise((resolve, reject) => {
 	});
 });
 
+// Has to be removed by root container
+const cleanCerts = async (composeFilePath) => new Promise((resolve, reject) => {
+	const supportDir = path.dirname(composeFilePath);
+	const proc = spawn('docker', [
+		'run', '--rm', '--user', '0:0', '--entrypoint', 'rm',
+		'--volume', `${supportDir}:/work`,
+		'eventstore/es-gencert-cli:1.0.2',
+		'-rf', '/work/certs'
+	], { cwd: undefined, stdio: ['ignore', 'ignore', process.stderr] });
+
+	proc.on('close', code => code === 0 ? resolve() : reject(code));
+});
+
 const isContainerReady = async (containerName, readyOutputMatch) => new Promise((resolve) => {
 	const proc = spawn('docker', ['logs', containerName], { cwd: undefined });
 	proc.stdout.on('data', line => line.toString().includes(readyOutputMatch) && resolve(true));
@@ -50,6 +63,7 @@ before(async function () {
 	console.log('Starting KurrentDB stacks...');
 
 	await Promise.all([removeStack(singleComposeFileLocation), removeStack(clusterComposeFileLocation)]);
+	await Promise.all([cleanCerts(singleComposeFileLocation), cleanCerts(clusterComposeFileLocation)]);
 	await Promise.all([startStack(singleComposeFileLocation), startStack(clusterComposeFileLocation)]);
 
 	while (true) {
