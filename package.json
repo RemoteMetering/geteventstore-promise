@@ -16,7 +16,7 @@
 		"test:insecure": "NODE_ENV=test mocha --exit --ignore 'tests/tcp.*' tests/",
 		"test:secure": "NODE_ENV=test TESTS_RUN_SECURE=true mocha --exit --ignore 'tests/tcp.*' tests/",
 		"test:grpc": "NODE_ENV=test TESTS_RUN_SECURE=false mocha --exit tests/grpc.*",
-		"coverage": "c8 yarn test"
+		"coverage": "NODE_ENV=test TESTS_RUN_SECURE=true c8 mocha --exit --ignore 'tests/tcp.*' tests/"
 	},
 	"repository": {
 		"type": "git",
@@ -45,7 +45,7 @@
 		"node-eventstore-client": "^23.10.1"
 	},
 	"devDependencies": {
-		"c8": "^10.1.3",
+		"c8": "^11.0.0",
 		"mocha": "^11.7.6"
 	},
 	"c8": {
