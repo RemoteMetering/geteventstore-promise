@@ -49,7 +49,7 @@ describe('TCP Client - Test Connection', () => {
 		this.timeout(60 * 1000);
 		const config = getTcpConfig();
 		config.maxReconnections = 2;
-		config.hostname = 'madetofailhostname.fakedomain.af';
+		config.hostname = '192.0.2.1';
 
 		const client = new KurrentDB.TCPClient(config);
 
@@ -91,7 +91,7 @@ describe('TCP Client - Test Connection', () => {
 		await writeEventsInParallel(client);
 
 		const pool = await client.getPool();
-		assert.equal(5);
+		assert.equal(5, pool._allObjects.size);
 
 		await client.close();
 	});
