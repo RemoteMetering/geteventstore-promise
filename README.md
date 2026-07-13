@@ -13,7 +13,7 @@ All three expose the same core methods, so you can switch transport through conf
 > yarn add @metronomic/kurrentdb-client
 
 In your application:
-> import EventStore from '@metronomic/kurrentdb-client';
+> import KurrentDB from '@metronomic/kurrentdb-client';
 
 # Common methods
 
@@ -79,7 +79,7 @@ The gRPC client is the recommended transport for new work.
 The protocol defaults to `kurrentdb+discover`, which lets the client discover cluster nodes. Set `useSslConnection` for a secure connection and `tlsCAFile` to point at a CA certificate when the server uses one.
 
 ```javascript
-const client = new EventStore.GRPCClient({
+const client = new KurrentDB.GRPCClient({
 	hostname: 'localhost',
 	port: 2113,
 	credentials: {
@@ -89,7 +89,7 @@ const client = new EventStore.GRPCClient({
 });
 
 // Secure
-const secureClient = new EventStore.GRPCClient({
+const secureClient = new KurrentDB.GRPCClient({
 	hostname: 'localhost',
 	port: 2113,
 	useSslConnection: true,
@@ -101,7 +101,7 @@ const secureClient = new EventStore.GRPCClient({
 });
 
 // Clustering - Gossip Seeds
-const clusterClient = new EventStore.GRPCClient({
+const clusterClient = new KurrentDB.GRPCClient({
 	gossipSeeds: [
 		{ hostname: '192.168.0.10', port: 2113 },
 		{ hostname: '192.168.0.11', port: 2113 },
@@ -140,7 +140,7 @@ Methods available on the gRPC client beyond the common set above. The `readAll*`
 ## Config
 
 ```javascript
-const client = new EventStore.HTTPClient({
+const client = new KurrentDB.HTTPClient({
 	hostname: 'localhost',
 	port: 2113,
 	credentials: {
@@ -150,7 +150,7 @@ const client = new EventStore.HTTPClient({
 });
 
 // Secure
-const secureClient = new EventStore.HTTPClient({
+const secureClient = new KurrentDB.HTTPClient({
 	protocol: 'https',
 	hostname: 'localhost',
 	port: 2113,
@@ -182,7 +182,7 @@ Available on the HTTP client only.
 ```javascript
 import { v4 as generateId } from 'uuid';
 
-const client = new EventStore.TCPClient({
+const client = new KurrentDB.TCPClient({
 	hostname: 'localhost',
 	port: 1113,
 	credentials: {
@@ -196,7 +196,7 @@ const client = new EventStore.TCPClient({
 });
 
 // Secure
-const secureClient = new EventStore.TCPClient({
+const secureClient = new KurrentDB.TCPClient({
 	hostname: 'localhost',
 	port: 1113,
 	useSslConnection: true,
@@ -212,7 +212,7 @@ const secureClient = new EventStore.TCPClient({
 });
 
 // Override connection name
-const namedClient = new EventStore.TCPClient({
+const namedClient = new KurrentDB.TCPClient({
 	hostname: 'localhost',
 	port: 1113,
 	credentials: {
@@ -227,7 +227,7 @@ const namedClient = new EventStore.TCPClient({
 });
 
 // Clustering - Gossip Seeds
-const clusterClient = new EventStore.TCPClient({
+const clusterClient = new KurrentDB.TCPClient({
 	gossipSeeds: [
 		{ hostname: '192.168.0.10', port: 2113 },
 		{ hostname: '192.168.0.11', port: 2113 },
@@ -244,7 +244,7 @@ const clusterClient = new EventStore.TCPClient({
 });
 
 // Clustering - DNS Discovery
-const discoverClient = new EventStore.TCPClient({
+const discoverClient = new KurrentDB.TCPClient({
 	protocol: 'discover',
 	hostname: 'my.host',
 	port: 2113,
