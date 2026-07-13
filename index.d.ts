@@ -329,8 +329,8 @@ export class GRPCClient {
 	readEventsForward(streamName: string, startPosition?: number, count?: number, resolveLinkTos?: boolean): Promise<GRPCReadResult>;
 	readEventsBackward(streamName: string, startPosition?: number, count?: number, resolveLinkTos?: boolean): Promise<GRPCReadResult>;
 	readAllEvents(startPosition?: ReadPosition, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): Promise<Event[]>;
-	readAllEventsForward(startPosition?: ReadPosition, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): Promise<GRPCReadResult>;
-	readAllEventsBackward(startPosition?: ReadPosition, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): Promise<GRPCReadResult>;
+	readAllEventsForward(startPosition?: ReadPosition, count?: number, resolveLinkTos?: boolean): Promise<GRPCReadResult>;
+	readAllEventsBackward(startPosition?: ReadPosition, count?: number, resolveLinkTos?: boolean): Promise<GRPCReadResult>;
 	iterateAllStreamEvents(streamName: string, chunkSize?: number, startPosition?: number, resolveLinkTos?: boolean): AsyncIterableIterator<Event>;
 	iterateEvents(streamName: string, startPosition?: number, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): AsyncIterableIterator<Event>;
 	iterateEventsForward(streamName: string, startPosition?: number, count?: number, resolveLinkTos?: boolean): AsyncIterableIterator<Event>;
