@@ -19,7 +19,7 @@
 		"test:v21": "yarn test:v21:insecure && yarn test:v21:secure",
 		"test:v21:insecure": "NODE_ENV=test TESTS_V21=true mocha --exit tests/",
 		"test:v21:secure": "NODE_ENV=test TESTS_V21=true TESTS_RUN_SECURE=true mocha --exit tests/",
-		"coverage": "NODE_ENV=test TESTS_RUN_SECURE=true c8 mocha --exit --ignore 'tests/tcp.*' tests/"
+		"coverage": "NODE_ENV=test TESTS_V21=true TESTS_RUN_SECURE=true c8 mocha --exit tests/"
 	},
 	"repository": {
 		"type": "git",
