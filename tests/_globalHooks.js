@@ -5,10 +5,15 @@ import path from 'path';
 global.runningTestsInSecureMode = process.env.TESTS_RUN_SECURE === 'true';
 const securityMode = global.runningTestsInSecureMode ? 'secure' : 'insecure';
 
-console.log(`Running tests in \x1b[36m${securityMode}\x1b[0m mode...`);
+const runningV21 = process.env.TESTS_V21 === 'true';
+const version = runningV21 ? 'v21' : 'lts';
 
-const singleComposeFileLocation = path.join(import.meta.dirname, 'support', 'single', `docker-compose-${securityMode}.yml`);
-const clusterComposeFileLocation = path.join(import.meta.dirname, 'support', 'cluster', `docker-compose-${securityMode}.yml`);
+const singleReadyMatch = runningV21 ? '"InaugurationManager" in state (Leader' : 'InaugurationManager in state (Leader';
+
+console.log(`Running \x1b[33m${version}\x1b[0m tests in \x1b[36m${securityMode}\x1b[0m mode...`);
+
+const singleComposeFileLocation = path.join(import.meta.dirname, 'support', version, 'single', `docker-compose-${securityMode}.yml`);
+const clusterComposeFileLocation = path.join(import.meta.dirname, 'support', version, 'cluster', `docker-compose-${securityMode}.yml`);
 let eventstore;
 
 const startStack = async (filePath) => new Promise((resolve, reject) => {
@@ -42,15 +47,15 @@ before(async function () {
 	this.timeout(60 * 1000);
 	if (eventstore) return;
 
-	console.log('Starting EventStoreDB stacks...');
+	console.log('Starting KurrentDB stacks...');
 
 	await Promise.all([removeStack(singleComposeFileLocation), removeStack(clusterComposeFileLocation)]);
 	await Promise.all([startStack(singleComposeFileLocation), startStack(clusterComposeFileLocation)]);
 
 	while (true) {
 		const [isSingleReady, isClusterReady] = await Promise.all([
-			isContainerReady('metronomic_kurrentdb_client_test_single.eventstore', `InaugurationManager in state (Leader`),
-			isContainerReady('metronomic_kurrentdb_client_test_cluster_node1.eventstore', '<LIVE> [Leader')
+			isContainerReady(`metronomic_kurrentdb_client_test_single`, singleReadyMatch),
+			isContainerReady(`metronomic_kurrentdb_client_test_cluster_node1`, '<LIVE> [Leader')
 		]);
 		if (isSingleReady && isClusterReady) break;
 		await sleep(100);
@@ -60,6 +65,6 @@ before(async function () {
 
 after(async function () {
 	this.timeout(60 * 1000);
-	console.log('Killing EventStoreDB stacks...');
+	console.log('Killing KurrentDB stacks...');
 	await Promise.all([removeStack(singleComposeFileLocation), removeStack(clusterComposeFileLocation)]);
 });

@@ -107,7 +107,7 @@ describe('Projections', () => {
 			assert.equal(projectionConfig.checkpointUnhandledBytesThreshold, 10000000);
 			assert.equal(projectionConfig.pendingEventsThreshold, 5000);
 			assert.equal(projectionConfig.maxWriteBatchLength, 500);
-			assert.equal(projectionConfig.label, 'Projections');
+			if (process.env.TESTS_V21 !== 'true') assert.equal(projectionConfig.label, 'Projections');
 		});
 
 		it('Should remove one-time projection', async function () {

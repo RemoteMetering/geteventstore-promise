@@ -25,9 +25,9 @@ services:
       singleclusternetwork:
         ipv4_address: 172.30.239.10
 
-  metronomic_kurrentdb_client_test_single.eventstore:
+  metronomic_kurrentdb_client_test_single:
     image: kurrentplatform/kurrentdb:26.1
-    container_name: metronomic_kurrentdb_client_test_single.eventstore
+    container_name: metronomic_kurrentdb_client_test_single
     environment:
       - KURRENTDB_MEM_DB=true
       - KURRENTDB_CLUSTER_SIZE=1
@@ -55,7 +55,7 @@ services:
 
 networks:
   singleclusternetwork:
-    name: metronomic_kurrentdb_client_test_single_eventstoredb.local
+    name: metronomic_kurrentdb_client_test_single_kurrentdb.local
     driver: bridge
     ipam:
       driver: default

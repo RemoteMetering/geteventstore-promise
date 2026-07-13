@@ -1,0 +1,58 @@
+version: "3.5"
+
+services:
+  metronomic_kurrentdb_client_test_setup_certs_single:
+    image: eventstore/es-gencert-cli:1.0.2
+    entrypoint: bash
+    user: "0:0"
+    command: >
+      -c "mkdir -p ./certs && cd /certs
+      && es-gencert-cli create-ca
+      && es-gencert-cli create-node -out ./single -ip-addresses 127.0.0.1,172.30.239.11 -dns-names localhost
+      && find . -type f -print0 | xargs -0 chmod 666"
+    container_name: metronomic_kurrentdb_client_test_setup_certs_single
+    volumes:
+      - ./certs:/certs
+    networks:
+      singleclusternetwork:
+        ipv4_address: 172.30.239.10
+
+  metronomic_kurrentdb_client_test_single:
+    image: eventstore/eventstore:21.10.0-buster-slim
+    container_name: metronomic_kurrentdb_client_test_single
+    environment:
+      - EVENTSTORE_MEM_DB=true
+      - EVENTSTORE_CLUSTER_SIZE=1
+      - EVENTSTORE_RUN_PROJECTIONS=All
+      - EVENTSTORE_START_STANDARD_PROJECTIONS=true
+      - EVENTSTORE_INT_IP=172.30.239.11
+      - EVENTSTORE_ENABLE_EXTERNAL_TCP=true
+      - EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP=true
+      - EVENTSTORE_DISCOVER_VIA_DNS=false
+      - EVENTSTORE_ADVERTISE_HOST_TO_CLIENT_AS=127.0.0.1
+      - EVENTSTORE_HTTP_PORT_ADVERTISE_AS=22117
+      - EVENTSTORE_TRUSTED_ROOT_CERTIFICATES_PATH=/certs/ca
+      - EVENTSTORE_CERTIFICATE_FILE=/certs/single/node.crt
+      - EVENTSTORE_CERTIFICATE_PRIVATE_KEY_FILE=/certs/single/node.key
+      # Added for when testing v5
+    #   - EVENTSTORE_EXT_HTTP_PORT_ADVERTISE_AS=2117
+    ports:
+      - "11116:1113"
+      - "22117:2113"
+    volumes:
+      - ./certs:/certs
+    depends_on:
+      - metronomic_kurrentdb_client_test_setup_certs_single
+    restart: always
+    networks:
+      singleclusternetwork:
+        ipv4_address: 172.30.239.11
+
+networks:
+  singleclusternetwork:
+    name: metronomic_kurrentdb_client_test_single_eventstoredb.local
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.30.239.0/24

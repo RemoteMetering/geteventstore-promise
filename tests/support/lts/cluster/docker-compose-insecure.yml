@@ -1,9 +1,9 @@
 version: "3.5"
 
 services:
-  metronomic_kurrentdb_client_test_cluster_node1.eventstore: &template
+  metronomic_kurrentdb_client_test_cluster_node1: &template
     image: kurrentplatform/kurrentdb:26.1
-    container_name: metronomic_kurrentdb_client_test_cluster_node1.eventstore
+    container_name: metronomic_kurrentdb_client_test_cluster_node1
     env_file:
       - vars.env
     environment:
@@ -15,7 +15,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "curl --fail --insecure http://metronomic_kurrentdb_client_test_cluster_node1.eventstore:2113/health/live || exit 1",
+          "curl --fail --insecure http://metronomic_kurrentdb_client_test_cluster_node1:2113/health/live || exit 1",
         ]
       interval: 5s
       timeout: 5s
@@ -28,9 +28,9 @@ services:
       clusternetwork:
         ipv4_address: 172.30.240.11
 
-  metronomic_kurrentdb_client_test_cluster_node2.eventstore:
+  metronomic_kurrentdb_client_test_cluster_node2:
     <<: *template
-    container_name: metronomic_kurrentdb_client_test_cluster_node2.eventstore
+    container_name: metronomic_kurrentdb_client_test_cluster_node2
     environment:
       - KURRENTDB_INSECURE=true
       - KURRENTDB_REPLICATION_IP=172.30.240.12
@@ -40,7 +40,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "curl --fail --insecure http://metronomic_kurrentdb_client_test_cluster_node2.eventstore:2113/health/live || exit 1",
+          "curl --fail --insecure http://metronomic_kurrentdb_client_test_cluster_node2:2113/health/live || exit 1",
         ]
       interval: 5s
       timeout: 5s
@@ -52,9 +52,9 @@ services:
       clusternetwork:
         ipv4_address: 172.30.240.12
 
-  metronomic_kurrentdb_client_test_cluster_node3.eventstore:
+  metronomic_kurrentdb_client_test_cluster_node3:
     <<: *template
-    container_name: metronomic_kurrentdb_client_test_cluster_node3.eventstore
+    container_name: metronomic_kurrentdb_client_test_cluster_node3
     environment:
       - KURRENTDB_INSECURE=true
       - KURRENTDB_REPLICATION_IP=172.30.240.13
@@ -64,7 +64,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "curl --fail --insecure http://metronomic_kurrentdb_client_test_cluster_node3.eventstore:2113/health/live || exit 1",
+          "curl --fail --insecure http://metronomic_kurrentdb_client_test_cluster_node3:2113/health/live || exit 1",
         ]
       interval: 5s
       timeout: 5s
@@ -78,7 +78,7 @@ services:
 
 networks:
   clusternetwork:
-    name: metronomic_kurrentdb_client_test_cluster_eventstoredb.local
+    name: metronomic_kurrentdb_client_test_cluster_kurrentdb.local
     driver: bridge
     ipam:
       driver: default
