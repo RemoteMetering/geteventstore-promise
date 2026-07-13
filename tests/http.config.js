@@ -1,11 +1,11 @@
 import getHttpConfig from './support/getHttpConfig.js';
-import EventStore from '../lib/index.js';
+import KurrentDB from '../lib/index.js';
 import assert from 'assert';
 
 describe('Http Client - Config', () => {
 	it('Should return assertion error when config is undefined', done => {
 		try {
-			new EventStore.HTTPClient();
+			new KurrentDB.HTTPClient();
 			done('Config should not pass assertion');
 		} catch (err) {
 			assert.equal(err === undefined, false);
@@ -23,7 +23,7 @@ describe('Http Client - Config', () => {
 					password: 'changeit'
 				}
 			};
-			new EventStore.HTTPClient(config);
+			new KurrentDB.HTTPClient(config);
 			done();
 		} catch (err) {
 			assert.equal(err === undefined, false);
@@ -38,7 +38,7 @@ describe('Http Client - Config', () => {
 				hostname: 'localhost',
 				port: 2113
 			};
-			new EventStore.HTTPClient(config);
+			new KurrentDB.HTTPClient(config);
 			done();
 		} catch (err) {
 			assert.equal(err === undefined, false);
@@ -49,7 +49,7 @@ describe('Http Client - Config', () => {
 
 	it('Should return http client when config is complete', done => {
 		try {
-			const client = new EventStore.HTTPClient(getHttpConfig());
+			const client = new KurrentDB.HTTPClient(getHttpConfig());
 			assert.equal(client !== undefined, true);
 			done();
 		} catch (err) {

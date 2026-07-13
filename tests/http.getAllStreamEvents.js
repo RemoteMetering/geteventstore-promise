@@ -1,13 +1,13 @@
 import generateEventId from '../lib/utilities/generateEventId.js';
 import getHttpConfig from './support/getHttpConfig.js';
-import EventStore from '../lib/index.js';
+import KurrentDB from '../lib/index.js';
 import assert from 'assert';
 
-const eventFactory = new EventStore.EventFactory();
+const eventFactory = new KurrentDB.EventFactory();
 
 describe('Http Client - Get All Stream Events', () => {
 	it('Should write events and read back all stream events', async() => {
-		const client = new EventStore.HTTPClient(getHttpConfig());
+		const client = new KurrentDB.HTTPClient(getHttpConfig());
 
 		const events = [];
 		for (let k = 0; k < 1000; k++) {
@@ -26,7 +26,7 @@ describe('Http Client - Get All Stream Events', () => {
 	}).timeout(5000);
 
 	it('Should write events and read back all events from start event', async() => {
-		const client = new EventStore.HTTPClient(getHttpConfig());
+		const client = new KurrentDB.HTTPClient(getHttpConfig());
 
 		const events = [];
 		for (let k = 0; k < 1000; k++) {
@@ -44,7 +44,7 @@ describe('Http Client - Get All Stream Events', () => {
 	}).timeout(5000);
 
 	it('Should write events and read back stream events with embed type rich', async() => {
-		const client = new EventStore.HTTPClient(getHttpConfig());
+		const client = new KurrentDB.HTTPClient(getHttpConfig());
 
 		const events = [];
 		for (let k = 0; k < 1000; k++) {

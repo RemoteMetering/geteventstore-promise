@@ -1,15 +1,15 @@
 import generateEventId from '../lib/utilities/generateEventId.js';
 import getGRPCConfig from './support/getGRPCConfig.js';
 import sleep from './utilities/sleep.js';
-import EventStore from '../lib/index.js';
+import KurrentDB from '../lib/index.js';
 import assert from 'assert';
 
-const eventFactory = new EventStore.EventFactory();
+const eventFactory = new KurrentDB.EventFactory();
 
 describe('gRPC Client - Persistent Subscription', () => {
 	it('Should get all events written to a persistent subscription stream after subscription is started', function (done) {
 		this.timeout(15 * 1000);
-		const client = new EventStore.GRPCClient(getGRPCConfig());
+		const client = new KurrentDB.GRPCClient(getGRPCConfig());
 		const groupName = `TestPersistentSubscriptionGroup`;
 		const testStream = `TestStream-${generateEventId()}`;
 		let processedEventCount = 0;
@@ -58,7 +58,7 @@ describe('gRPC Client - Persistent Subscription', () => {
 
 	it('Should be able to start multiple subscriptions from single client instance', async function () {
 		this.timeout(15 * 1000);
-		const client = new EventStore.GRPCClient(getGRPCConfig());
+		const client = new KurrentDB.GRPCClient(getGRPCConfig());
 
 		const groupNameOne = `TestPersistentSubscriptionGroupOne`;
 		const groupNameTwo = `TestPersistentSubscriptionGroupTwo`;
@@ -89,7 +89,7 @@ describe('gRPC Client - Persistent Subscription', () => {
 
 	it('Subscription should fail when subscription does not exist yet', async function () {
 		this.timeout(15 * 1000);
-		const client = new EventStore.GRPCClient(getGRPCConfig());
+		const client = new KurrentDB.GRPCClient(getGRPCConfig());
 
 		try {
 			await client.subscribeToPersistentSubscriptionToStream(`DOES_NOT_EXISTS_FOR_SUB`, 'NO_GROUP', () => {});

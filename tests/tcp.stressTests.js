@@ -1,14 +1,14 @@
 import generateEventId from '../lib/utilities/generateEventId.js';
 import getTcpConfig from './support/getTcpConfig.js';
-import EventStore from '../lib/index.js';
+import KurrentDB from '../lib/index.js';
 import assert from 'assert';
 
-const eventFactory = new EventStore.EventFactory();
+const eventFactory = new KurrentDB.EventFactory();
 
 describe('TCP Client - Stress Tests', () => {
 	it('Should handle parallel writes', async function () {
 		this.timeout(20000);
-		const client = new EventStore.TCPClient(getTcpConfig());
+		const client = new KurrentDB.TCPClient(getTcpConfig());
 
 		const testStream = `TestStream-${generateEventId()}`;
 		const numberOfEvents = 5000;
@@ -29,7 +29,7 @@ describe('TCP Client - Stress Tests', () => {
 
 	it('Should handle parallel reads and writes', function (callback) {
 		this.timeout(60000);
-		const client = new EventStore.TCPClient(getTcpConfig());
+		const client = new KurrentDB.TCPClient(getTcpConfig());
 
 		const testStream = `TestStream-${generateEventId()}`;
 		const numberOfEvents = 5000;

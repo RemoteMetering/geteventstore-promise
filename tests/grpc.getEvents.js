@@ -1,16 +1,16 @@
 import generateEventId from '../lib/utilities/generateEventId.js';
 import getGRPCConfig from './support/getGRPCConfig.js';
-import EventStore from '../lib/index.js';
+import KurrentDB from '../lib/index.js';
 import assert from 'assert';
 
-const eventFactory = new EventStore.EventFactory();
+const eventFactory = new KurrentDB.EventFactory();
 
 describe('gRPC Client - Get Events', () => {
 	const testStream = `TestStream-${generateEventId()}`;
 	const numberOfEvents = 10;
 
 	before(async () => {
-		const client = new EventStore.GRPCClient(getGRPCConfig());
+		const client = new KurrentDB.GRPCClient(getGRPCConfig());
 
 		const events = [];
 
@@ -26,7 +26,7 @@ describe('gRPC Client - Get Events', () => {
 	});
 
 	it('Should get events reading forward', async () => {
-		const client = new EventStore.GRPCClient(getGRPCConfig());
+		const client = new KurrentDB.GRPCClient(getGRPCConfig());
 
 		const events = await client.getEvents(testStream, undefined, undefined, 'forward');
 		assert.equal(events.length, 10);
@@ -40,7 +40,7 @@ describe('gRPC Client - Get Events', () => {
 	});
 
 	it('Should get events reading backward', async () => {
-		const client = new EventStore.GRPCClient(getGRPCConfig());
+		const client = new KurrentDB.GRPCClient(getGRPCConfig());
 
 		const events = await client.getEvents(testStream, undefined, undefined, 'backward');
 		assert.equal(events.length, 10);

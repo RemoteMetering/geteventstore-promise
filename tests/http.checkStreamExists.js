@@ -1,11 +1,11 @@
 import generateEventId from '../lib/utilities/generateEventId.js';
 import getHttpConfig from './support/getHttpConfig.js';
-import EventStore from '../lib/index.js';
+import KurrentDB from '../lib/index.js';
 import assert from 'assert';
 
 describe('Http Client - Check Stream Exist', () => {
 	it('Should return true when a stream exists', async () => {
-		const client = new EventStore.HTTPClient(getHttpConfig());
+		const client = new KurrentDB.HTTPClient(getHttpConfig());
 
 		const testStream = `TestStream-${generateEventId()}`;
 		await client.writeEvent(testStream, 'TestEventType', {
@@ -16,14 +16,14 @@ describe('Http Client - Check Stream Exist', () => {
 	}).timeout(5000);
 
 	it('Should return false when a stream does not exist', async () => {
-		const client = new EventStore.HTTPClient(getHttpConfig());
+		const client = new KurrentDB.HTTPClient(getHttpConfig());
 		assert.equal(await client.checkStreamExists('Non_existentStream'), false);
 	});
 
 	it('Should return rejected promise when the request error is anything other than a 404', callback => {
 		const httpConfig = getHttpConfig();
 		httpConfig.port = 1;
-		const client = new EventStore.HTTPClient(httpConfig);
+		const client = new KurrentDB.HTTPClient(httpConfig);
 
 		client.checkStreamExists('Non_existentStream_wrong_port_config').then(() => {
 			callback('Should not have returned successful promise');
@@ -38,7 +38,7 @@ describe('Http Client - Check Stream Exist', () => {
 		const httpConfig = getHttpConfig();
 		httpConfig.timeout = 0.00001;
 
-		const client = new EventStore.HTTPClient(httpConfig);
+		const client = new KurrentDB.HTTPClient(httpConfig);
 		const testStream = `TestStream-${generateEventId()}`;
 		client.writeEvent(testStream, 'TestEventType', {
 			something: '123'

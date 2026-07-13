@@ -2,15 +2,15 @@ import generateEventId from '../lib/utilities/generateEventId.js';
 import chunkArray from '../lib/utilities/chunkArray.js';
 import getHttpConfig from './support/getHttpConfig.js';
 import sleep from './utilities/sleep.js';
-import EventStore from '../lib/index.js';
+import KurrentDB from '../lib/index.js';
 import assert from 'assert';
 
-const eventFactory = new EventStore.EventFactory();
+const eventFactory = new KurrentDB.EventFactory();
 
 describe('HTTP Client - Persistent Subscription', () => {
 	it('Should get and ack first batch of events written to a stream', async function() {
 		this.timeout(15 * 1000);
-		const client = new EventStore.HTTPClient(getHttpConfig());
+		const client = new KurrentDB.HTTPClient(getHttpConfig());
 		const testStream = `TestStream-${generateEventId()}`;
 
 		const events = [];
@@ -35,7 +35,7 @@ describe('HTTP Client - Persistent Subscription', () => {
 
 	it('Should ack and nack messages individually', async function() {
 		this.timeout(20 * 1000);
-		const client = new EventStore.HTTPClient(getHttpConfig());
+		const client = new KurrentDB.HTTPClient(getHttpConfig());
 		const testStream = `TestStream-${generateEventId()}`;
 
 		const events = [];
@@ -72,7 +72,7 @@ describe('HTTP Client - Persistent Subscription', () => {
 
 	it('Should update persistent subscription ', async function() {
 		this.timeout(15 * 1000);
-		const client = new EventStore.HTTPClient(getHttpConfig());
+		const client = new KurrentDB.HTTPClient(getHttpConfig());
 		const testStream = `TestStream-${generateEventId()}`;
 
 		const events = [];
@@ -100,7 +100,7 @@ describe('HTTP Client - Persistent Subscription', () => {
 
 	it('Should delete persistent subscription', function(done) {
 		this.timeout(15 * 1000);
-		const client = new EventStore.HTTPClient(getHttpConfig());
+		const client = new KurrentDB.HTTPClient(getHttpConfig());
 		const testStream = `TestStream-${generateEventId()}`;
 
 		const events = [];
@@ -126,7 +126,7 @@ describe('HTTP Client - Persistent Subscription', () => {
 
 	it('Should return persistent subscription info', async function() {
 		this.timeout(15 * 1000);
-		const client = new EventStore.HTTPClient(getHttpConfig());
+		const client = new KurrentDB.HTTPClient(getHttpConfig());
 		const testStream = `TestStream-${generateEventId()}`;
 
 		const events = [];
@@ -148,7 +148,7 @@ describe('HTTP Client - Persistent Subscription', () => {
 
 	it('Should return persistent subscriptions info for a stream', async function() {
 		this.timeout(15 * 1000);
-		const client = new EventStore.HTTPClient(getHttpConfig());
+		const client = new KurrentDB.HTTPClient(getHttpConfig());
 		const testStream = `TestStream-${generateEventId()}`;
 
 		const events = [];
@@ -169,7 +169,7 @@ describe('HTTP Client - Persistent Subscription', () => {
 
 	it('Should return persistent subscriptions info for all', async function() {
 		this.timeout(15 * 1000);
-		const client = new EventStore.HTTPClient(getHttpConfig());
+		const client = new KurrentDB.HTTPClient(getHttpConfig());
 		const testStream = `TestStream-${generateEventId()}`;
 
 		const events = [];

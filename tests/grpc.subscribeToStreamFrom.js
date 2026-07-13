@@ -1,15 +1,15 @@
 import generateEventId from '../lib/utilities/generateEventId.js';
 import getGRPCConfig from './support/getGRPCConfig.js';
 import sleep from './utilities/sleep.js';
-import EventStore from '../lib/index.js';
+import KurrentDB from '../lib/index.js';
 import assert from 'assert';
 
-const eventFactory = new EventStore.EventFactory();
+const eventFactory = new KurrentDB.EventFactory();
 
 describe('gRPC Client - Subscribe To Stream From', () => {
 	it('Should get all events written to a subscription stream', function (done) {
 		this.timeout(15 * 1000);
-		const client = new EventStore.GRPCClient(getGRPCConfig());
+		const client = new KurrentDB.GRPCClient(getGRPCConfig());
 		const testStream = `TestStream-${generateEventId()}`;
 		let processedEventCount = 0;
 		let hasPassed = false;
@@ -41,7 +41,7 @@ describe('gRPC Client - Subscribe To Stream From', () => {
 	it('Should get all resolved events read from middle of a linked stream', function (done) {
 		this.timeout(9 * 1000);
 
-		const client = new EventStore.GRPCClient(getGRPCConfig());
+		const client = new KurrentDB.GRPCClient(getGRPCConfig());
 		const testStream = `TestStream-${generateEventId()}`;
 		let hasProcessedEvents = false;
 		let hasPassed = false;
@@ -81,7 +81,7 @@ describe('gRPC Client - Subscribe To Stream From', () => {
 
 	it('Subscription should fail when stream does not exist yet', async function () {
 		this.timeout(15 * 1000);
-		const client = new EventStore.GRPCClient(getGRPCConfig());
+		const client = new KurrentDB.GRPCClient(getGRPCConfig());
 
 		try {
 			await client.subscribeToStreamFrom(`DOES_NOT_EXISTS_FOR_SUB`, 0, () => {});

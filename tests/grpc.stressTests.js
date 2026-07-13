@@ -1,14 +1,14 @@
 import generateEventId from '../lib/utilities/generateEventId.js';
 import getGRPCConfig from './support/getGRPCConfig.js';
-import EventStore from '../lib/index.js';
+import KurrentDB from '../lib/index.js';
 import assert from 'assert';
 
-const eventFactory = new EventStore.EventFactory();
+const eventFactory = new KurrentDB.EventFactory();
 
 describe('gRPC Client - Stress Tests', () => {
 	it('Should handle parallel writes', async function () {
 		this.timeout(20000);
-		const client = new EventStore.GRPCClient(getGRPCConfig());
+		const client = new KurrentDB.GRPCClient(getGRPCConfig());
 
 		const testStream = `TestStream-${generateEventId()}`;
 		const numberOfEvents = 5000;
@@ -29,7 +29,7 @@ describe('gRPC Client - Stress Tests', () => {
 
 	it('Should handle parallel reads and writes', function (callback) {
 		this.timeout(60000);
-		const client = new EventStore.GRPCClient(getGRPCConfig());
+		const client = new KurrentDB.GRPCClient(getGRPCConfig());
 
 		const testStream = `TestStream-${generateEventId()}`;
 		const numberOfEvents = 5000;

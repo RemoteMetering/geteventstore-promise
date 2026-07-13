@@ -1,13 +1,13 @@
 import generateEventId from '../lib/utilities/generateEventId.js';
 import getTcpConfig from './support/getTcpConfig.js';
-import EventStore from '../lib/index.js';
+import KurrentDB from '../lib/index.js';
 import assert from 'assert';
 
-const eventFactory = new EventStore.EventFactory();
+const eventFactory = new KurrentDB.EventFactory();
 
 describe('TCP Client - Write Events', () => {
 	it('Write to a new stream and read the events', async () => {
-		const client = new EventStore.TCPClient(getTcpConfig());
+		const client = new KurrentDB.TCPClient(getTcpConfig());
 
 		const events = [eventFactory.newEvent('TestEventType', {
 			something: '456'
@@ -23,7 +23,7 @@ describe('TCP Client - Write Events', () => {
 	});
 
 	it('Write to a new stream and read the events by type', async () => {
-		const client = new EventStore.TCPClient(getTcpConfig());
+		const client = new KurrentDB.TCPClient(getTcpConfig());
 
 		const events = [eventFactory.newEvent('TestEventType', {
 			something: '456'
@@ -43,7 +43,7 @@ describe('TCP Client - Write Events', () => {
 	});
 
 	it('Should not fail promise if no events provided', async () => {
-		const client = new EventStore.TCPClient(getTcpConfig());
+		const client = new KurrentDB.TCPClient(getTcpConfig());
 
 		const events = [];
 		const testStream = `TestStream-${generateEventId()}`;
@@ -51,7 +51,7 @@ describe('TCP Client - Write Events', () => {
 	});
 
 	it('Should fail promise if non array provided', () => {
-		const client = new EventStore.TCPClient(getTcpConfig());
+		const client = new KurrentDB.TCPClient(getTcpConfig());
 
 		const events = {
 			something: 'here'
@@ -74,7 +74,7 @@ describe('TCP Client - Write Events to pre-populated stream', () => {
 		events2;
 
 	beforeEach(async () => {
-		client = new EventStore.TCPClient(getTcpConfig());
+		client = new KurrentDB.TCPClient(getTcpConfig());
 
 		events = [eventFactory.newEvent('TestEventType', {
 			something: '456'

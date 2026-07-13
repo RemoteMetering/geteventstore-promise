@@ -1,10 +1,10 @@
 import getHttpConfig from './support/getHttpConfig.js';
-import EventStore from '../lib/index.js';
+import KurrentDB from '../lib/index.js';
 import assert from 'assert';
 
 describe('Http Client - Ping', () => {
 	it('Should return successful when OK', () => {
-		const client = new EventStore.HTTPClient(getHttpConfig());
+		const client = new KurrentDB.HTTPClient(getHttpConfig());
 		return client.ping();
 	});
 
@@ -13,7 +13,7 @@ describe('Http Client - Ping', () => {
 		const config = getHttpConfig();
 		config.hostname = 'MadeToFailHostName';
 
-		const client = new EventStore.HTTPClient(config);
+		const client = new KurrentDB.HTTPClient(config);
 
 		return client.ping().then(() => {
 			throw new Error('Should not succeed');

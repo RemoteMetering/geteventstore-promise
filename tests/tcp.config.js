@@ -1,11 +1,11 @@
 import getTcpConfig from './support/getTcpConfig.js';
-import EventStore from '../lib/index.js';
+import KurrentDB from '../lib/index.js';
 import assert from 'assert';
 
 describe('TCP Client - Config', () => {
 	it('Should return assertion error when config is undefined', done => {
 		try {
-			new EventStore.TCPClient();
+			new KurrentDB.TCPClient();
 			done('Config should not pass assertion');
 		} catch (err) {
 			assert.equal(err === undefined, false);
@@ -23,7 +23,7 @@ describe('TCP Client - Config', () => {
 					password: 'changeit'
 				}
 			};
-			new EventStore.TCPClient(config);
+			new KurrentDB.TCPClient(config);
 			done();
 		} catch (err) {
 			assert.equal(err === undefined, false);
@@ -38,7 +38,7 @@ describe('TCP Client - Config', () => {
 				hostname: 'localhost',
 				port: 1113
 			};
-			new EventStore.TCPClient(config);
+			new KurrentDB.TCPClient(config);
 			done();
 		} catch (err) {
 			assert.equal(err === undefined, false);
@@ -49,7 +49,7 @@ describe('TCP Client - Config', () => {
 
 	it('Should return tcp client when config is complete', done => {
 		try {
-			const client = new EventStore.TCPClient(getTcpConfig());
+			const client = new KurrentDB.TCPClient(getTcpConfig());
 			assert.equal(client !== undefined, true);
 			done();
 		} catch (err) {

@@ -1,9 +1,9 @@
 import generateEventId from '../lib/utilities/generateEventId.js';
 import getGRPCConfig from './support/getGRPCConfig.js';
-import EventStore from '../lib/index.js';
+import KurrentDB from '../lib/index.js';
 import assert from 'assert';
 
-const eventFactory = new EventStore.EventFactory();
+const eventFactory = new KurrentDB.EventFactory();
 
 const buildEvents = (count) => {
 	const events = [];
@@ -25,7 +25,7 @@ const collect = async (iterable) => {
 
 describe('gRPC Client - Iterate All Stream Events', () => {
 	it('Should write events and iterate all stream events', async () => {
-		const client = new EventStore.GRPCClient(getGRPCConfig());
+		const client = new KurrentDB.GRPCClient(getGRPCConfig());
 
 		const testStream = `TestStream-${generateEventId()}`;
 		await client.writeEvents(testStream, buildEvents(1000));
@@ -39,7 +39,7 @@ describe('gRPC Client - Iterate All Stream Events', () => {
 	}).timeout(5000);
 
 	it('Should write events and iterate all events from start event', async () => {
-		const client = new EventStore.GRPCClient(getGRPCConfig());
+		const client = new KurrentDB.GRPCClient(getGRPCConfig());
 
 		const testStream = `TestStream-${generateEventId()}`;
 		await client.writeEvents(testStream, buildEvents(1000));
@@ -53,7 +53,7 @@ describe('gRPC Client - Iterate All Stream Events', () => {
 	}).timeout(5000);
 
 	it('Should page across multiple chunks and preserve order', async () => {
-		const client = new EventStore.GRPCClient(getGRPCConfig());
+		const client = new KurrentDB.GRPCClient(getGRPCConfig());
 
 		const testStream = `TestStream-${generateEventId()}`;
 		await client.writeEvents(testStream, buildEvents(1000));
@@ -66,7 +66,7 @@ describe('gRPC Client - Iterate All Stream Events', () => {
 	}).timeout(5000);
 
 	it('Should yield lazily and stop when the consumer stops early', async () => {
-		const client = new EventStore.GRPCClient(getGRPCConfig());
+		const client = new KurrentDB.GRPCClient(getGRPCConfig());
 
 		const testStream = `TestStream-${generateEventId()}`;
 		await client.writeEvents(testStream, buildEvents(1000));

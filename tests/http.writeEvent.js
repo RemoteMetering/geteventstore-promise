@@ -1,11 +1,11 @@
 import generateEventId from '../lib/utilities/generateEventId.js';
 import getHttpConfig from './support/getHttpConfig.js';
-import EventStore from '../lib/index.js';
+import KurrentDB from '../lib/index.js';
 import assert from 'assert';
 
 describe('Http Client - Write Event', () => {
 	it('Write to a new stream and read the event', async () => {
-		const client = new EventStore.HTTPClient(getHttpConfig());
+		const client = new KurrentDB.HTTPClient(getHttpConfig());
 		const testStream = `TestStream-${generateEventId()}`;
 
 		await client.writeEvent(testStream, 'TestEventType', {
@@ -17,7 +17,7 @@ describe('Http Client - Write Event', () => {
 	});
 
 	it('Should fail promise if no event data provided', async () => {
-		const client = new EventStore.HTTPClient(getHttpConfig());
+		const client = new KurrentDB.HTTPClient(getHttpConfig());
 		const testStream = `TestStream-${generateEventId()}`;
 
 		try {
@@ -35,7 +35,7 @@ describe('Http Client - Write Event to pre-populated stream', () => {
 	let client;
 	let testStream;
 	beforeEach(async () => {
-		client = new EventStore.HTTPClient(getHttpConfig());
+		client = new KurrentDB.HTTPClient(getHttpConfig());
 		testStream = `TestStream-${generateEventId()}`;
 
 		await client.writeEvent(testStream, 'TestEventType', {

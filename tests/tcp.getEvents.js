@@ -1,16 +1,16 @@
 import generateEventId from '../lib/utilities/generateEventId.js';
 import getTcpConfig from './support/getTcpConfig.js';
-import EventStore from '../lib/index.js';
+import KurrentDB from '../lib/index.js';
 import assert from 'assert';
 
-const eventFactory = new EventStore.EventFactory();
+const eventFactory = new KurrentDB.EventFactory();
 
 describe('TCP Client - Get Events', () => {
 	const testStream = `TestStream-${generateEventId()}`;
 	const numberOfEvents = 10;
 
 	before(async () => {
-		const client = new EventStore.TCPClient(getTcpConfig());
+		const client = new KurrentDB.TCPClient(getTcpConfig());
 
 		const events = [];
 
@@ -26,7 +26,7 @@ describe('TCP Client - Get Events', () => {
 	});
 
 	it('Should get events reading forward', async () => {
-		const client = new EventStore.TCPClient(getTcpConfig());
+		const client = new KurrentDB.TCPClient(getTcpConfig());
 
 		const events = await client.getEvents(testStream, undefined, undefined, 'forward');
 		assert.equal(events.length, 10);
@@ -42,7 +42,7 @@ describe('TCP Client - Get Events', () => {
 	});
 
 	it('Should get events reading backward', async () => {
-		const client = new EventStore.TCPClient(getTcpConfig());
+		const client = new KurrentDB.TCPClient(getTcpConfig());
 
 		const events = await client.getEvents(testStream, undefined, undefined, 'backward');
 		assert.equal(events.length, 10);

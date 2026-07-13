@@ -1,9 +1,9 @@
 import generateEventId from '../lib/utilities/generateEventId.js';
 import getTcpConfig from './support/getTcpConfig.js';
-import EventStore from '../lib/index.js';
+import KurrentDB from '../lib/index.js';
 import assert from 'assert';
 
-const eventFactory = new EventStore.EventFactory();
+const eventFactory = new KurrentDB.EventFactory();
 
 const collect = async (iterable) => {
 	const events = [];
@@ -18,7 +18,7 @@ describe('TCP Client - Iterate Events', () => {
 	const numberOfEvents = 10;
 
 	before(async () => {
-		const client = new EventStore.TCPClient(getTcpConfig());
+		const client = new KurrentDB.TCPClient(getTcpConfig());
 
 		const events = [];
 		for (let i = 1; i <= numberOfEvents; i++) {
@@ -31,7 +31,7 @@ describe('TCP Client - Iterate Events', () => {
 	});
 
 	it('Should iterate events reading forward', async () => {
-		const client = new EventStore.TCPClient(getTcpConfig());
+		const client = new KurrentDB.TCPClient(getTcpConfig());
 
 		const events = await collect(client.iterateEvents(testStream, undefined, undefined, 'forward'));
 		assert.equal(events.length, 10);
@@ -43,7 +43,7 @@ describe('TCP Client - Iterate Events', () => {
 	});
 
 	it('Should iterate events reading backward', async () => {
-		const client = new EventStore.TCPClient(getTcpConfig());
+		const client = new KurrentDB.TCPClient(getTcpConfig());
 
 		const events = await collect(client.iterateEvents(testStream, undefined, undefined, 'backward'));
 		assert.equal(events.length, 10);
@@ -53,7 +53,7 @@ describe('TCP Client - Iterate Events', () => {
 	});
 
 	it('Should iterate events forward via iterateEventsForward', async () => {
-		const client = new EventStore.TCPClient(getTcpConfig());
+		const client = new KurrentDB.TCPClient(getTcpConfig());
 
 		const events = await collect(client.iterateEventsForward(testStream));
 		assert.equal(events.length, 10);
@@ -63,7 +63,7 @@ describe('TCP Client - Iterate Events', () => {
 	});
 
 	it('Should iterate events backward via iterateEventsBackward', async () => {
-		const client = new EventStore.TCPClient(getTcpConfig());
+		const client = new KurrentDB.TCPClient(getTcpConfig());
 
 		const events = await collect(client.iterateEventsBackward(testStream));
 		assert.equal(events.length, 10);
@@ -73,7 +73,7 @@ describe('TCP Client - Iterate Events', () => {
 	});
 
 	it('Should respect the count bound', async () => {
-		const client = new EventStore.TCPClient(getTcpConfig());
+		const client = new KurrentDB.TCPClient(getTcpConfig());
 
 		const events = await collect(client.iterateEvents(testStream, 0, 4, 'forward'));
 		assert.equal(events.length, 4);
@@ -84,7 +84,7 @@ describe('TCP Client - Iterate Events', () => {
 	});
 
 	it('Should iterate only events matching the requested types', async () => {
-		const client = new EventStore.TCPClient(getTcpConfig());
+		const client = new KurrentDB.TCPClient(getTcpConfig());
 
 		const events = await collect(client.iterateEventsByType(testStream, ['EvenType']));
 		assert.equal(events.length, 5);
