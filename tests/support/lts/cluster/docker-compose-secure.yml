@@ -10,7 +10,7 @@ services:
   metronomic_kurrentdb_client_test_setup:
     image: eventstore/es-gencert-cli:1.0.2
     entrypoint: bash
-    user: "1000:1000"
+    user: "0:0"
     command: >
       -c "mkdir -p ./certs && cd /certs
       && es-gencert-cli create-ca
@@ -27,7 +27,10 @@ services:
   metronomic_kurrentdb_client_test_setup_certs_cluster:
     image: eventstore/es-gencert-cli:1.0.2
     entrypoint: bash
-    user: "1000:1000"
+    # Runs as root so gencert can write into the ./certs bind mount, which the
+    # Docker daemon recreates as root owned after cleanCerts removes it. The
+    # chmod 666 below keeps the generated files readable by the DB and tests.
+    user: "0:0"
     command: >
       -c "mkdir -p ./certs && cd /certs
       && es-gencert-cli create-ca
