@@ -112,9 +112,15 @@ export interface GRPCWriteEventOptions {
 export interface GRPCMultiStreamWrite {
 	streamName: string;
 	// Event metadata must be a plain object of string keys to string values.
-	// Non string values cause the underlying multiStreamAppend to reject the transaction.
-	events: NewEvent[];
-	expectedVersion?: number;
+	// Non string values cause the underlying appendRecords to reject the transaction.
+	event: NewEvent;
+}
+
+export interface GRPCConsistencyCheck {
+	streamName: string;
+	// A revision number, or one of "any", "no_stream", "stream_exists".
+	// null, undefined and -2 are all treated as "any".
+	expectedVersion?: number | "any" | "no_stream" | "stream_exists";
 }
 
 export interface TCPWriteEventsOptions extends TCPWriteEventOptions {
@@ -332,7 +338,7 @@ export class GRPCClient {
 	checkStreamExists(streamName: string): Promise<boolean>;
 	writeEvent(streamName: string, eventType: string, data: object, metaData?: object, options?: GRPCWriteEventOptions): Promise<GRPCAppendResult>;
 	writeEvents(streamName: string, events: NewEvent[], options?: GRPCWriteEventOptions): Promise<GRPCAppendResult>;
-	multiStreamWrite(writes: GRPCMultiStreamWrite[]): Promise<GRPCMultiAppendResult>;
+	multiStreamWriteCrossStreamConsistency(writes: GRPCMultiStreamWrite[], checks?: GRPCConsistencyCheck[]): Promise<GRPCMultiAppendResult>;
 	getAllStreamEvents(streamName: string, chunkSize?: number, startPosition?: number, resolveLinkTos?: boolean): Promise<Event[]>;
 	getEvents(streamName: string, startPosition?: number, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): Promise<Event[]>;
 	getEventsByType(streamName: string, eventTypes: string[], startPosition?: number, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): Promise<Event[]>;

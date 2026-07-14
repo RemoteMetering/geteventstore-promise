@@ -119,7 +119,7 @@ const clusterClient = new KurrentDB.GRPCClient({
 Methods available on the gRPC client beyond the common set above. The `readAll*` and `iterateAll*` methods read across all streams using the server-wide `$all` stream. The `subscribe*` and pool methods (`close`, `getPool`, `closeAllPools`) are shared with the TCP client.
 
 * getStreamMetadata(streamName)
-* multiStreamWrite(writes)
+* multiStreamWriteCrossStreamConsistency(writes, checks)
 * readAllEvents(startPosition, count, direction, resolveLinkTos)
 * readAllEventsForward(startPosition, count, resolveLinkTos)
 * readAllEventsBackward(startPosition, count, resolveLinkTos)
@@ -134,28 +134,6 @@ Methods available on the gRPC client beyond the common set above. The `readAll*`
 * getPool()
 * closeAllPools()
 
-### Notes on `multiStreamWrite`
-
-Writes events to several streams in one atomic transaction.
-
-```javascript
-const result = await client.multiStreamWrite([
-	{
-		streamName: 'orders-123',
-		events: [eventFactory.newEvent('OrderPlaced', { total: 50 })]
-	},
-	{
-		streamName: 'customers-456',
-		events: [eventFactory.newEvent('OrderLinked', { orderId: '123' })],
-		expectedVersion: 4
-	}
-]);
-
-// result.position is the transaction log position
-// result.responses lists the resulting revision per stream
-```
-
-Note that event metadata here must be a plain object of string keys to string values. Non string values cause the transaction to be rejected. This differs from `writeEvents`, which serialises arbitrary object metadata as JSON. On read, the server also adds its own `$schema.*` properties alongside the metadata keys you supplied.
 
 ---
 
