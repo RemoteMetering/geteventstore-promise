@@ -44,43 +44,54 @@ describe('Http Client - Delete stream', () => {
 		});
 	});
 
-	it('Should return successful on stream delete hard delete', callback => {
+	it('Should return successful on stream delete hard delete', async () => {
 		const client = new KurrentDB.HTTPClient(getHttpConfig());
 		const testStream = `TestStream-${generateEventId()}`;
 
-		client.writeEvent(testStream, 'TestEventType', {
+		await client.writeEvent(testStream, 'TestEventType', {
 			something: '123'
-		}).then(() => client.deleteStream(testStream, true).then(() => client.checkStreamExists(testStream).then(() => {
-			callback('Should not have returned resolved promise');
-		}).catch(err => {
-			assert(err.message.includes('410'), 'Expected http 410');
-			callback();
-		})).catch(callback)).catch(callback);
-	});
-
-	it('Should fail when a stream does not exist', () => {
-		const client = new KurrentDB.HTTPClient(getHttpConfig());
-		const testStream = `TestStream-${generateEventId()}`;
-
-		return client.deleteStream(testStream).then(() => {
-			assert.fail('Should have failed because stream does not exist');
-		}).catch(err => {
-			assert(err);
 		});
+		await client.deleteStream(testStream, true);
+
+		try {
+			await client.checkStreamExists(testStream);
+		} catch (err) {
+			assert(err.message.includes('410'), 'Expected http 410');
+			return;
+		}
+		assert.fail('Should not have returned resolved promise');
 	});
 
-	it('Should return HTTP 410 when a writing to a stream that has been hard deleted', () => {
+	it('Should fail when a stream does not exist', async () => {
 		const client = new KurrentDB.HTTPClient(getHttpConfig());
 		const testStream = `TestStream-${generateEventId()}`;
 
-		return client.writeEvent(testStream, 'TestEventType', {
+		try {
+			await client.deleteStream(testStream);
+		} catch (err) {
+			assert(err);
+			return;
+		}
+		assert.fail('Should have failed because stream does not exist');
+	});
+
+	it('Should return HTTP 410 when a writing to a stream that has been hard deleted', async () => {
+		const client = new KurrentDB.HTTPClient(getHttpConfig());
+		const testStream = `TestStream-${generateEventId()}`;
+
+		await client.writeEvent(testStream, 'TestEventType', {
 			something: '123'
-		}).then(() => client.deleteStream(testStream, true).then(() => client.writeEvent(testStream, 'TestEventType', {
-			something: '456'
-		}).then(() => {
-			assert.fail('Should have failed because stream does not exist');
-		})).catch(err => {
+		});
+		await client.deleteStream(testStream, true);
+
+		try {
+			await client.writeEvent(testStream, 'TestEventType', {
+				something: '456'
+			});
+		} catch (err) {
 			assert.equal(410, err.response.status);
-		}));
+			return;
+		}
+		assert.fail('Should have failed because stream does not exist');
 	});
 });

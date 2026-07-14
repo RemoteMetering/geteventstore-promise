@@ -65,7 +65,7 @@ describe('gRPC Client - Write Events', () => {
 		await client.writeEvents(testStream, events);
 	});
 
-	it('Should fail promise if non array provided', () => {
+	it('Should fail promise if non array provided', async () => {
 		const client = new KurrentDB.GRPCClient(getGRPCConfig());
 
 		const events = {
@@ -73,12 +73,14 @@ describe('gRPC Client - Write Events', () => {
 		};
 
 		const testStream = `TestStream-${generateEventId()}`;
-		return client.writeEvents(testStream, events).then(async () => {
-			await client.close();
-			assert.fail('should not have succeeded');
-		}).catch(err => {
+		try {
+			await client.writeEvents(testStream, events);
+		} catch (err) {
 			assert(err, 'error expected');
-		});
+			return;
+		}
+		await client.close();
+		assert.fail('should not have succeeded');
 	});
 });
 

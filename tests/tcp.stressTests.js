@@ -27,7 +27,7 @@ describe('TCP Client - Stress Tests', () => {
 		await client.close();
 	});
 
-	it('Should handle parallel reads and writes', function (callback) {
+	it('Should handle parallel reads and writes', async function () {
 		this.timeout(60000);
 		const client = new KurrentDB.TCPClient(getTcpConfig());
 
@@ -43,24 +43,20 @@ describe('TCP Client - Stress Tests', () => {
 			}));
 		}
 
-		const checkCounts = async () => {
-			if (readCount === numberOfEvents && writeCount === numberOfEvents && writeCount === readCount) {
-				await client.close();
-				callback();
-			}
-		};
+		const writes = events.map(async ev => {
+			await client.writeEvent(testStream, ev.eventType, ev.data);
+			writeCount++;
+		});
+		const reads = events.map(async () => {
+			await client.getEvents(testStream, undefined, 10);
+			readCount++;
+		});
 
-		events.forEach(ev => {
-			client.writeEvent(testStream, ev.eventType, ev.data).then(() => {
-				writeCount++;
-				checkCounts();
-			});
-		});
-		events.forEach(() => {
-			client.getEvents(testStream, undefined, 10).then(() => {
-				readCount++;
-				checkCounts();
-			});
-		});
+		await Promise.all([...writes, ...reads]);
+
+		assert.equal(numberOfEvents, writeCount);
+		assert.equal(numberOfEvents, readCount);
+
+		await client.close();
 	});
 });

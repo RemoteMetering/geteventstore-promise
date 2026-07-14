@@ -45,7 +45,7 @@ describe('TCP Client - Test Connection', () => {
 		await client.close();
 	});
 
-	it('Should not connect on incorrect hostname', function () {
+	it('Should not connect on incorrect hostname', async function () {
 		this.timeout(60 * 1000);
 		const config = getTcpConfig();
 		config.maxReconnections = 2;
@@ -54,16 +54,19 @@ describe('TCP Client - Test Connection', () => {
 		const client = new KurrentDB.TCPClient(config);
 
 		const testStream = `TestStream-${generateEventId()}`;
-		return client.writeEvent(testStream, 'TestEventType', {
-			something: '123'
-		}).then(() => {
+		try {
+			await client.writeEvent(testStream, 'TestEventType', {
+				something: '123'
+			});
 			assert.fail('Should not have written event successfully');
-		}).catch(err => {
+		} catch (err) {
 			assert.notEqual(err.message, 'Should not have written event successfully');
-		}).finally(() => client.close());
+		} finally {
+			await client.close();
+		}
 	});
 
-	it('Should not connect on incorrect port', function () {
+	it('Should not connect on incorrect port', async function () {
 		this.timeout(60 * 1000);
 		const config = getTcpConfig();
 		config.maxReconnections = 2;
@@ -72,13 +75,16 @@ describe('TCP Client - Test Connection', () => {
 		const client = new KurrentDB.TCPClient(config);
 
 		const testStream = `TestStream-${generateEventId()}`;
-		return client.writeEvent(testStream, 'TestEventType', {
-			something: '123'
-		}).then(() => {
+		try {
+			await client.writeEvent(testStream, 'TestEventType', {
+				something: '123'
+			});
 			assert.fail('Should not have written event successfully');
-		}).catch(err => {
+		} catch (err) {
 			assert.notEqual(err.message, 'Should not have written event successfully');
-		}).finally(() => client.close());
+		} finally {
+			await client.close();
+		}
 	});
 
 	it('Should default to 5 connections with no pool options provided', async function () {

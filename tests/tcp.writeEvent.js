@@ -18,16 +18,18 @@ describe('TCP Client - Write Event', () => {
 		await client.close();
 	});
 
-	it('Should fail promise if no event data provided', () => {
+	it('Should fail promise if no event data provided', async () => {
 		const client = new KurrentDB.TCPClient(getTcpConfig());
 
 		const testStream = `TestStream-${generateEventId()}`;
-		return client.writeEvent(testStream, 'TestEventType').then(async () => {
-			await client.close();
-			assert.fail('write should not have succeeded');
-		}).catch(err => {
+		try {
+			await client.writeEvent(testStream, 'TestEventType');
+		} catch (err) {
 			assert(err, 'error should have been returned');
-		});
+			return;
+		}
+		await client.close();
+		assert.fail('write should not have succeeded');
 	});
 });
 

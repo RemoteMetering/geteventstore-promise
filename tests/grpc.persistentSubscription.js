@@ -7,24 +7,22 @@ import assert from 'assert';
 const eventFactory = new KurrentDB.EventFactory();
 
 describe('gRPC Client - Persistent Subscription', () => {
-	it('Should get all events written to a persistent subscription stream after subscription is started', function (done) {
+	it('Should get all events written to a persistent subscription stream after subscription is started', async function () {
 		this.timeout(15 * 1000);
 		const client = new KurrentDB.GRPCClient(getGRPCConfig());
 		const groupName = `TestPersistentSubscriptionGroup`;
 		const testStream = `TestStream-${generateEventId()}`;
 		let processedEventCount = 0;
 		let hasPassed = false;
+		let dropped = false;
 
 		function onEventAppeared(sub, ev) {
 			sub.ack(ev);
 			processedEventCount++;
 		}
 
-		async function onDropped() {
-			if (!hasPassed) {
-				await client.closeAllPools();
-				done('should not drop');
-			}
+		function onDropped() {
+			if (!hasPassed) dropped = true;
 		}
 
 		const initialEvents = [];
@@ -35,25 +33,30 @@ describe('gRPC Client - Persistent Subscription', () => {
 			}));
 		}
 
-		client.writeEvents(testStream, initialEvents).then(() => {
-			client.createPersistentSubscriptionToStream(testStream, groupName).then(() => {
-				client.subscribeToPersistentSubscriptionToStream(testStream, groupName, onEventAppeared, onDropped).then(subscription => sleep(3000).then(async () => {
-					assert.equal(20, processedEventCount, 'expect processed events to be 20');
-					assert(subscription, 'Subscription Expected');
-					hasPassed = true;
-					await subscription.close();
-					await client.close();
-					done();
-				}));
-			});
-			const events = [];
-			for (let k = 0; k < 10; k++) {
-				events.push(eventFactory.newEvent('TestEventType', {
-					id: k
-				}));
-			}
-			return sleep(100).then(() => client.writeEvents(testStream, events));
-		}).catch(done);
+		await client.writeEvents(testStream, initialEvents);
+		await client.createPersistentSubscriptionToStream(testStream, groupName);
+		const subscription = await client.subscribeToPersistentSubscriptionToStream(testStream, groupName, onEventAppeared, onDropped);
+
+		const events = [];
+		for (let k = 0; k < 10; k++) {
+			events.push(eventFactory.newEvent('TestEventType', {
+				id: k
+			}));
+		}
+		await sleep(100);
+		await client.writeEvents(testStream, events);
+		await sleep(3000);
+
+		if (dropped) {
+			await client.closeAllPools();
+			assert.fail('should not drop');
+		}
+
+		assert.equal(20, processedEventCount, 'expect processed events to be 20');
+		assert(subscription, 'Subscription Expected');
+		hasPassed = true;
+		await subscription.close();
+		await client.close();
 	});
 
 	it('Should be able to start multiple subscriptions from single client instance', async function () {

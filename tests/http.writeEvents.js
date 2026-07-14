@@ -46,7 +46,7 @@ describe('Http Client - Write Events', () => {
 		return client.writeEvents(testStream, events);
 	});
 
-	it('Should fail promise if non array provided', () => {
+	it('Should fail promise if non array provided', async () => {
 		const client = new KurrentDB.HTTPClient(getHttpConfig());
 
 		const events = {
@@ -54,12 +54,14 @@ describe('Http Client - Write Events', () => {
 		};
 
 		const testStream = `TestStream-${generateEventId()}`;
-		return client.writeEvents(testStream, events).then(() => {
-			assert.fail('should not have succeeded');
-		}).catch(err => {
+		try {
+			await client.writeEvents(testStream, events);
+		} catch (err) {
 			assert(err, 'Error expected');
 			assert(err.message, 'Error Message Expected');
-		});
+			return;
+		}
+		assert.fail('should not have succeeded');
 	});
 });
 

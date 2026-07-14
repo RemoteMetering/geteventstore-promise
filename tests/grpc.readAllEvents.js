@@ -68,7 +68,8 @@ describe('gRPC Client - $All Stream Events', () => {
 		await client.close();
 	});
 
-	it('Should read events reading forward with a count greater than the stream length return a maximum of 4096', async function () {
+	// Explicitly backward here cause of deleted events at beginning of $all that don't get mapped back
+	it('Should read events reading backward with a count greater than the stream length return a maximum of 4096', async function () {
 		this.timeout(40000);
 		const client = new KurrentDB.GRPCClient(getGRPCConfig());
 
@@ -83,9 +84,8 @@ describe('gRPC Client - $All Stream Events', () => {
 		}
 
 		await client.writeEvents(testStream, events);
-		const result = await client.readAllEventsForward(undefined, 5000);
-		// assert.equal(result.events.length, 4096);
-		assert.equal(result.events.length, 4076); //TODO: Figure out why this is not 4096 when running all tests together
+		const result = await client.readAllEventsBackward(undefined, 5000);
+		assert.equal(result.events.length, 4096);
 
 		await client.close();
 	});

@@ -5,17 +5,24 @@ import KurrentDB from '../lib/index.js';
 import assert from 'assert';
 
 describe('gRPC Client - Delete stream', () => {
-	it('Should return successful on stream delete', () => {
+	it('Should return successful on stream delete', async () => {
 		const client = new KurrentDB.GRPCClient(getGRPCConfig());
 
 		const testStream = `TestStream-${generateEventId()}`;
-		return client.writeEvent(testStream, 'TestEventType', {
-			something: '123'
-		}).then(() => client.deleteStream(testStream).then(() => client.checkStreamExists(testStream).then(exists => {
-			assert.equal(false, exists);
-		})).catch(err => {
-			assert.fail(err.message);
-		})).finally(() => client.close());
+		try {
+			await client.writeEvent(testStream, 'TestEventType', {
+				something: '123'
+			});
+			try {
+				await client.deleteStream(testStream);
+				const exists = await client.checkStreamExists(testStream);
+				assert.equal(false, exists);
+			} catch (err) {
+				assert.fail(err.message);
+			}
+		} finally {
+			await client.close();
+		}
 	});
 
 	it('Should return successful on projected stream delete', async () => {
@@ -33,61 +40,89 @@ describe('gRPC Client - Delete stream', () => {
 		await client.close();
 	});
 
-	it('Should return successful on writing to a stream that has been soft deleted', () => {
+	it('Should return successful on writing to a stream that has been soft deleted', async () => {
 		const client = new KurrentDB.GRPCClient(getGRPCConfig());
 
 		const testStream = `TestStream-${generateEventId()}`;
 
-		return client.writeEvent(testStream, 'TestEventType', {
-			something: '123'
-		}).then(() => client.deleteStream(testStream).then(() => client.writeEvent(testStream, 'TestEventType', {
-			something: '456'
-		})).catch(err => {
-			assert.fail(err.message);
-		})).finally(() => client.close());
+		try {
+			await client.writeEvent(testStream, 'TestEventType', {
+				something: '123'
+			});
+			try {
+				await client.deleteStream(testStream);
+				await client.writeEvent(testStream, 'TestEventType', {
+					something: '456'
+				});
+			} catch (err) {
+				assert.fail(err.message);
+			}
+		} finally {
+			await client.close();
+		}
 	});
 
-	it('Should return successful on stream delete hard delete', callback => {
+	it('Should return successful on stream delete hard delete', async () => {
 		const client = new KurrentDB.GRPCClient(getGRPCConfig());
 
 		const testStream = `TestStream-${generateEventId()}`;
-		client.writeEvent(testStream, 'TestEventType', {
-			something: '123'
-		}).then(() => client.deleteStream(testStream, true)
-			.then(() => client.checkStreamExists(testStream))
-			.then(() => {
-				callback('Should not have returned resolved promise');
-			}).catch(err => {
+		try {
+			await client.writeEvent(testStream, 'TestEventType', {
+				something: '123'
+			});
+			await client.deleteStream(testStream, true);
+
+			try {
+				await client.checkStreamExists(testStream);
+			} catch (err) {
 				assert.equal(err.type, 'stream-deleted');
-				callback();
-			}).catch(callback)).catch(callback).finally(() => client.close());
+				return;
+			}
+			assert.fail('Should not have returned resolved promise');
+		} finally {
+			await client.close();
+		}
 	});
 
-	it('Should fail when a stream does not exist', () => {
+	it('Should fail when a stream does not exist', async () => {
 		const client = new KurrentDB.GRPCClient(getGRPCConfig());
 
 		const testStream = `TestStream-${generateEventId()}`;
 
-		return client.deleteStream(testStream).then(() => {
-			assert.fail('Should have failed because stream does not exist');
-		}).catch(err => {
+		let succeeded = false;
+		try {
+			await client.deleteStream(testStream);
+			succeeded = true;
+		} catch (err) {
 			assert(err);
-		}).finally(() => client.close());
+		} finally {
+			await client.close();
+		}
+		assert(!succeeded, 'Should have failed because stream does not exist');
 	});
 
-	it('Should return "StreamDeletedError" when a writing to a stream that has been hard deleted', () => {
+	it('Should return "StreamDeletedError" when a writing to a stream that has been hard deleted', async () => {
 		const client = new KurrentDB.GRPCClient(getGRPCConfig());
 
 		const testStream = `TestStream-${generateEventId()}`;
 
-		return client.writeEvent(testStream, 'TestEventType', {
-			something: '123'
-		}).then(() => client.deleteStream(testStream, true).then(() => client.writeEvent(testStream, 'TestEventType', {
-			something: '456'
-		}).then(() => {
+		try {
+			await client.writeEvent(testStream, 'TestEventType', {
+				something: '123'
+			});
+			await client.deleteStream(testStream, true);
+
+			try {
+				await client.writeEvent(testStream, 'TestEventType', {
+					something: '456'
+				});
+			} catch (err) {
+				assert.equal(err.type, 'stream-deleted');
+				return;
+			}
 			assert.fail('Should have failed because stream does not exist');
-		})).catch(err => {
-			assert.equal(err.type, 'stream-deleted');
-		})).finally(() => client.close());
+		} finally {
+			await client.close();
+		}
 	});
 });

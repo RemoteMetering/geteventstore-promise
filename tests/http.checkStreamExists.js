@@ -20,33 +20,36 @@ describe('Http Client - Check Stream Exist', () => {
 		assert.equal(await client.checkStreamExists('Non_existentStream'), false);
 	});
 
-	it('Should return rejected promise when the request error is anything other than a 404', callback => {
+	it('Should return rejected promise when the request error is anything other than a 404', async () => {
 		const httpConfig = getHttpConfig();
 		httpConfig.port = 1;
 		const client = new KurrentDB.HTTPClient(httpConfig);
 
-		client.checkStreamExists('Non_existentStream_wrong_port_config').then(() => {
-			callback('Should not have returned successful promise');
-		}).catch(err => {
+		try {
+			await client.checkStreamExists('Non_existentStream_wrong_port_config');
+		} catch (err) {
 			assert(err, 'No error received');
 			assert(err.message.includes('ECONNREFUSED'), 'Connection refused error expected');
-			callback();
-		});
+			return;
+		}
+		assert.fail('Should not have returned successful promise');
 	}).timeout(5000);
 
-	it('Should throw an exception when timeout is reached', callback => {
+	it('Should throw an exception when timeout is reached', async () => {
 		const httpConfig = getHttpConfig();
 		httpConfig.timeout = 0.00001;
 
 		const client = new KurrentDB.HTTPClient(httpConfig);
 		const testStream = `TestStream-${generateEventId()}`;
-		client.writeEvent(testStream, 'TestEventType', {
-			something: '123'
-		}).then(() => client.checkStreamExists(testStream).then(() => {
-			callback('Expected to fail');
-		})).catch(err => {
-			if (err.message.includes('timeout')) callback();
-			else callback('Time out error expected');
-		});
+		try {
+			await client.writeEvent(testStream, 'TestEventType', {
+				something: '123'
+			});
+			await client.checkStreamExists(testStream);
+		} catch (err) {
+			if (err.message.includes('timeout')) return;
+			assert.fail('Time out error expected');
+		}
+		assert.fail('Expected to fail');
 	});
 });

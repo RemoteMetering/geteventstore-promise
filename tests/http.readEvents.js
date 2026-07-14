@@ -138,27 +138,31 @@ describe('Http Client - Read Events', () => {
 	describe('Http Client - Get Events Failure', () => {
 		const testStream = `TestStream-${generateEventId()}`;
 
-		it('Should return 404 when stream does not exist', () => {
+		it('Should return 404 when stream does not exist', async () => {
 			const client = new KurrentDB.HTTPClient(getHttpConfig());
 
-			return client.readEventsForward(testStream).then(() => {
-				throw new Error('Should not have received events');
-			}).catch(err => {
+			try {
+				await client.readEventsForward(testStream);
+			} catch (err) {
 				assert.equal(404, err.response.status, 'Should have received 404');
-			});
+				return;
+			}
+			throw new Error('Should not have received events');
 		});
 
-		it('Should not return 404 when stream does not exist if ignore 404 is set on config', () => {
+		it('Should not return 404 when stream does not exist if ignore 404 is set on config', async () => {
 			const httpConfigWithIgnore = getHttpConfig();
 			httpConfigWithIgnore.ignore = [404];
 
 			const client = new KurrentDB.HTTPClient(httpConfigWithIgnore);
 
-			return client.readEventsForward(testStream).then(() => {
-				throw new Error('Should not have received events');
-			}).catch(err => {
+			try {
+				await client.readEventsForward(testStream);
+			} catch (err) {
 				assert.equal(404, err.response.status, 'Should have received 404');
-			});
+				return;
+			}
+			throw new Error('Should not have received events');
 		});
 	});
 });

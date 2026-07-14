@@ -234,10 +234,16 @@ describe('Projections', () => {
 			assert.equal(removeResponse.name, projectionName);
 		});
 
-		it('Should return 404 for non-existent projection when requesting state', function () {
+		it('Should return 404 for non-existent projection when requesting state', async function () {
 			this.timeout(10 * 1000);
 			const client = new KurrentDB.HTTPClient(getHttpConfig());
-			return client.projections.getState('SomeProjectionNameThatDoesNotExist').catch(err => assert(err.response.status, 404));
+			try {
+				await client.projections.getState('SomeProjectionNameThatDoesNotExist');
+			} catch (err) {
+				assert.equal(err.response.status, 404, 'Should have received 404');
+				return;
+			}
+			assert.fail('Should have received 404 for non-existent projection');
 		});
 
 		it('Should return result for test projection', async function () {
@@ -298,10 +304,16 @@ describe('Projections', () => {
 			assert.equal(removeResponse.name, projectionName);
 		});
 
-		it('Should return 404 for non-existent projection when requesting result', function () {
+		it('Should return 404 for non-existent projection when requesting result', async function () {
 			this.timeout(10 * 1000);
 			const client = new KurrentDB.HTTPClient(getHttpConfig());
-			return client.projections.getResult('SomeProjectionNameThatDoesNotExist').catch(err => assert(err.response.status, 404));
+			try {
+				await client.projections.getResult('SomeProjectionNameThatDoesNotExist');
+			} catch (err) {
+				assert.equal(err.response.status, 404, 'Should have received 404');
+				return;
+			}
+			assert.fail('Should have received 404 for non-existent projection');
 		});
 	});
 });

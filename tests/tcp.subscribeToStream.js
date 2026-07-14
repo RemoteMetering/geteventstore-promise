@@ -7,22 +7,20 @@ import assert from 'assert';
 const eventFactory = new KurrentDB.EventFactory();
 
 describe('TCP Client - Subscribe To Stream', () => {
-	it('Should get all events written to a subscription stream after subscription is started', function (done) {
+	it('Should get all events written to a subscription stream after subscription is started', async function () {
 		this.timeout(15 * 1000);
 		const client = new KurrentDB.TCPClient(getTcpConfig());
 		const testStream = `TestStream-${generateEventId()}`;
 		let processedEventCount = 0;
 		let hasPassed = false;
+		let dropped = false;
 
 		function onEventAppeared() {
 			processedEventCount++;
 		}
 
-		async function onDropped() {
-			if (!hasPassed) {
-				await client.closeAllPools();
-				done('should not drop');
-			}
+		function onDropped() {
+			if (!hasPassed) dropped = true;
 		}
 
 		const initialEvents = [];
@@ -33,23 +31,29 @@ describe('TCP Client - Subscribe To Stream', () => {
 			}));
 		}
 
-		client.writeEvents(testStream, initialEvents).then(() => {
-			client.subscribeToStream(testStream, onEventAppeared, onDropped, false).then(subscription => sleep(3000).then(async () => {
-				assert.equal(10, processedEventCount, 'expect processed events to be 10');
-				assert(subscription, 'Subscription Expected');
-				hasPassed = true;
-				await subscription.close();
-				await client.close();
-				done();
+		await client.writeEvents(testStream, initialEvents);
+		const subscription = await client.subscribeToStream(testStream, onEventAppeared, onDropped, false);
+
+		const events = [];
+		for (let k = 0; k < 10; k++) {
+			events.push(eventFactory.newEvent('TestEventType', {
+				id: k
 			}));
-			const events = [];
-			for (let k = 0; k < 10; k++) {
-				events.push(eventFactory.newEvent('TestEventType', {
-					id: k
-				}));
-			}
-			return sleep(100).then(() => client.writeEvents(testStream, events));
-		}).catch(done);
+		}
+		await sleep(100);
+		await client.writeEvents(testStream, events);
+		await sleep(3000);
+
+		if (dropped) {
+			await client.closeAllPools();
+			assert.fail('should not drop');
+		}
+
+		assert.equal(10, processedEventCount, 'expect processed events to be 10');
+		assert(subscription, 'Subscription Expected');
+		hasPassed = true;
+		await subscription.close();
+		await client.close();
 	});
 
 	it('Should be able to start multiple subscriptions from single client instance', async function () {

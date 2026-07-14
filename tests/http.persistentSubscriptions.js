@@ -98,7 +98,7 @@ describe('HTTP Client - Persistent Subscription', () => {
 		assert.equal(options.resolveLinkTos, result.config.resolveLinktos);
 	});
 
-	it('Should delete persistent subscription', function(done) {
+	it('Should delete persistent subscription', async function() {
 		this.timeout(15 * 1000);
 		const client = new KurrentDB.HTTPClient(getHttpConfig());
 		const testStream = `TestStream-${generateEventId()}`;
@@ -112,16 +112,17 @@ describe('HTTP Client - Persistent Subscription', () => {
 
 		const testSubscriptionName = testStream;
 
-		client.writeEvents(testStream, events).then(() => client.persistentSubscriptions.assert(testSubscriptionName, testStream).then(() => client.persistentSubscriptions.remove(testSubscriptionName, testStream).then(() => client.persistentSubscriptions.getEvents(testSubscriptionName, testStream, 10).then(() => {
-			done('Should have not gotten events');
-		}).catch(err => {
-			try {
-				assert.equal(404, err.response.status, 'Should have received 404');
-			} catch (ex) {
-				return done(ex.message);
-			}
-			done();
-		})))).catch(done);
+		await client.writeEvents(testStream, events);
+		await client.persistentSubscriptions.assert(testSubscriptionName, testStream);
+		await client.persistentSubscriptions.remove(testSubscriptionName, testStream);
+
+		try {
+			await client.persistentSubscriptions.getEvents(testSubscriptionName, testStream, 10);
+		} catch (err) {
+			assert.equal(404, err.response.status, 'Should have received 404');
+			return;
+		}
+		assert.fail('Should have not gotten events');
 	});
 
 	it('Should return persistent subscription info', async function() {
