@@ -1,8 +1,8 @@
-import path from 'path';
+import getCaCertPath from './getCaCertPath.js';
 
 export default () => ({
 	useSslConnection: global.runningTestsInSecureMode,
-	tlsCAFile: global.runningTestsInSecureMode ? path.resolve(import.meta.dirname, './cluster/certs/ca/ca.crt') : undefined,
+	tlsCAFile: global.runningTestsInSecureMode ? getCaCertPath('cluster') : undefined,
 	gossipSeeds: [
 		{ hostname: process.env.ES_HOST || 'localhost', port: 22137 },
 		{ hostname: process.env.ES_HOST || 'localhost', port: 22157 },
