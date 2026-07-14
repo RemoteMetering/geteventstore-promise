@@ -21,6 +21,7 @@
 #### Features
 
 - Stream operations, `$all` reads, and stream metadata
+- `multiStreamWrite` to append events to multiple streams in a single atomic transaction
 - Persistent subscriptions
 - Projections
 

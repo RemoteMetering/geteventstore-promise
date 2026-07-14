@@ -22,6 +22,21 @@ describe('gRPC Client - Write Events', () => {
 		await client.close();
 	});
 
+	it('Write to a new stream and read the event metadata back', async () => {
+		const client = new KurrentDB.GRPCClient(getGRPCConfig());
+
+		const metadata = { source: 'unit-test', count: 5 };
+		const events = [eventFactory.newEvent('TestEventType', { something: '456' }, metadata)];
+
+		const testStream = `TestStream-${generateEventId()}`;
+		await client.writeEvents(testStream, events);
+
+		const evs = await client.getEvents(testStream);
+		assert.deepEqual(evs[0].metadata, metadata);
+
+		await client.close();
+	});
+
 	it('Write to a new stream and read the events by type', async () => {
 		const client = new KurrentDB.GRPCClient(getGRPCConfig());
 

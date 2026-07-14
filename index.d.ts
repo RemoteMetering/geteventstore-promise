@@ -9,6 +9,7 @@ import {
 
 import {
 	AppendResult as GRPCAppendResult,
+	MultiAppendResult as GRPCMultiAppendResult,
 	DeleteResult as GRPCDeleteResult,
 	StreamSubscription,
 	PersistentSubscriptionToStream,
@@ -106,6 +107,14 @@ export interface TCPWriteEventOptions {
 export interface GRPCWriteEventOptions {
 	expectedVersion?: number;
 	batchAppendSizeInBytes? : number;
+}
+
+export interface GRPCMultiStreamWrite {
+	streamName: string;
+	// Event metadata must be a plain object of string keys to string values.
+	// Non string values cause the underlying multiStreamAppend to reject the transaction.
+	events: NewEvent[];
+	expectedVersion?: number;
 }
 
 export interface TCPWriteEventsOptions extends TCPWriteEventOptions {
@@ -323,6 +332,7 @@ export class GRPCClient {
 	checkStreamExists(streamName: string): Promise<boolean>;
 	writeEvent(streamName: string, eventType: string, data: object, metaData?: object, options?: GRPCWriteEventOptions): Promise<GRPCAppendResult>;
 	writeEvents(streamName: string, events: NewEvent[], options?: GRPCWriteEventOptions): Promise<GRPCAppendResult>;
+	multiStreamWrite(writes: GRPCMultiStreamWrite[]): Promise<GRPCMultiAppendResult>;
 	getAllStreamEvents(streamName: string, chunkSize?: number, startPosition?: number, resolveLinkTos?: boolean): Promise<Event[]>;
 	getEvents(streamName: string, startPosition?: number, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): Promise<Event[]>;
 	getEventsByType(streamName: string, eventTypes: string[], startPosition?: number, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): Promise<Event[]>;
