@@ -1,3 +1,29 @@
+# 5.0.0 (2026-07-14)
+
+#### Features
+
+- Added a gRPC client backed by `@kurrent/kurrentdb-client`
+- Added `iterate*` async iterator read methods across all clients: `iterateEvents`, `iterateEventsForward`, `iterateEventsBackward`, `iterateAllStreamEvents`, and `iterateEventsByType`. The gRPC client also adds `iterateAllEvents`, `iterateAllEventsForward`, and `iterateAllEventsBackward`
+- These `iterate*` methods stream events one at a time, reducing memory footprint. They are now the preferred way to read over the buffering `getEvents`, `getAllStreamEvents`, `readEventsForward`, and `readEventsBackward` methods
+
+#### Breaking Changes
+
+- Renamed package to `@metronomic/kurrentdb-client`
+- Package is now pure ESM
+- Node 20 or later is now required
+
+#### Changes
+
+- Changed the default connection pool size to 5 for gRPC and TCP
+
+## gRPC
+
+#### Features
+
+- Stream operations, `$all` reads, and stream metadata
+- Persistent subscriptions
+- Projections
+
 # 4.0.1 (2021-09-28)
 
 ## TCP

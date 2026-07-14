@@ -1,6 +1,6 @@
 {
 	"name": "@metronomic/kurrentdb-client",
-	"version": "4.0.1",
+	"version": "5.0.0",
 	"description": "KurrentDB client wrapper",
 	"type": "module",
 	"main": "./lib/index.js",
