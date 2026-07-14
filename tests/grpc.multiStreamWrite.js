@@ -92,15 +92,17 @@ describeMultiStreamWrite('gRPC Client - Multi Stream Write', () => {
 
 		const streamA = `TestStream-${generateEventId()}`;
 
+		let succeeded = false;
 		try {
 			await client.multiStreamWrite([{
 				streamName: streamA,
 				events: [eventFactory.newEvent('TestEventType', { something: 'a1' }, { count: 5 })]
 			}]);
-			assert.fail('Multi stream write should not have succeeded with non string metadata');
+			succeeded = true;
 		} catch (err) {
 			assert(err, 'error expected');
 		}
+		assert(!succeeded, 'Multi stream write should not have succeeded with non string metadata');
 
 		// The stream must never have been created
 		assert.equal(await client.checkStreamExists(streamA), false, 'stream A should not exist');
@@ -117,6 +119,7 @@ describeMultiStreamWrite('gRPC Client - Multi Stream Write', () => {
 		// Seed stream A so it sits at revision 0
 		await client.writeEvent(streamA, 'TestEventType', { something: 'seed' });
 
+		let succeeded = false;
 		try {
 			await client.multiStreamWrite([{
 				streamName: streamA,
@@ -126,10 +129,11 @@ describeMultiStreamWrite('gRPC Client - Multi Stream Write', () => {
 				streamName: streamB,
 				events: [eventFactory.newEvent('TestEventType', { something: 'b1' })]
 			}]);
-			assert.fail('Multi stream write should not have succeeded');
+			succeeded = true;
 		} catch (err) {
 			assert(err, 'error expected');
 		}
+		assert(!succeeded, 'Multi stream write should not have succeeded');
 
 		// Stream A must be untouched and stream B must never have been created
 		const eventsA = await client.getEvents(streamA);
@@ -146,27 +150,31 @@ describeMultiStreamWrite('gRPC Client - Multi Stream Write', () => {
 		await client.multiStreamWrite([]);
 	});
 
-	it('Fails the promise when a non array is provided', () => {
+	it('Fails the promise when writes is not an array', async () => {
 		const client = new KurrentDB.GRPCClient(getGRPCConfig());
 
-		return client.multiStreamWrite({ streamName: 'nope', events: [] }).then(async () => {
-			await client.close();
-			assert.fail('should not have succeeded');
-		}).catch(err => {
+		try {
+			await client.multiStreamWrite({ streamName: 'nope', events: [] });
+		} catch (err) {
 			assert(err, 'error expected');
-		});
+			return;
+		}
+		await client.close();
+		assert.fail('should not have succeeded');
 	});
 
-	it('Fails the promise when a write is missing its events array', () => {
+	it('Fails the promise when a write is missing its events array', async () => {
 		const client = new KurrentDB.GRPCClient(getGRPCConfig());
 
 		const streamA = `TestStream-${generateEventId()}`;
 
-		return client.multiStreamWrite([{ streamName: streamA }]).then(async () => {
-			await client.close();
-			assert.fail('should not have succeeded');
-		}).catch(err => {
+		try {
+			await client.multiStreamWrite([{ streamName: streamA }]);
+		} catch (err) {
 			assert(err, 'error expected');
-		});
+			return;
+		}
+		await client.close();
+		assert.fail('should not have succeeded');
 	});
 });

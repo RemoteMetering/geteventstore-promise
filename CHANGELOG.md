@@ -21,6 +21,7 @@
 #### Features
 
 - Stream operations, `$all` reads, and stream metadata
+- `multiStreamWrite` to append events to multiple streams in a single atomic transaction, with a per stream `expectedVersion`
 - `multiStreamWriteCrossStreamConsistency` to append event records to one or more streams in a single atomic transaction, with optional cross-stream consistency checks
 - Persistent subscriptions
 - Projections
