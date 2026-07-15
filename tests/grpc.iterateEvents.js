@@ -1,17 +1,10 @@
 import generateEventId from '../lib/utilities/generateEventId.js';
 import getGRPCConfig from './support/getGRPCConfig.js';
 import KurrentDB from '../lib/index.js';
+import collect from '../lib/utilities/collect.js';
 import assert from 'assert';
 
 const eventFactory = new KurrentDB.EventFactory();
-
-const collect = async (iterable) => {
-	const events = [];
-	for await (const event of iterable) {
-		events.push(event);
-	}
-	return events;
-};
 
 describe('gRPC Client - Iterate Events', () => {
 	const testStream = `TestStream-${generateEventId()}`;
