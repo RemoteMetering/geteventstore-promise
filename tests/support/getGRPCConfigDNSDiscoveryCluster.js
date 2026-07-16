@@ -9,10 +9,5 @@ export default () => ({
 	credentials: {
 		username: 'admin',
 		password: 'changeit'
-	},
-	poolOptions: {
-		autostart: false,
-		max: 10,
-		min: 0
 	}
 });

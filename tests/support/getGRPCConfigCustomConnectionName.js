@@ -9,10 +9,5 @@ export default () => ({
 		username: 'admin',
 		password: 'changeit'
 	},
-	poolOptions: {
-		autostart: false,
-		max: 10,
-		min: 0
-	},
 	connectionNameGenerator: () => `CUSTOM_GRPC_CONNECTION_NAME_${new Date().getTime()}`
 });

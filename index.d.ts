@@ -15,7 +15,8 @@ import {
 	PersistentSubscriptionToStream,
 	ProjectionDetails,
 	GetStreamMetadataResult,
-	ReadPosition
+	ReadPosition,
+	KurrentDBClient
 } from '@kurrent/kurrentdb-client'
 
 import {
@@ -91,7 +92,6 @@ export interface GRPCConfig {
 	tlsCAFile?: string;
 	gossipSeeds?: GossipSeed[];
 	credentials: UserCredentials;
-	poolOptions?: ConnectionPoolOptions;
 	connectionName?: string;
 	connectionNameGenerator?: () => string | Promise<string>;
 }
@@ -250,9 +250,6 @@ export interface MappedEventAppearedCallback<TSubscription> {
 	(subscription: TSubscription, event: Event): void | Promise<void>;
 }
 
-export interface GRPCMappedEventAppearedCallback<TSubscription> {
-	(subscription: TSubscription, event: Event): void | Promise<void>;
-}
 export interface GRPCSubscriptionDroppedCallback<TSubscription> {
 	(subscription: TSubscription): void | Promise<void>;
 }
@@ -365,10 +362,10 @@ export class GRPCClient {
 	iterateAllEventsForward(startPosition?: ReadPosition, count?: number, resolveLinkTos?: boolean): AsyncIterableIterator<Event>;
 	iterateAllEventsBackward(startPosition?: ReadPosition, count?: number, resolveLinkTos?: boolean): AsyncIterableIterator<Event>;
 	deleteStream(streamName: string, hardDelete?: boolean): Promise<GRPCDeleteResult>;
-	subscribeToStream(streamName: string, onEventAppeared?: GRPCMappedEventAppearedCallback<StreamSubscription>, onDropped?: GRPCSubscriptionDroppedCallback<StreamSubscription>, resolveLinkTos?: boolean): Promise<StreamSubscription>;
-	subscribeToStreamFrom(streamName: string, fromEventNumber?: number, onEventAppeared?: GRPCMappedEventAppearedCallback<StreamSubscription>, onDropped?: GRPCSubscriptionDroppedCallback<StreamSubscription>, settings?: SubscribeToStreamFromSettings): Promise<StreamSubscription>;
+	subscribeToStream(streamName: string, onEventAppeared?: MappedEventAppearedCallback<StreamSubscription>, onDropped?: GRPCSubscriptionDroppedCallback<StreamSubscription>, resolveLinkTos?: boolean): Promise<StreamSubscription>;
+	subscribeToStreamFrom(streamName: string, fromEventNumber?: number, onEventAppeared?: MappedEventAppearedCallback<StreamSubscription>, onLiveProcessingStarted?: LiveProcessingStartedCallback, onDropped?: GRPCSubscriptionDroppedCallback<StreamSubscription>, settings?: SubscribeToStreamFromSettings): Promise<StreamSubscription>;
 	createPersistentSubscriptionToStream(streamName: string, groupName: string, settings?: PersistentSubscriptionOptions): Promise<void>;
-	subscribeToPersistentSubscriptionToStream(streamName: string, groupName: string, onEventAppeared?: GRPCMappedEventAppearedCallback<PersistentSubscriptionToStream>, onDropped?: GRPCSubscriptionDroppedCallback<PersistentSubscriptionToStream>, settings?: PersistentSubscriptionOptions, duplexOptions?: object): Promise<PersistentSubscriptionToStream>;
+	subscribeToPersistentSubscriptionToStream(streamName: string, groupName: string, onEventAppeared?: MappedEventAppearedCallback<PersistentSubscriptionToStream>, onDropped?: GRPCSubscriptionDroppedCallback<PersistentSubscriptionToStream>, settings?: PersistentSubscriptionOptions, duplexOptions?: object): Promise<PersistentSubscriptionToStream>;
 	projections: {
 		start(name: string): Promise<void>;
 		stop(name: string): Promise<void>;
@@ -390,6 +387,6 @@ export class GRPCClient {
 		getStreamSubscriptionsInfo(streamName: string): Promise<PersistentSubscriptionInfo[]>;
 	};
 	close(): Promise<void>;
-	getPool(): Promise<ConnectionPool<object>>;
-	closeAllPools(): Promise<void>;
+	getConnection(): Promise<KurrentDBClient>;
+	closeAllConnections(): Promise<void>;
 }

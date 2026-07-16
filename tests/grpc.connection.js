@@ -35,12 +35,8 @@ describe('gRPC Client - Test Connection', () => {
 			something: '123'
 		});
 
-		const pool = await client.getPool();
-		assert.equal(1, pool._allObjects.size);
-
-		const connection = await pool.acquire();
+		const connection = await client.getConnection();
 		assert(connection.connectionName.startsWith('CUSTOM_GRPC_CONNECTION_NAME_'), `Expected connection name to start with 'CUSTOM_GRPC_CONNECTION_NAME_', got '${connection.connectionName}'`);
-		await pool.release(connection);
 
 		await client.close();
 	});
@@ -87,37 +83,22 @@ describe('gRPC Client - Test Connection', () => {
 		}
 	});
 
-	it('Should default to 5 connections with no pool options provided', async function () {
+	it('Should share a single multiplexed connection across parallel operations', async function () {
 		this.timeout(60 * 1000);
 		const config = getGRPCConfig();
-		delete config.poolOptions;
 		config.makeConfigUniqueWithThis = new Date().getTime();
 		const client = new KurrentDB.GRPCClient(config);
 
 		await writeEventsInParallel(client);
 
-		const pool = await client.getPool();
-		assert.equal(5, pool._allObjects.size);
+		const connection = await client.getConnection();
+		const connectionAgain = await client.getConnection();
+		assert.strictEqual(connection, connectionAgain);
 
 		await client.close();
 	});
 
-	it('Should fill up pool connections to provided max', async function () {
-		this.timeout(60 * 1000);
-		const config = getGRPCConfig();
-		config.poolOptions.max = 7;
-		config.makeConfigUniqueWithThis = new Date().getTime();
-		const client = new KurrentDB.GRPCClient(config);
-
-		await writeEventsInParallel(client);
-
-		const pool = await client.getPool();
-		assert.equal(7, pool._allObjects.size);
-
-		await client.close();
-	});
-
-	it('Should close pool', async function () {
+	it('Should close connection', async function () {
 		this.timeout(60 * 1000);
 		const config = getGRPCConfig();
 		const client = new KurrentDB.GRPCClient(config);
@@ -130,28 +111,28 @@ describe('gRPC Client - Test Connection', () => {
 
 		let failed = false;
 		try {
-			await client.getPool();
+			await client.getConnection();
 			failed = true;
 		} catch (err) {
-			if (failed) throw new Error('Connection Pool should not exist');
-			assert.equal(err.message, 'Connection Pool not found');
+			if (failed) throw new Error('Connection should not exist');
+			assert.equal(err.message, 'Connection not found');
 		}
 	});
 
-	it('Should close all pools', async function () {
+	it('Should close all connections', async function () {
 		this.timeout(60 * 1000);
 		const config = getGRPCConfig();
 		const client = new KurrentDB.GRPCClient(config);
 
-		await client.closeAllPools();
+		await client.closeAllConnections();
 
 		let failed = false;
 		try {
-			await client.getPool();
+			await client.getConnection();
 			failed = true;
 		} catch (err) {
-			if (failed) throw new Error('Connection Pool should not exist');
-			assert.equal(err.message, 'Connection Pool not found');
+			if (failed) throw new Error('Connection should not exist');
+			assert.equal(err.message, 'Connection not found');
 		}
 	});
 });
