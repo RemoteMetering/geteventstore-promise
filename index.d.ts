@@ -228,6 +228,11 @@ export interface PersistentSubscriptionToAllOptions {
 	filter?: Filter;
 }
 
+export interface ReplayParkedMessagesOptions {
+	// When to stop replaying parked messages. Leave undefined for no limit.
+	stopAt?: number | bigint;
+}
+
 export interface PersistentSubscriptionAssertResult {
 	correlationId: string;
 	reason: string;
@@ -437,6 +442,8 @@ export class GRPCClient {
 		getAllSubscriptionsInfo(): Promise<PersistentSubscriptionInfo[]>;
 		getToAllSubscriptionsInfo(): Promise<PersistentSubscriptionInfo[]>;
 		getStreamSubscriptionsInfo(streamName: string): Promise<PersistentSubscriptionInfo[]>;
+		replayParkedMessagesToStream(name: string, streamName: string, options?: ReplayParkedMessagesOptions): Promise<void>;
+		replayParkedMessagesToAll(name: string, options?: ReplayParkedMessagesOptions): Promise<void>;
 		restartSubsystem(): Promise<void>;
 	};
 	close(): Promise<void>;

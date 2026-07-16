@@ -7,6 +7,7 @@
 - These `iterate*` methods stream events one at a time, reducing memory footprint. They are now the preferred way to read over the buffering `getEvents`, `getAllStreamEvents`, `readEventsForward`, and `readEventsBackward` methods
 - Added `setStreamMetadata` across all clients to write stream metadata such as `maxAge`, `maxCount`, `truncateBefore`, `cacheControl`, and ACLs, plus custom properties. The HTTP and TCP clients translate the friendly metadata shape to the raw system metadata document
 - Added `projections.restartSubsystem` and `persistentSubscriptions.restartSubsystem` on the gRPC and HTTP clients to restart the server's projection and persistent subscription subsystems
+- Added `persistentSubscriptions.replayParkedMessagesToStream` and `persistentSubscriptions.replayParkedMessagesToAll` on the gRPC client to replay a subscription's parked messages, with an optional `stopAt` limit
 
 #### Breaking Changes
 

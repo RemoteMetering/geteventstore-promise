@@ -66,6 +66,11 @@ The `$all` variants are gRPC only and need KurrentDB 21.10 or later. `assertToAl
 * getToAllSubscriptionsInfo()
 * removeToAll(subscriptionName)
 
+`replayParkedMessages*` is gRPC only. It replays a subscription's parked messages, optionally stopping at a given position with `options.stopAt`.
+
+* replayParkedMessagesToStream(subscriptionName, streamName, options)
+* replayParkedMessagesToAll(subscriptionName, options)
+
 `restartSubsystem` is available on the gRPC and HTTP clients. It restarts the server's persistent subscription subsystem.
 
 * restartSubsystem()
