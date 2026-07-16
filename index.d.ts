@@ -330,6 +330,7 @@ export class HTTPClient {
 		getAllProjectionsInfo(): Promise<HTTPProjectionsInfo>;
 		disableAll(): Promise<void[]>;
 		enableAll(): Promise<void[]>;
+		restartSubsystem(): Promise<void>;
 	};
 	persistentSubscriptions: {
 		assert(name: string, streamName: string, options?: PersistentSubscriptionOptions): Promise<PersistentSubscriptionAssertResult>;
@@ -338,6 +339,7 @@ export class HTTPClient {
 		getSubscriptionInfo(name: string, streamName: string): Promise<PersistentSubscriptionInfo>;
 		getAllSubscriptionsInfo(): Promise<PersistentSubscriptionInfo[]>;
 		getStreamSubscriptionsInfo(streamName: string): Promise<PersistentSubscriptionInfo[]>;
+		restartSubsystem(): Promise<void>;
 	};
 }
 
@@ -415,6 +417,7 @@ export class GRPCClient {
 		assert(name: string, projectionContent: string, mode?: ProjectionMode, enabled?: boolean, checkpointsEnabled?: boolean, emitEnabled?: boolean, trackEmittedStreams?: boolean): Promise<void>;
 		disableAll(): Promise<void[]>;
 		enableAll(): Promise<void[]>;
+		restartSubsystem(): Promise<void>;
 	};
 	persistentSubscriptions: {
 		assert(name: string, streamName: string, options?: PersistentSubscriptionOptions): Promise<void>;
@@ -426,6 +429,7 @@ export class GRPCClient {
 		getAllSubscriptionsInfo(): Promise<PersistentSubscriptionInfo[]>;
 		getToAllSubscriptionsInfo(): Promise<PersistentSubscriptionInfo[]>;
 		getStreamSubscriptionsInfo(streamName: string): Promise<PersistentSubscriptionInfo[]>;
+		restartSubsystem(): Promise<void>;
 	};
 	close(): Promise<void>;
 	getConnection(): Promise<KurrentDBClient>;

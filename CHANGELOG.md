@@ -6,6 +6,7 @@
 - Added `iterate*` async iterator read methods across all clients: `iterateEvents`, `iterateEventsForward`, `iterateEventsBackward`, `iterateAllStreamEvents`, and `iterateEventsByType`. The gRPC client also adds `iterateAllEvents`, `iterateAllEventsForward`, and `iterateAllEventsBackward`
 - These `iterate*` methods stream events one at a time, reducing memory footprint. They are now the preferred way to read over the buffering `getEvents`, `getAllStreamEvents`, `readEventsForward`, and `readEventsBackward` methods
 - Added `setStreamMetadata` across all clients to write stream metadata such as `maxAge`, `maxCount`, `truncateBefore`, `cacheControl`, and ACLs, plus custom properties. The HTTP and TCP clients translate the friendly metadata shape to the raw system metadata document
+- Added `projections.restartSubsystem` and `persistentSubscriptions.restartSubsystem` on the gRPC and HTTP clients to restart the server's projection and persistent subscription subsystems
 
 #### Breaking Changes
 

@@ -66,6 +66,10 @@ The `$all` variants are gRPC only and need KurrentDB 21.10 or later. `assertToAl
 * getToAllSubscriptionsInfo()
 * removeToAll(subscriptionName)
 
+`restartSubsystem` is available on the gRPC and HTTP clients. It restarts the server's persistent subscription subsystem.
+
+* restartSubsystem()
+
 # Projections
 
 Available on the gRPC and HTTP clients. `config` is HTTP only, and `getInfo`'s `includeConfig` argument applies to HTTP only.
@@ -82,6 +86,10 @@ Available on the gRPC and HTTP clients. `config` is HTTP only, and `getInfo`'s `
 * enableAll()
 * disableAll()
 * getAllProjectionsInfo()
+
+`restartSubsystem` is available on the gRPC and HTTP clients. It restarts the server's projection subsystem.
+
+* restartSubsystem()
 
 # Preferred methods: iterate over read
 
