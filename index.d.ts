@@ -37,9 +37,10 @@ export interface Event {
 	eventNumber: number;
 	eventType: string;
 	created: string;
-	data: object;
-	metadata?: object;
+	data: object | null;
+	metadata?: object | null;
 	isJson?: boolean;
+	isResolved?: boolean;
 	positionStreamId?: string;
 	positionEventId?: string;
 	positionEventNumber?: number;
@@ -82,6 +83,7 @@ export interface TCPConfig extends ConnectionSettings {
 	credentials: UserCredentials;
 	poolOptions?: ConnectionPoolOptions;
 	connectionNameGenerator?: () => string | Promise<string>;
+	includeDeleted?: boolean;
 }
 
 export interface GRPCConfig {
@@ -94,6 +96,7 @@ export interface GRPCConfig {
 	credentials: UserCredentials;
 	connectionName?: string;
 	connectionNameGenerator?: () => string | Promise<string>;
+	includeDeleted?: boolean;
 }
 
 export interface HTTPWriteEventOptions  {

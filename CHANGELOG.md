@@ -11,6 +11,7 @@
 - Renamed package to `@metronomic/kurrentdb-client`
 - Package is now pure ESM
 - Node 20 or later is now required
+- Deleted events are now returned instead of being silently dropped. Reads, iterators and subscriptions on the TCP client previously skipped resolved-link events whose target had been deleted, tombstoned or scavenged. This hid the true batch size and made a full batch of deleted events look like the end of a stream. Deleted events are now returned with `isResolved: false` and `data`/`metadata` set to `null`. Set `includeDeleted: false` in the client config to restore the old skipping behaviour. The HTTP client already returned these records and is unchanged, as will the new gRPC client
 
 #### Changes
 

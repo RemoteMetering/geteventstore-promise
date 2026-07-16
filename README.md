@@ -34,6 +34,19 @@ Available on all three clients.
 * iterateAllStreamEvents(streamName, chunkSize, startPosition, resolveLinkTos)
 * iterateEventsByType(streamName, eventTypes, startPosition, count, direction, resolveLinkTos)
 
+# Deleted events
+
+When you read a stream or `$all` with `resolveLinkTos` enabled, some records are resolved-link events whose target has been deleted, tombstoned or scavenged. These are deleted events.
+
+By default all clients now return deleted events instead of dropping them. A deleted event carries `isResolved: false`, with `data` and `metadata` set to `null`, and its stream and position fields taken from the link record. Returning them keeps batch reads at their true size, so paging stays correct. Previously the TCP client silently dropped them, which made a full batch of deleted events look like the end of the stream.
+
+Set `includeDeleted: false` in the client config to skip deleted events and return only live ones. This applies to the gRPC and TCP clients. The HTTP client always returns them.
+
+```javascript
+const event = events.find(e => e.isResolved === false);
+// event.data === null, event.metadata === null
+```
+
 # Persistent subscriptions
 
 Available on the gRPC and HTTP clients. `getEvents` is HTTP only.
@@ -76,7 +89,7 @@ The gRPC client is the recommended transport for new work.
 
 ## Config
 
-The protocol defaults to `kurrentdb+discover`, which lets the client discover cluster nodes. Set `useSslConnection` for a secure connection and `tlsCAFile` to point at a CA certificate when the server uses one.
+The protocol defaults to `kurrentdb+discover`, which lets the client discover cluster nodes. Set `useSslConnection` for a secure connection and `tlsCAFile` to point at a CA certificate when the server uses one. Set `includeDeleted: false` to skip deleted events (see [Deleted events](#deleted-events)).
 
 ```javascript
 const client = new KurrentDB.GRPCClient({
@@ -183,6 +196,8 @@ Available on the HTTP client only.
 # TCP Client (Legacy)
 
 ## Config
+
+Set `includeDeleted: false` to skip deleted events (see [Deleted events](#deleted-events)).
 
 ```javascript
 import { v4 as generateId } from 'uuid';
