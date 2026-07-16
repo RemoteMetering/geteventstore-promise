@@ -12,11 +12,16 @@ describe('gRPC Client - Subscribe To Stream From', () => {
 		const client = new KurrentDB.GRPCClient(getGRPCConfig());
 		const testStream = `TestStream-${generateEventId()}`;
 		let processedEventCount = 0;
+		let liveProcessingStarted = false;
 		let hasPassed = false;
 		let dropped = false;
 
 		function onEventAppeared() {
 			processedEventCount++;
+		}
+
+		function onLiveProcessingStarted() {
+			liveProcessingStarted = true;
 		}
 
 		function onDropped() {
@@ -30,10 +35,11 @@ describe('gRPC Client - Subscribe To Stream From', () => {
 
 		try {
 			await client.writeEvents(testStream, events);
-			const sub = await client.subscribeToStreamFrom(testStream, 0, onEventAppeared, onDropped);
+			const sub = await client.subscribeToStreamFrom(testStream, 0, onEventAppeared, onLiveProcessingStarted, onDropped);
 			await sleep(3000);
 			assert(!dropped, 'should not drop');
 			assert.equal(10, processedEventCount);
+			assert(liveProcessingStarted, 'expect live processing callback after catching up');
 			assert(sub, 'Subscription Expected');
 			hasPassed = true;
 			await sub.close();
@@ -74,7 +80,7 @@ describe('gRPC Client - Subscribe To Stream From', () => {
 			const settings = {
 				resolveLinkTos: true
 			};
-			const sub = await client.subscribeToStreamFrom(`$ce-TestStream`, 5, onEventAppeared, onDropped, settings);
+			const sub = await client.subscribeToStreamFrom(`$ce-TestStream`, 5, onEventAppeared, null, onDropped, settings);
 			await sleep(3000);
 			hasReachAssert = true;
 			assert(!dropError, dropError);
@@ -87,19 +93,22 @@ describe('gRPC Client - Subscribe To Stream From', () => {
 		}
 	});
 
-	it('Subscription should fail when stream does not exist yet', async function () {
+	it('Should receive events for a stream created after subscribing', async function () {
 		this.timeout(15 * 1000);
 		const client = new KurrentDB.GRPCClient(getGRPCConfig());
+		const testStream = `TestStream-${generateEventId()}`;
+		let processedEventCount = 0;
 
 		try {
-			await client.subscribeToStreamFrom(`DOES_NOT_EXISTS_FOR_SUB`, 0, () => {});
-		} catch (err) {
-			assert.equal(err.message, `Cannot subscribe to stream 'DOES_NOT_EXISTS_FOR_SUB' as it does not exist`);
-			return;
+			const sub = await client.subscribeToStreamFrom(testStream, 0, () => processedEventCount++);
+			await sleep(100);
+			await client.writeEvent(testStream, 'TestEventType', { something: 1 });
+			await sleep(3000);
+
+			assert.equal(1, processedEventCount, 'expect the event written after subscribing to arrive');
+			await sub.close();
 		} finally {
 			await client.closeAllConnections();
 		}
-
-		throw new Error(`Should have failed because stream does not exist`);
 	});
 });

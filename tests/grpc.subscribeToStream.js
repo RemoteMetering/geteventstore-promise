@@ -82,19 +82,22 @@ describe('gRPC Client - Subscribe To Stream', () => {
 		await client.closeAllConnections();
 	});
 
-	it('Subscription should fail when stream does not exist yet', async function () {
+	it('Should receive events for a stream created after subscribing', async function () {
 		this.timeout(15 * 1000);
 		const client = new KurrentDB.GRPCClient(getGRPCConfig());
+		const testStream = `TestStream-${generateEventId()}`;
+		let processedEventCount = 0;
 
 		try {
-			await client.subscribeToStream(`DOES_NOT_EXISTS_FOR_SUB`, () => {});
-		} catch (err) {
-			assert.equal(err.message, `Cannot subscribe to stream 'DOES_NOT_EXISTS_FOR_SUB' as it does not exist`);
-			return;
+			const subscription = await client.subscribeToStream(testStream, () => processedEventCount++);
+			await sleep(100);
+			await client.writeEvent(testStream, 'TestEventType', { something: 1 });
+			await sleep(3000);
+
+			assert.equal(1, processedEventCount, 'expect the event written after subscribing to arrive');
+			await subscription.close();
 		} finally {
 			await client.closeAllConnections();
 		}
-
-		throw new Error(`Should have failed because stream does not exist`);
 	});
 });
