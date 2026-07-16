@@ -15,6 +15,8 @@ import {
 	PersistentSubscriptionToStream,
 	ProjectionDetails,
 	GetStreamMetadataResult,
+	StreamMetadata,
+	SetStreamMetadataOptions,
 	ReadPosition,
 	KurrentDBClient
 } from '@kurrent/kurrentdb-client'
@@ -104,6 +106,10 @@ export interface HTTPWriteEventOptions  {
 }
 
 export interface TCPWriteEventOptions {
+	expectedVersion?: number;
+}
+
+export interface StreamMetadataOptions {
 	expectedVersion?: number;
 }
 
@@ -269,6 +275,7 @@ export class EventFactory {
 export class HTTPClient {
 	constructor(config: HTTPConfig);
 	checkStreamExists(streamName: string): Promise<boolean>;
+	setStreamMetadata(streamName: string, metadata: StreamMetadata, options?: StreamMetadataOptions): Promise<void>;
 	writeEvent(streamName: string, eventType: string, data: object, metaData?: object, options?: HTTPWriteEventOptions): Promise<void>;
 	writeEvents(streamName: string, events: NewEvent[], options?: HTTPWriteEventOptions): Promise<void>;
 	getAllStreamEvents(streamName: string, chunkSize?: number, startPosition?: number, resolveLinkTos?: boolean, embed?: EmbedType): Promise<Event[]>;
@@ -314,6 +321,7 @@ export class HTTPClient {
 export class TCPClient {
 	constructor(config: TCPConfig);
 	checkStreamExists(streamName: string): Promise<boolean>;
+	setStreamMetadata(streamName: string, metadata: StreamMetadata, options?: StreamMetadataOptions): Promise<TCPWriteResult>;
 	writeEvent(streamName: string, eventType: string, data: object, metaData?: object, options?: TCPWriteEventOptions): Promise<TCPWriteResult>;
 	writeEvents(streamName: string, events: NewEvent[], options?: TCPWriteEventsOptions): Promise<TCPWriteResult>;
 	getAllStreamEvents(streamName: string, chunkSize?: number, startPosition?: number, resolveLinkTos?: boolean): Promise<Event[]>;
@@ -343,6 +351,7 @@ export class TCPClient {
 export class GRPCClient {
 	constructor(config: GRPCConfig);
 	getStreamMetadata(streamName: string): Promise<GetStreamMetadataResult>;
+	setStreamMetadata(streamName: string, metadata: StreamMetadata, options?: SetStreamMetadataOptions): Promise<GRPCAppendResult>;
 	checkStreamExists(streamName: string): Promise<boolean>;
 	writeEvent(streamName: string, eventType: string, data: object, metaData?: object, options?: GRPCWriteEventOptions): Promise<GRPCAppendResult>;
 	writeEvents(streamName: string, events: NewEvent[], options?: GRPCWriteEventOptions): Promise<GRPCAppendResult>;
