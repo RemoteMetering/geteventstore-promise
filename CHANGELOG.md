@@ -26,6 +26,8 @@
 - Stream operations, `$all` reads, and stream metadata
 - A single multiplexed connection per config. `close` disposes the client's connection, `getConnection` returns it, and `closeAllConnections` disposes every connection the process has opened
 - `subscribeToStreamFrom` supports the `onLiveProcessingStarted` callback, fired when the subscription catches up and switches to live events
+- `subscribeToAll`, a catch-up subscription over `$all`, with `onLiveProcessingStarted` support
+- Server-side filtering over `$all` by event type or stream prefix. The `readAll*`, `iterateAll*`, and `subscribeToAll` methods accept an optional `filter`, so the server sends only matching events instead of the client reading and discarding. Build filters with the exported `eventTypeFilter`, `streamNameFilter`, and `excludeSystemEvents` helpers
 - `multiStreamWrite` to append events to multiple streams in a single atomic transaction, with a per stream `expectedVersion`
 - `multiStreamWriteCrossStreamConsistency` to append event records to one or more streams in a single atomic transaction, with optional cross-stream consistency checks
 - Persistent subscriptions

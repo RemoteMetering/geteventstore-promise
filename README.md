@@ -152,14 +152,15 @@ The client multiplexes all calls and subscriptions over a single shared connecti
 * getStreamMetadata(streamName)
 * multiStreamWrite(writes)
 * multiStreamWriteCrossStreamConsistency(writes, checks)
-* readAllEvents(startPosition, count, direction, resolveLinkTos)
-* readAllEventsForward(startPosition, count, resolveLinkTos)
-* readAllEventsBackward(startPosition, count, resolveLinkTos)
-* iterateAllEvents(startPosition, count, direction, resolveLinkTos)
-* iterateAllEventsForward(startPosition, count, resolveLinkTos)
-* iterateAllEventsBackward(startPosition, count, resolveLinkTos)
+* readAllEvents(startPosition, count, direction, resolveLinkTos, filter)
+* readAllEventsForward(startPosition, count, resolveLinkTos, filter)
+* readAllEventsBackward(startPosition, count, resolveLinkTos, filter)
+* iterateAllEvents(startPosition, count, direction, resolveLinkTos, filter)
+* iterateAllEventsForward(startPosition, count, resolveLinkTos, filter)
+* iterateAllEventsBackward(startPosition, count, resolveLinkTos, filter)
 * subscribeToStream(streamName, onEventAppeared, onDropped, resolveLinkTos)
 * subscribeToStreamFrom(streamName, fromEventNumber, onEventAppeared, onLiveProcessingStarted, onDropped, settings)
+* subscribeToAll(fromPosition, onEventAppeared, onLiveProcessingStarted, onDropped, settings)
 * createPersistentSubscriptionToStream(streamName, groupName, settings)
 * subscribeToPersistentSubscriptionToStream(streamName, groupName, onEventAppeared, onDropped, settings, duplexOptions)
 * createPersistentSubscriptionToAll(groupName, settings)
@@ -168,6 +169,30 @@ The client multiplexes all calls and subscriptions over a single shared connecti
 * getConnection()
 * closeAllConnections()
 
+## Server-side filtering over $all
+
+The `readAll*`, `iterateAll*`, and `subscribeToAll` methods accept an optional server-side `filter`. The server then only sends matching events, instead of the client reading every event and discarding non-matches. This is far cheaper over `$all` than filtering in your own code.
+
+Build a filter with the helpers exported from the package. Filters match on either event type or stream name, by prefix or by regular expression.
+
+```javascript
+import KurrentDB, { eventTypeFilter, streamNameFilter, excludeSystemEvents } from '@metronomic/kurrentdb-client';
+
+const client = new KurrentDB.GRPCClient(config);
+
+// All OrderPlaced events across every stream, newest first
+const { events } = await client.readAllEventsBackward('end', 100, false, eventTypeFilter({ prefixes: ['OrderPlaced'] }));
+
+// Live subscription to every event on streams starting with "order-", skipping catch-up history
+await client.subscribeToAll('end', onEventAppeared, onLiveProcessingStarted, onDropped, {
+	filter: streamNameFilter({ prefixes: ['order-'] })
+});
+
+// Exclude system events (those on $ streams)
+await client.readAllEventsForward('start', 1000, false, excludeSystemEvents());
+```
+
+`subscribeToAll` is a catch-up subscription over `$all`. `fromPosition` is `'start'`, `'end'`, or a `{ commit, prepare }` position. `onLiveProcessingStarted` fires when the subscription catches up and switches to live events.
 
 ---
 

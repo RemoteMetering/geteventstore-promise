@@ -12,6 +12,7 @@ import {
 	MultiAppendResult as GRPCMultiAppendResult,
 	DeleteResult as GRPCDeleteResult,
 	StreamSubscription,
+	AllStreamSubscription,
 	PersistentSubscriptionToStream,
 	PersistentSubscriptionToAll,
 	Filter,
@@ -278,6 +279,12 @@ export interface SubscribeToStreamFromSettings {
 	readBatchSize?: number;
 }
 
+export interface SubscribeToAllSettings {
+	resolveLinkTos?: boolean;
+	// Optional server-side filter, built with eventTypeFilter / streamNameFilter / excludeSystemEvents.
+	filter?: Filter;
+}
+
 export interface MappedEventAppearedCallback<TSubscription> {
 	(subscription: TSubscription, event: Event): void | Promise<void>;
 }
@@ -387,20 +394,21 @@ export class GRPCClient {
 	getEventsByType(streamName: string, eventTypes: string[], startPosition?: number, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): Promise<Event[]>;
 	readEventsForward(streamName: string, startPosition?: number, count?: number, resolveLinkTos?: boolean): Promise<GRPCReadResult>;
 	readEventsBackward(streamName: string, startPosition?: number, count?: number, resolveLinkTos?: boolean): Promise<GRPCReadResult>;
-	readAllEvents(startPosition?: ReadPosition, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): Promise<Event[]>;
-	readAllEventsForward(startPosition?: ReadPosition, count?: number, resolveLinkTos?: boolean): Promise<GRPCReadResult>;
-	readAllEventsBackward(startPosition?: ReadPosition, count?: number, resolveLinkTos?: boolean): Promise<GRPCReadResult>;
+	readAllEvents(startPosition?: ReadPosition, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean, filter?: Filter): Promise<Event[]>;
+	readAllEventsForward(startPosition?: ReadPosition, count?: number, resolveLinkTos?: boolean, filter?: Filter): Promise<GRPCReadResult>;
+	readAllEventsBackward(startPosition?: ReadPosition, count?: number, resolveLinkTos?: boolean, filter?: Filter): Promise<GRPCReadResult>;
 	iterateAllStreamEvents(streamName: string, chunkSize?: number, startPosition?: number, resolveLinkTos?: boolean): AsyncIterableIterator<Event>;
 	iterateEvents(streamName: string, startPosition?: number, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): AsyncIterableIterator<Event>;
 	iterateEventsForward(streamName: string, startPosition?: number, count?: number, resolveLinkTos?: boolean): AsyncIterableIterator<Event>;
 	iterateEventsBackward(streamName: string, startPosition?: number, count?: number, resolveLinkTos?: boolean): AsyncIterableIterator<Event>;
 	iterateEventsByType(streamName: string, eventTypes: string[], startPosition?: number, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): AsyncIterableIterator<Event>;
-	iterateAllEvents(startPosition?: ReadPosition, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean): AsyncIterableIterator<Event>;
-	iterateAllEventsForward(startPosition?: ReadPosition, count?: number, resolveLinkTos?: boolean): AsyncIterableIterator<Event>;
-	iterateAllEventsBackward(startPosition?: ReadPosition, count?: number, resolveLinkTos?: boolean): AsyncIterableIterator<Event>;
+	iterateAllEvents(startPosition?: ReadPosition, count?: number, direction?: ReadDirection, resolveLinkTos?: boolean, filter?: Filter): AsyncIterableIterator<Event>;
+	iterateAllEventsForward(startPosition?: ReadPosition, count?: number, resolveLinkTos?: boolean, filter?: Filter): AsyncIterableIterator<Event>;
+	iterateAllEventsBackward(startPosition?: ReadPosition, count?: number, resolveLinkTos?: boolean, filter?: Filter): AsyncIterableIterator<Event>;
 	deleteStream(streamName: string, hardDelete?: boolean): Promise<GRPCDeleteResult>;
 	subscribeToStream(streamName: string, onEventAppeared?: MappedEventAppearedCallback<StreamSubscription>, onDropped?: GRPCSubscriptionDroppedCallback<StreamSubscription>, resolveLinkTos?: boolean): Promise<StreamSubscription>;
 	subscribeToStreamFrom(streamName: string, fromEventNumber?: number, onEventAppeared?: MappedEventAppearedCallback<StreamSubscription>, onLiveProcessingStarted?: LiveProcessingStartedCallback, onDropped?: GRPCSubscriptionDroppedCallback<StreamSubscription>, settings?: SubscribeToStreamFromSettings): Promise<StreamSubscription>;
+	subscribeToAll(fromPosition?: ReadPosition, onEventAppeared?: MappedEventAppearedCallback<AllStreamSubscription>, onLiveProcessingStarted?: LiveProcessingStartedCallback, onDropped?: GRPCSubscriptionDroppedCallback<AllStreamSubscription>, settings?: SubscribeToAllSettings): Promise<AllStreamSubscription>;
 	createPersistentSubscriptionToStream(streamName: string, groupName: string, settings?: PersistentSubscriptionOptions): Promise<void>;
 	createPersistentSubscriptionToAll(groupName: string, settings?: PersistentSubscriptionToAllOptions): Promise<void>;
 	subscribeToPersistentSubscriptionToStream(streamName: string, groupName: string, onEventAppeared?: MappedEventAppearedCallback<PersistentSubscriptionToStream>, onDropped?: GRPCSubscriptionDroppedCallback<PersistentSubscriptionToStream>, settings?: PersistentSubscriptionOptions, duplexOptions?: object): Promise<PersistentSubscriptionToStream>;
@@ -436,11 +444,17 @@ export class GRPCClient {
 	closeAllConnections(): Promise<void>;
 }
 
+// Server-side filter builders for the gRPC readAll / subscribeToAll methods.
+export { eventTypeFilter, streamNameFilter, excludeSystemEvents } from '@kurrent/kurrentdb-client';
+
 declare const KurrentDB: {
 	EventFactory: typeof EventFactory;
 	HTTPClient: typeof HTTPClient;
 	TCPClient: typeof TCPClient;
 	GRPCClient: typeof GRPCClient;
+	eventTypeFilter: typeof import('@kurrent/kurrentdb-client').eventTypeFilter;
+	streamNameFilter: typeof import('@kurrent/kurrentdb-client').streamNameFilter;
+	excludeSystemEvents: typeof import('@kurrent/kurrentdb-client').excludeSystemEvents;
 };
 
 export default KurrentDB;
