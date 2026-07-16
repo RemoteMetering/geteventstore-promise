@@ -45,7 +45,7 @@ describe('gRPC Client - Subscribe To Stream', () => {
 		await sleep(3000);
 
 		if (dropped) {
-			await client.closeAllPools();
+			await client.closeAllConnections();
 			assert.fail('should not drop');
 		}
 
@@ -79,7 +79,7 @@ describe('gRPC Client - Subscribe To Stream', () => {
 
 		await sub1.close();
 		await sub2.close();
-		await client.closeAllPools();
+		await client.closeAllConnections();
 	});
 
 	it('Subscription should fail when stream does not exist yet', async function () {
@@ -92,7 +92,7 @@ describe('gRPC Client - Subscribe To Stream', () => {
 			assert.equal(err.message, `Cannot subscribe to stream 'DOES_NOT_EXISTS_FOR_SUB' as it does not exist`);
 			return;
 		} finally {
-			await client.closeAllPools();
+			await client.closeAllConnections();
 		}
 
 		throw new Error(`Should have failed because stream does not exist`);

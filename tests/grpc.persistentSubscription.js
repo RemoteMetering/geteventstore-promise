@@ -48,7 +48,7 @@ describe('gRPC Client - Persistent Subscription', () => {
 		await sleep(3000);
 
 		if (dropped) {
-			await client.closeAllPools();
+			await client.closeAllConnections();
 			assert.fail('should not drop');
 		}
 
@@ -87,7 +87,7 @@ describe('gRPC Client - Persistent Subscription', () => {
 
 		await sub1.close();
 		await sub2.close();
-		await client.closeAllPools();
+		await client.closeAllConnections();
 	});
 
 	it('Subscription should fail when subscription does not exist yet', async function () {
@@ -100,7 +100,7 @@ describe('gRPC Client - Persistent Subscription', () => {
 			assert.equal(err.message, `Subscription group NO_GROUP on stream DOES_NOT_EXISTS_FOR_SUB does not exist`);
 			return;
 		} finally {
-			await client.closeAllPools();
+			await client.closeAllConnections();
 		}
 
 		throw new Error(`Should have failed because subscription does not exist`);

@@ -38,7 +38,7 @@ describe('gRPC Client - Subscribe To Stream From', () => {
 			hasPassed = true;
 			await sub.close();
 		} finally {
-			await client.closeAllPools();
+			await client.closeAllConnections();
 		}
 	});
 
@@ -83,7 +83,7 @@ describe('gRPC Client - Subscribe To Stream From', () => {
 			hasPassed = true;
 			await sub.close();
 		} finally {
-			await client.closeAllPools();
+			await client.closeAllConnections();
 		}
 	});
 
@@ -97,7 +97,7 @@ describe('gRPC Client - Subscribe To Stream From', () => {
 			assert.equal(err.message, `Cannot subscribe to stream 'DOES_NOT_EXISTS_FOR_SUB' as it does not exist`);
 			return;
 		} finally {
-			await client.closeAllPools();
+			await client.closeAllConnections();
 		}
 
 		throw new Error(`Should have failed because stream does not exist`);
