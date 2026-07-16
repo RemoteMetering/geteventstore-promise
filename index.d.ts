@@ -390,3 +390,12 @@ export class GRPCClient {
 	getConnection(): Promise<KurrentDBClient>;
 	closeAllConnections(): Promise<void>;
 }
+
+declare const KurrentDB: {
+	EventFactory: typeof EventFactory;
+	HTTPClient: typeof HTTPClient;
+	TCPClient: typeof TCPClient;
+	GRPCClient: typeof GRPCClient;
+};
+
+export default KurrentDB;

@@ -116,7 +116,9 @@ const clusterClient = new KurrentDB.GRPCClient({
 
 ## Additional gRPC methods
 
-Methods available on the gRPC client beyond the common set above. The `readAll*` and `iterateAll*` methods read across all streams using the server-wide `$all` stream. The `subscribe*` and pool methods (`close`, `getPool`, `closeAllPools`) are shared with the TCP client.
+Methods available on the gRPC client beyond the common set above. The `readAll*` and `iterateAll*` methods read across all streams using the server-wide `$all` stream.
+
+The client multiplexes all calls and subscriptions over a single shared connection per config, so there is no connection pool. `close` disposes the client's connection and `closeAllConnections` disposes every connection the process has opened.
 
 * getStreamMetadata(streamName)
 * multiStreamWrite(writes)
@@ -128,12 +130,12 @@ Methods available on the gRPC client beyond the common set above. The `readAll*`
 * iterateAllEventsForward(startPosition, count, resolveLinkTos)
 * iterateAllEventsBackward(startPosition, count, resolveLinkTos)
 * subscribeToStream(streamName, onEventAppeared, onDropped, resolveLinkTos)
-* subscribeToStreamFrom(streamName, fromEventNumber, onEventAppeared, onDropped, settings)
+* subscribeToStreamFrom(streamName, fromEventNumber, onEventAppeared, onLiveProcessingStarted, onDropped, settings)
 * createPersistentSubscriptionToStream(streamName, groupName, settings)
 * subscribeToPersistentSubscriptionToStream(streamName, groupName, onEventAppeared, onDropped, settings, duplexOptions)
 * close()
-* getPool()
-* closeAllPools()
+* getConnection()
+* closeAllConnections()
 
 
 ---

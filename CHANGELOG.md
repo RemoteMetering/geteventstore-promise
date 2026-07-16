@@ -1,4 +1,4 @@
-# 5.0.0 (2026-07-14)
+# 5.0.0 (2026-07-16)
 
 #### Features
 
@@ -14,13 +14,15 @@
 
 #### Changes
 
-- Changed the default connection pool size to 5 for gRPC and TCP
+- Changed the default connection pool size to 5 for TCP
 
 ## gRPC
 
 #### Features
 
 - Stream operations, `$all` reads, and stream metadata
+- A single multiplexed connection per config. `close` disposes the client's connection, `getConnection` returns it, and `closeAllConnections` disposes every connection the process has opened
+- `subscribeToStreamFrom` supports the `onLiveProcessingStarted` callback, fired when the subscription catches up and switches to live events
 - `multiStreamWrite` to append events to multiple streams in a single atomic transaction, with a per stream `expectedVersion`
 - `multiStreamWriteCrossStreamConsistency` to append event records to one or more streams in a single atomic transaction, with optional cross-stream consistency checks
 - Persistent subscriptions
