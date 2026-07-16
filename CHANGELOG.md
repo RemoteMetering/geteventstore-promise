@@ -5,6 +5,7 @@
 - Added a gRPC client backed by `@kurrent/kurrentdb-client`
 - Added `iterate*` async iterator read methods across all clients: `iterateEvents`, `iterateEventsForward`, `iterateEventsBackward`, `iterateAllStreamEvents`, and `iterateEventsByType`. The gRPC client also adds `iterateAllEvents`, `iterateAllEventsForward`, and `iterateAllEventsBackward`
 - These `iterate*` methods stream events one at a time, reducing memory footprint. They are now the preferred way to read over the buffering `getEvents`, `getAllStreamEvents`, `readEventsForward`, and `readEventsBackward` methods
+- Added `setStreamMetadata` across all clients to write stream metadata such as `maxAge`, `maxCount`, `truncateBefore`, `cacheControl`, and ACLs, plus custom properties. The HTTP and TCP clients translate the friendly metadata shape to the raw system metadata document
 
 #### Breaking Changes
 
@@ -27,6 +28,7 @@
 - `multiStreamWrite` to append events to multiple streams in a single atomic transaction, with a per stream `expectedVersion`
 - `multiStreamWriteCrossStreamConsistency` to append event records to one or more streams in a single atomic transaction, with optional cross-stream consistency checks
 - Persistent subscriptions
+- Persistent subscriptions to `$all`, with optional server-side filtering by event type or stream prefix. Adds `createPersistentSubscriptionToAll` and `subscribeToPersistentSubscriptionToAll`, plus `assertToAll`, `removeToAll`, `getToAllSubscriptionInfo`, and `getToAllSubscriptionsInfo` on `persistentSubscriptions`. Needs KurrentDB 21.10 or later
 - Projections
 
 # 4.0.1 (2021-09-28)

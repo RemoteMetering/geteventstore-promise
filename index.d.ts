@@ -13,6 +13,8 @@ import {
 	DeleteResult as GRPCDeleteResult,
 	StreamSubscription,
 	PersistentSubscriptionToStream,
+	PersistentSubscriptionToAll,
+	Filter,
 	ProjectionDetails,
 	GetStreamMetadataResult,
 	StreamMetadata,
@@ -204,6 +206,27 @@ export interface PersistentSubscriptionOptions {
 	namedConsumerStrategy?: string;
 }
 
+export type AllPosition = "start" | "end" | { commit: bigint; prepare: bigint };
+
+export interface PersistentSubscriptionToAllOptions {
+	resolveLinkTos?: boolean;
+	startFrom?: AllPosition;
+	startPosition?: AllPosition;
+	extraStatistics?: boolean;
+	messageTimeout?: number;
+	maxRetryCount?: number;
+	liveBufferSize?: number;
+	readBatchSize?: number;
+	historyBufferSize?: number;
+	checkPointAfter?: number;
+	checkPointLowerBound?: number;
+	checkPointUpperBound?: number;
+	maxSubscriberCount?: number;
+	consumerStrategyName?: string;
+	// Only applied on create. Filters the $all stream by event type or stream prefix.
+	filter?: Filter;
+}
+
 export interface PersistentSubscriptionAssertResult {
 	correlationId: string;
 	reason: string;
@@ -377,7 +400,9 @@ export class GRPCClient {
 	subscribeToStream(streamName: string, onEventAppeared?: MappedEventAppearedCallback<StreamSubscription>, onDropped?: GRPCSubscriptionDroppedCallback<StreamSubscription>, resolveLinkTos?: boolean): Promise<StreamSubscription>;
 	subscribeToStreamFrom(streamName: string, fromEventNumber?: number, onEventAppeared?: MappedEventAppearedCallback<StreamSubscription>, onLiveProcessingStarted?: LiveProcessingStartedCallback, onDropped?: GRPCSubscriptionDroppedCallback<StreamSubscription>, settings?: SubscribeToStreamFromSettings): Promise<StreamSubscription>;
 	createPersistentSubscriptionToStream(streamName: string, groupName: string, settings?: PersistentSubscriptionOptions): Promise<void>;
+	createPersistentSubscriptionToAll(groupName: string, settings?: PersistentSubscriptionToAllOptions): Promise<void>;
 	subscribeToPersistentSubscriptionToStream(streamName: string, groupName: string, onEventAppeared?: MappedEventAppearedCallback<PersistentSubscriptionToStream>, onDropped?: GRPCSubscriptionDroppedCallback<PersistentSubscriptionToStream>, settings?: PersistentSubscriptionOptions, duplexOptions?: object): Promise<PersistentSubscriptionToStream>;
+	subscribeToPersistentSubscriptionToAll(groupName: string, onEventAppeared?: MappedEventAppearedCallback<PersistentSubscriptionToAll>, onDropped?: GRPCSubscriptionDroppedCallback<PersistentSubscriptionToAll>, settings?: { bufferSize?: number }, duplexOptions?: object): Promise<PersistentSubscriptionToAll>;
 	projections: {
 		start(name: string): Promise<void>;
 		stop(name: string): Promise<void>;
@@ -393,9 +418,13 @@ export class GRPCClient {
 	};
 	persistentSubscriptions: {
 		assert(name: string, streamName: string, options?: PersistentSubscriptionOptions): Promise<void>;
+		assertToAll(name: string, options?: PersistentSubscriptionToAllOptions): Promise<void>;
 		remove(name: string, streamName: string): Promise<void>;
+		removeToAll(name: string): Promise<void>;
 		getSubscriptionInfo(name: string, streamName: string): Promise<PersistentSubscriptionInfo>;
+		getToAllSubscriptionInfo(name: string): Promise<PersistentSubscriptionInfo>;
 		getAllSubscriptionsInfo(): Promise<PersistentSubscriptionInfo[]>;
+		getToAllSubscriptionsInfo(): Promise<PersistentSubscriptionInfo[]>;
 		getStreamSubscriptionsInfo(streamName: string): Promise<PersistentSubscriptionInfo[]>;
 	};
 	close(): Promise<void>;

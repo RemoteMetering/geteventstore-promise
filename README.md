@@ -28,6 +28,7 @@ Available on all three clients.
 * writeEvents(streamName, events, options)
 * deleteStream(streamName, hardDelete)
 * checkStreamExists(streamName)
+* setStreamMetadata(streamName, metadata, options)
 * iterateEvents(streamName, startPosition, count, direction, resolveLinkTos)
 * iterateEventsForward(streamName, startPosition, count, resolveLinkTos)
 * iterateEventsBackward(streamName, startPosition, count, resolveLinkTos)
@@ -57,6 +58,13 @@ Available on the gRPC and HTTP clients. `getEvents` is HTTP only.
 * getStreamSubscriptionsInfo(streamName)
 * getAllSubscriptionsInfo()
 * remove(subscriptionName, streamName)
+
+The `$all` variants are gRPC only and need KurrentDB 21.10 or later. `assertToAll` accepts an optional `filter` in its options to restrict the subscription to matching event types or stream prefixes.
+
+* assertToAll(subscriptionName, options)
+* getToAllSubscriptionInfo(subscriptionName)
+* getToAllSubscriptionsInfo()
+* removeToAll(subscriptionName)
 
 # Projections
 
@@ -146,6 +154,8 @@ The client multiplexes all calls and subscriptions over a single shared connecti
 * subscribeToStreamFrom(streamName, fromEventNumber, onEventAppeared, onLiveProcessingStarted, onDropped, settings)
 * createPersistentSubscriptionToStream(streamName, groupName, settings)
 * subscribeToPersistentSubscriptionToStream(streamName, groupName, onEventAppeared, onDropped, settings, duplexOptions)
+* createPersistentSubscriptionToAll(groupName, settings)
+* subscribeToPersistentSubscriptionToAll(groupName, onEventAppeared, onDropped, settings, duplexOptions)
 * close()
 * getConnection()
 * closeAllConnections()
