@@ -6,7 +6,6 @@ describe('gRPC Client - Config', () => {
   it('Should return assertion error when config is undefined', (done) => {
     try {
       // Constructed purely to trigger the config assertion
-      // eslint-disable-next-line no-new
       new KurrentDB.GRPCClient();
       done('Config should not pass assertion');
     } catch (err) {
@@ -26,7 +25,6 @@ describe('gRPC Client - Config', () => {
         }
       };
       // Constructed purely to trigger the config assertion
-      // eslint-disable-next-line no-new
       new KurrentDB.GRPCClient(config);
       done();
     } catch (err) {
@@ -43,7 +41,6 @@ describe('gRPC Client - Config', () => {
         port: 1113
       };
       // Constructed purely to trigger the config assertion
-      // eslint-disable-next-line no-new
       new KurrentDB.GRPCClient(config);
       done();
     } catch (err) {

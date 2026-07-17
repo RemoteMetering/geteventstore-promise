@@ -2,7 +2,7 @@ services:
   volumes-provisioner:
     image: hasnat/volumes-provisioner
     environment:
-      PROVISION_DIRECTORIES: "1000:1000:0755:/tmp/certs"
+      PROVISION_DIRECTORIES: '1000:1000:0755:/tmp/certs'
     volumes:
       - certs:/tmp/certs
     network_mode: none
@@ -10,7 +10,7 @@ services:
   metronomic_kurrentdb_client_test_setup:
     image: eventstore/es-gencert-cli:1.0.2
     entrypoint: bash
-    user: "0:0"
+    user: '0:0'
     command: >
       -c "mkdir -p ./certs && cd /certs
       && es-gencert-cli create-ca
@@ -30,7 +30,7 @@ services:
     # Runs as root so gencert can write into the ./certs bind mount, which the
     # Docker daemon recreates as root owned after cleanCerts removes it. The
     # chmod 666 below keeps the generated files readable by the DB and tests.
-    user: "0:0"
+    user: '0:0'
     command: >
       -c "mkdir -p ./certs && cd /certs
       && es-gencert-cli create-ca
@@ -61,15 +61,15 @@ services:
     healthcheck:
       test:
         [
-          "CMD-SHELL",
-          "curl --fail --insecure http://metronomic_kurrentdb_client_test_cluster_node1:2113/health/live || exit 1",
+          'CMD-SHELL',
+          'curl --fail --insecure http://metronomic_kurrentdb_client_test_cluster_node1:2113/health/live || exit 1'
         ]
       interval: 5s
       timeout: 5s
       retries: 24
     ports:
-      - "11136:1113"
-      - "22137:2113"
+      - '11136:1113'
+      - '22137:2113'
     volumes:
       - ./certs:/certs
     depends_on:
@@ -93,15 +93,15 @@ services:
     healthcheck:
       test:
         [
-          "CMD-SHELL",
-          "curl --fail --insecure http://metronomic_kurrentdb_client_test_cluster_node2:2113/health/live || exit 1",
+          'CMD-SHELL',
+          'curl --fail --insecure http://metronomic_kurrentdb_client_test_cluster_node2:2113/health/live || exit 1'
         ]
       interval: 5s
       timeout: 5s
       retries: 24
     ports:
-      - "11156:1113"
-      - "22157:2113"
+      - '11156:1113'
+      - '22157:2113'
     networks:
       clusternetwork:
         ipv4_address: 172.30.240.12
@@ -120,15 +120,15 @@ services:
     healthcheck:
       test:
         [
-          "CMD-SHELL",
-          "curl --fail --insecure http://metronomic_kurrentdb_client_test_cluster_node3:2113/health/live || exit 1",
+          'CMD-SHELL',
+          'curl --fail --insecure http://metronomic_kurrentdb_client_test_cluster_node3:2113/health/live || exit 1'
         ]
       interval: 5s
       timeout: 5s
       retries: 24
     ports:
-      - "11176:1113"
-      - "22177:2113"
+      - '11176:1113'
+      - '22177:2113'
     networks:
       clusternetwork:
         ipv4_address: 172.30.240.13

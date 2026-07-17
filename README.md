@@ -1,39 +1,42 @@
 # @metronomic/kurrentdb-client
+
 A Node.js KurrentDB(previously EventStoreDB) client API wrapper.
 
 The package ships three clients over three transports:
 
-* **gRPC** (`GRPCClient`) talks to modern KurrentDB. This is the recommended transport for new work. Uses the official [@kurrent/kurrentdb-client](https://www.npmjs.com/package/@kurrent/kurrentdb-client) package.
-* **HTTP** (`HTTPClient`) talks to the KurrentDB HTTP API.
-* **TCP** (`TCPClient`) talks to the legacy KurrentDB TCP API. Uses the [node-eventstore-client](https://www.npmjs.com/package/node-eventstore-client) package.
+- **gRPC** (`GRPCClient`) talks to modern KurrentDB. This is the recommended transport for new work. Uses the official [@kurrent/kurrentdb-client](https://www.npmjs.com/package/@kurrent/kurrentdb-client) package.
+- **HTTP** (`HTTPClient`) talks to the KurrentDB HTTP API.
+- **TCP** (`TCPClient`) talks to the legacy KurrentDB TCP API. Uses the [node-eventstore-client](https://www.npmjs.com/package/node-eventstore-client) package.
 
 All three expose the same core methods, so you can switch transport through configuration alone.
 
 # Installation
-> yarn add @metronomic/kurrentdb-client
+
+> pnpm add @metronomic/kurrentdb-client
 
 In your application:
+
 > import KurrentDB from '@metronomic/kurrentdb-client';
 
 # Common methods
 
 Available on all three clients.
 
-* getEvents(streamName, startPosition, count, direction, resolveLinkTos)
-* getAllStreamEvents(streamName, chunkSize, startPosition, resolveLinkTos)
-* getEventsByType(streamName, eventTypes, startPosition, count, direction, resolveLinkTos)
-* readEventsForward(streamName, startPosition, count, resolveLinkTos)
-* readEventsBackward(streamName, startPosition, count, resolveLinkTos)
-* writeEvent(streamName, eventType, data, metaData, options)
-* writeEvents(streamName, events, options)
-* deleteStream(streamName, hardDelete)
-* checkStreamExists(streamName)
-* setStreamMetadata(streamName, metadata, options)
-* iterateEvents(streamName, startPosition, count, direction, resolveLinkTos)
-* iterateEventsForward(streamName, startPosition, count, resolveLinkTos)
-* iterateEventsBackward(streamName, startPosition, count, resolveLinkTos)
-* iterateAllStreamEvents(streamName, chunkSize, startPosition, resolveLinkTos)
-* iterateEventsByType(streamName, eventTypes, startPosition, count, direction, resolveLinkTos)
+- getEvents(streamName, startPosition, count, direction, resolveLinkTos)
+- getAllStreamEvents(streamName, chunkSize, startPosition, resolveLinkTos)
+- getEventsByType(streamName, eventTypes, startPosition, count, direction, resolveLinkTos)
+- readEventsForward(streamName, startPosition, count, resolveLinkTos)
+- readEventsBackward(streamName, startPosition, count, resolveLinkTos)
+- writeEvent(streamName, eventType, data, metaData, options)
+- writeEvents(streamName, events, options)
+- deleteStream(streamName, hardDelete)
+- checkStreamExists(streamName)
+- setStreamMetadata(streamName, metadata, options)
+- iterateEvents(streamName, startPosition, count, direction, resolveLinkTos)
+- iterateEventsForward(streamName, startPosition, count, resolveLinkTos)
+- iterateEventsBackward(streamName, startPosition, count, resolveLinkTos)
+- iterateAllStreamEvents(streamName, chunkSize, startPosition, resolveLinkTos)
+- iterateEventsByType(streamName, eventTypes, startPosition, count, direction, resolveLinkTos)
 
 # Deleted events
 
@@ -44,7 +47,7 @@ By default all clients now return deleted events instead of dropping them. A del
 Set `includeDeleted: false` in the client config to skip deleted events and return only live ones. This applies to the gRPC and TCP clients. The HTTP client always returns them.
 
 ```javascript
-const event = events.find(e => e.isResolved === false);
+const event = events.find((e) => e.isResolved === false);
 // event.data === null, event.metadata === null
 ```
 
@@ -52,49 +55,49 @@ const event = events.find(e => e.isResolved === false);
 
 Available on the gRPC and HTTP clients. `getEvents` is HTTP only.
 
-* assert(subscriptionName, streamName, options)
-* getEvents(subscriptionName, streamName, count, embed)
-* getSubscriptionInfo(subscriptionName, streamName)
-* getStreamSubscriptionsInfo(streamName)
-* getAllSubscriptionsInfo()
-* remove(subscriptionName, streamName)
+- assert(subscriptionName, streamName, options)
+- getEvents(subscriptionName, streamName, count, embed)
+- getSubscriptionInfo(subscriptionName, streamName)
+- getStreamSubscriptionsInfo(streamName)
+- getAllSubscriptionsInfo()
+- remove(subscriptionName, streamName)
 
 The `$all` variants are gRPC only and need KurrentDB 21.10 or later. `assertToAll` accepts an optional `filter` in its options to restrict the subscription to matching event types or stream prefixes.
 
-* assertToAll(subscriptionName, options)
-* getToAllSubscriptionInfo(subscriptionName)
-* getToAllSubscriptionsInfo()
-* removeToAll(subscriptionName)
+- assertToAll(subscriptionName, options)
+- getToAllSubscriptionInfo(subscriptionName)
+- getToAllSubscriptionsInfo()
+- removeToAll(subscriptionName)
 
 `replayParkedMessages*` is gRPC only. It replays a subscription's parked messages, optionally stopping at a given position with `options.stopAt`.
 
-* replayParkedMessagesToStream(subscriptionName, streamName, options)
-* replayParkedMessagesToAll(subscriptionName, options)
+- replayParkedMessagesToStream(subscriptionName, streamName, options)
+- replayParkedMessagesToAll(subscriptionName, options)
 
 `restartSubsystem` is available on the gRPC and HTTP clients. It restarts the server's persistent subscription subsystem.
 
-* restartSubsystem()
+- restartSubsystem()
 
 # Projections
 
 Available on the gRPC and HTTP clients. `config` is HTTP only, and `getInfo`'s `includeConfig` argument applies to HTTP only.
 
-* start(projectionName)
-* stop(projectionName)
-* reset(projectionName)
-* remove(projectionName, deleteCheckpointStream, deleteStateStream)
-* config(projectionName)
-* getState(projectionName, options)
-* getResult(projectionName, options)
-* getInfo(projectionName, includeConfig)
-* assert(projectionName, projectionContent, mode, enabled, checkpointsEnabled, emitEnabled, trackEmittedStreams)
-* enableAll()
-* disableAll()
-* getAllProjectionsInfo()
+- start(projectionName)
+- stop(projectionName)
+- reset(projectionName)
+- remove(projectionName, deleteCheckpointStream, deleteStateStream)
+- config(projectionName)
+- getState(projectionName, options)
+- getResult(projectionName, options)
+- getInfo(projectionName, includeConfig)
+- assert(projectionName, projectionContent, mode, enabled, checkpointsEnabled, emitEnabled, trackEmittedStreams)
+- enableAll()
+- disableAll()
+- getAllProjectionsInfo()
 
 `restartSubsystem` is available on the gRPC and HTTP clients. It restarts the server's projection subsystem.
 
-* restartSubsystem()
+- restartSubsystem()
 
 # Preferred methods: iterate over read
 
@@ -114,37 +117,37 @@ The protocol defaults to `kurrentdb+discover`, which lets the client discover cl
 
 ```javascript
 const client = new KurrentDB.GRPCClient({
-	hostname: 'localhost',
-	port: 2113,
-	credentials: {
-		username: 'admin',
-		password: 'changeit'
-	}
+  hostname: 'localhost',
+  port: 2113,
+  credentials: {
+    username: 'admin',
+    password: 'changeit'
+  }
 });
 
 // Secure
 const secureClient = new KurrentDB.GRPCClient({
-	hostname: 'localhost',
-	port: 2113,
-	useSslConnection: true,
-	tlsCAFile: '/path/to/ca.crt',
-	credentials: {
-		username: 'admin',
-		password: 'changeit'
-	}
+  hostname: 'localhost',
+  port: 2113,
+  useSslConnection: true,
+  tlsCAFile: '/path/to/ca.crt',
+  credentials: {
+    username: 'admin',
+    password: 'changeit'
+  }
 });
 
 // Clustering - Gossip Seeds
 const clusterClient = new KurrentDB.GRPCClient({
-	gossipSeeds: [
-		{ hostname: '192.168.0.10', port: 2113 },
-		{ hostname: '192.168.0.11', port: 2113 },
-		{ hostname: '192.168.0.12', port: 2113 }
-	],
-	credentials: {
-		username: 'admin',
-		password: 'changeit'
-	}
+  gossipSeeds: [
+    { hostname: '192.168.0.10', port: 2113 },
+    { hostname: '192.168.0.11', port: 2113 },
+    { hostname: '192.168.0.12', port: 2113 }
+  ],
+  credentials: {
+    username: 'admin',
+    password: 'changeit'
+  }
 });
 ```
 
@@ -154,25 +157,25 @@ Methods available on the gRPC client beyond the common set above. The `readAll*`
 
 The client multiplexes all calls and subscriptions over a single shared connection per config, so there is no connection pool. `close` disposes the client's connection and `closeAllConnections` disposes every connection the process has opened.
 
-* getStreamMetadata(streamName)
-* multiStreamWrite(writes)
-* multiStreamWriteCrossStreamConsistency(writes, checks)
-* readAllEvents(startPosition, count, direction, resolveLinkTos, filter)
-* readAllEventsForward(startPosition, count, resolveLinkTos, filter)
-* readAllEventsBackward(startPosition, count, resolveLinkTos, filter)
-* iterateAllEvents(startPosition, count, direction, resolveLinkTos, filter)
-* iterateAllEventsForward(startPosition, count, resolveLinkTos, filter)
-* iterateAllEventsBackward(startPosition, count, resolveLinkTos, filter)
-* subscribeToStream(streamName, onEventAppeared, onDropped, resolveLinkTos)
-* subscribeToStreamFrom(streamName, fromEventNumber, onEventAppeared, onLiveProcessingStarted, onDropped, settings)
-* subscribeToAll(fromPosition, onEventAppeared, onLiveProcessingStarted, onDropped, settings)
-* createPersistentSubscriptionToStream(streamName, groupName, settings)
-* subscribeToPersistentSubscriptionToStream(streamName, groupName, onEventAppeared, onDropped, settings, duplexOptions)
-* createPersistentSubscriptionToAll(groupName, settings)
-* subscribeToPersistentSubscriptionToAll(groupName, onEventAppeared, onDropped, settings, duplexOptions)
-* close()
-* getConnection()
-* closeAllConnections()
+- getStreamMetadata(streamName)
+- multiStreamWrite(writes)
+- multiStreamWriteCrossStreamConsistency(writes, checks)
+- readAllEvents(startPosition, count, direction, resolveLinkTos, filter)
+- readAllEventsForward(startPosition, count, resolveLinkTos, filter)
+- readAllEventsBackward(startPosition, count, resolveLinkTos, filter)
+- iterateAllEvents(startPosition, count, direction, resolveLinkTos, filter)
+- iterateAllEventsForward(startPosition, count, resolveLinkTos, filter)
+- iterateAllEventsBackward(startPosition, count, resolveLinkTos, filter)
+- subscribeToStream(streamName, onEventAppeared, onDropped, resolveLinkTos)
+- subscribeToStreamFrom(streamName, fromEventNumber, onEventAppeared, onLiveProcessingStarted, onDropped, settings)
+- subscribeToAll(fromPosition, onEventAppeared, onLiveProcessingStarted, onDropped, settings)
+- createPersistentSubscriptionToStream(streamName, groupName, settings)
+- subscribeToPersistentSubscriptionToStream(streamName, groupName, onEventAppeared, onDropped, settings, duplexOptions)
+- createPersistentSubscriptionToAll(groupName, settings)
+- subscribeToPersistentSubscriptionToAll(groupName, onEventAppeared, onDropped, settings, duplexOptions)
+- close()
+- getConnection()
+- closeAllConnections()
 
 ## Server-side filtering over $all
 
@@ -186,11 +189,16 @@ import KurrentDB, { eventTypeFilter, streamNameFilter, excludeSystemEvents } fro
 const client = new KurrentDB.GRPCClient(config);
 
 // All OrderPlaced events across every stream, newest first
-const { events } = await client.readAllEventsBackward('end', 100, false, eventTypeFilter({ prefixes: ['OrderPlaced'] }));
+const { events } = await client.readAllEventsBackward(
+  'end',
+  100,
+  false,
+  eventTypeFilter({ prefixes: ['OrderPlaced'] })
+);
 
 // Live subscription to every event on streams starting with "order-", skipping catch-up history
 await client.subscribeToAll('end', onEventAppeared, onLiveProcessingStarted, onDropped, {
-	filter: streamNameFilter({ prefixes: ['order-'] })
+  filter: streamNameFilter({ prefixes: ['order-'] })
 });
 
 // Exclude system events (those on $ streams)
@@ -207,24 +215,24 @@ await client.readAllEventsForward('start', 1000, false, excludeSystemEvents());
 
 ```javascript
 const client = new KurrentDB.HTTPClient({
-	hostname: 'localhost',
-	port: 2113,
-	credentials: {
-		username: 'admin',
-		password: 'changeit'
-	}
+  hostname: 'localhost',
+  port: 2113,
+  credentials: {
+    username: 'admin',
+    password: 'changeit'
+  }
 });
 
 // Secure
 const secureClient = new KurrentDB.HTTPClient({
-	protocol: 'https',
-	hostname: 'localhost',
-	port: 2113,
-	validateServer: true, //defaults to `true` when `protocol` is `https`, set to `false` when using self-signed certs
-	credentials: {
-		username: 'admin',
-		password: 'changeit'
-	}
+  protocol: 'https',
+  hostname: 'localhost',
+  port: 2113,
+  validateServer: true, //defaults to `true` when `protocol` is `https`, set to `false` when using self-signed certs
+  credentials: {
+    username: 'admin',
+    password: 'changeit'
+  }
 });
 ```
 
@@ -232,12 +240,12 @@ const secureClient = new KurrentDB.HTTPClient({
 
 Available on the HTTP client only.
 
-* admin.scavenge()
-* admin.shutdown()
+- admin.scavenge()
+- admin.shutdown()
 
 ## Additional HTTP methods
 
-* ping()
+- ping()
 
 ---
 
@@ -251,90 +259,90 @@ Set `includeDeleted: false` to skip deleted events (see [Deleted events](#delete
 import { v4 as generateId } from 'uuid';
 
 const client = new KurrentDB.TCPClient({
-	hostname: 'localhost',
-	port: 1113,
-	credentials: {
-		username: 'admin',
-		password: 'changeit'
-	},
-	poolOptions: {
-		min: 0,
-		max: 10
-	}
+  hostname: 'localhost',
+  port: 1113,
+  credentials: {
+    username: 'admin',
+    password: 'changeit'
+  },
+  poolOptions: {
+    min: 0,
+    max: 10
+  }
 });
 
 // Secure
 const secureClient = new KurrentDB.TCPClient({
-	hostname: 'localhost',
-	port: 1113,
-	useSslConnection: true,
-	validateServer: true, //defaults to `true` when `useSslConnection` is `true`, set to `false` when using self-signed certs
-	credentials: {
-		username: 'admin',
-		password: 'changeit'
-	},
-	poolOptions: {
-		min: 0,
-		max: 10
-	}
+  hostname: 'localhost',
+  port: 1113,
+  useSslConnection: true,
+  validateServer: true, //defaults to `true` when `useSslConnection` is `true`, set to `false` when using self-signed certs
+  credentials: {
+    username: 'admin',
+    password: 'changeit'
+  },
+  poolOptions: {
+    min: 0,
+    max: 10
+  }
 });
 
 // Override connection name
 const namedClient = new KurrentDB.TCPClient({
-	hostname: 'localhost',
-	port: 1113,
-	credentials: {
-		username: 'admin',
-		password: 'changeit'
-	},
-	poolOptions: {
-		min: 0,
-		max: 10
-	},
-	connectionNameGenerator: () => `APP_NAME_${generateId()}`
+  hostname: 'localhost',
+  port: 1113,
+  credentials: {
+    username: 'admin',
+    password: 'changeit'
+  },
+  poolOptions: {
+    min: 0,
+    max: 10
+  },
+  connectionNameGenerator: () => `APP_NAME_${generateId()}`
 });
 
 // Clustering - Gossip Seeds
 const clusterClient = new KurrentDB.TCPClient({
-	gossipSeeds: [
-		{ hostname: '192.168.0.10', port: 2113 },
-		{ hostname: '192.168.0.11', port: 2113 },
-		{ hostname: '192.168.0.12', port: 2113 }
-	],
-	credentials: {
-		username: 'admin',
-		password: 'changeit'
-	},
-	poolOptions: {
-		min: 0,
-		max: 10
-	}
+  gossipSeeds: [
+    { hostname: '192.168.0.10', port: 2113 },
+    { hostname: '192.168.0.11', port: 2113 },
+    { hostname: '192.168.0.12', port: 2113 }
+  ],
+  credentials: {
+    username: 'admin',
+    password: 'changeit'
+  },
+  poolOptions: {
+    min: 0,
+    max: 10
+  }
 });
 
 // Clustering - DNS Discovery
 const discoverClient = new KurrentDB.TCPClient({
-	protocol: 'discover',
-	hostname: 'my.host',
-	port: 2113,
-	credentials: {
-		username: 'admin',
-		password: 'changeit'
-	},
-	poolOptions: {
-		min: 0,
-		max: 10
-	}
+  protocol: 'discover',
+  hostname: 'my.host',
+  port: 2113,
+  credentials: {
+    username: 'admin',
+    password: 'changeit'
+  },
+  poolOptions: {
+    min: 0,
+    max: 10
+  }
 });
 ```
 
 ## Additional TCP methods
 
-* subscribeToStream(streamName, onEventAppeared, onDropped, resolveLinkTos)
-* subscribeToStreamFrom(streamName, fromEventNumber, onEventAppeared, onLiveProcessingStarted, onDropped, settings)
-* eventEnumerator(streamName, direction, resolveLinkTos)
-* close()
-* getPool()
-* closeAllPools()
+- subscribeToStream(streamName, onEventAppeared, onDropped, resolveLinkTos)
+- subscribeToStreamFrom(streamName, fromEventNumber, onEventAppeared, onLiveProcessingStarted, onDropped, settings)
+- eventEnumerator(streamName, direction, resolveLinkTos)
+- close()
+- getPool()
+- closeAllPools()
 
 ## License
 

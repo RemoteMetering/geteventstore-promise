@@ -1,4 +1,4 @@
-version: "3.5"
+version: '3.5'
 
 services:
   metronomic_kurrentdb_client_test_single:
@@ -16,8 +16,8 @@ services:
       - KURRENTDB_ADVERTISE_HOST_TO_CLIENT_AS=127.0.0.1
       - KURRENTDB_NODE_PORT_ADVERTISE_AS=22117
     ports:
-      - "11116:1113"
-      - "22117:2113"
+      - '11116:1113'
+      - '22117:2113'
     networks:
       singleclusternetwork:
         ipv4_address: 172.30.239.11

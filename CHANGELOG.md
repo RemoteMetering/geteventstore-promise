@@ -201,21 +201,23 @@
 - Typescript definitions added
 - Package exports now exposed as classes
 
-	##### Previous Usage (Deprecated)
-	```javascript
-	const eventstore = require('geteventstore-promise');
-	const httpClient = eventstore.http(...config);
-	const tcpClient = eventstore.tcp(...config);
-	const newEvent = eventstore.eventFactory.NewEvent(...args);
-	```
+  ##### Previous Usage (Deprecated)
 
-	##### New Usage
-	```javascript
-	const EventStore = require('geteventstore-promise');
-	const httpClient = new EventStore.HTTPClient(...config);
-	const tcpClient = new EventStore.TCPClient(...config);
-	const newEvent = new EventStore.EventFactory().newEvent(...args);
-	```
+  ```javascript
+  const eventstore = require('geteventstore-promise');
+  const httpClient = eventstore.http(...config);
+  const tcpClient = eventstore.tcp(...config);
+  const newEvent = eventstore.eventFactory.NewEvent(...args);
+  ```
+
+  ##### New Usage
+
+  ```javascript
+  const EventStore = require('geteventstore-promise');
+  const httpClient = new EventStore.HTTPClient(...config);
+  const tcpClient = new EventStore.TCPClient(...config);
+  const newEvent = new EventStore.EventFactory().newEvent(...args);
+  ```
 
 #### Dependencies
 
@@ -253,7 +255,7 @@
 
 #### TCP Client
 
-- Feature - Implemented connection pooling(defaulting to 1 connection) using [https://github.com/coopernurse/node-pool](https://github.com/coopernurse/node-pool), please see config in library and pass config as "poolOptions" when initing TCP client.<br/> Example: ` {  ...,  poolOptions: { min: 1, max: 10 } } `
+- Feature - Implemented connection pooling(defaulting to 1 connection) using [https://github.com/coopernurse/node-pool](https://github.com/coopernurse/node-pool), please see config in library and pass config as "poolOptions" when initing TCP client.<br/> Example: `{  ...,  poolOptions: { min: 1, max: 10 } }`
 
 - Change - subscriptions now use [https://github.com/nicdex/node-eventstore-client](https://github.com/nicdex/node-eventstore-client) for subscriptions - Causes breaking changes
 
@@ -435,7 +437,6 @@
 
 - added missing debug logs
 
-
 # 1.1.22 (2017-03-09)
 
 #### HTTP Client
@@ -559,7 +560,7 @@
 
 - Feature: added start event number on getAllStreamEvents
 - Fix: any get events function will default to 4096 count if greater is requested (warning also displayed)
-- Change: default chunkSize of reads from 250 to 1000 
+- Change: default chunkSize of reads from 250 to 1000
 
 #### Tests
 
@@ -608,8 +609,8 @@
 
 #### HTTP client
 
-- 'getProjectionState' moved to 'projections.getState' 
-- 'getAllProjectionsInfo' moved to 'projections.getAllProjectionsInfo' 
+- 'getProjectionState' moved to 'projections.getState'
+- 'getAllProjectionsInfo' moved to 'projections.getAllProjectionsInfo'
 
 # 1.1.0 (2016-03-14)
 
@@ -621,34 +622,34 @@
 - Removed protocol property, assigned internally
 
 ##### Previous Usage
+
 ```javascript
 var eventstore = require('geteventstore-promise');
 
 var client = eventstore.http({
-				http:{
-	                hostname: 'localhost',
-	                protocol: 'http',
-	                port: 2113,
-	                credentials: {
-	                	username: 'admin',
-	                	password: 'changeit'
-	                }
-	            }
-            });
-
+  http: {
+    hostname: 'localhost',
+    protocol: 'http',
+    port: 2113,
+    credentials: {
+      username: 'admin',
+      password: 'changeit'
+    }
+  }
+});
 ```
 
 ##### New Usage
+
 ```javascript
 var eventstore = require('geteventstore-promise');
 
 var client = eventstore.http({
-                hostname: 'localhost',
-                port: 2113,
-                credentials: {
-					username: 'admin',
-					password: 'changeit'
-				}
-            });
-
+  hostname: 'localhost',
+  port: 2113,
+  credentials: {
+    username: 'admin',
+    password: 'changeit'
+  }
+});
 ```

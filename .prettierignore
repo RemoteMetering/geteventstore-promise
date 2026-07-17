@@ -1,0 +1,8 @@
+node_modules
+coverage
+dist
+build
+doc
+public
+.claude
+pnpm-lock.yaml

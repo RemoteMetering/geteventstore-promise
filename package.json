@@ -12,15 +12,18 @@
   },
   "types": "./index.d.ts",
   "scripts": {
-    "test": "yarn test:insecure && yarn test:secure",
+    "test": "pnpm test:insecure && pnpm test:secure",
     "test:insecure": "NODE_ENV=test mocha --exit --ignore 'tests/tcp.*' tests/",
     "test:secure": "NODE_ENV=test TESTS_RUN_SECURE=true mocha --exit --ignore 'tests/tcp.*' tests/",
     "test:grpc": "NODE_ENV=test TESTS_RUN_SECURE=false mocha --exit tests/grpc.*",
-    "test:v21": "yarn test:v21:insecure && yarn test:v21:secure",
+    "test:v21": "pnpm test:v21:insecure && pnpm test:v21:secure",
     "test:v21:insecure": "NODE_ENV=test TESTS_V21=true mocha --exit tests/",
     "test:v21:secure": "NODE_ENV=test TESTS_V21=true TESTS_RUN_SECURE=true mocha --exit tests/",
     "coverage": "NODE_ENV=test TESTS_V21=true TESTS_RUN_SECURE=true c8 mocha --exit tests/",
-    "lint": "eslint --fix --ext .js,.mjs,.cjs,.json ."
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "repository": {
     "type": "git",
@@ -50,18 +53,13 @@
     "node-eventstore-client": "^23.10.1"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3.3.6",
+    "@eslint/js": "^9.39.5",
     "@eslint/json": "^2.0.1",
     "c8": "^11.0.0",
     "eslint": "^9",
-    "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-n": "^18.2.2",
     "eslint-plugin-prettier": "^5.5.6",
-    "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^7.1.1",
     "globals": "^17.7.0",
     "mocha": "^11.7.6",
     "prettier": "^3.9.5"

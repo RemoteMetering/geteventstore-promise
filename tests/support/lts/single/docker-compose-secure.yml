@@ -2,7 +2,7 @@ services:
   volumes-provisioner:
     image: hasnat/volumes-provisioner
     environment:
-      PROVISION_DIRECTORIES: "1000:1000:0755:/tmp/certs"
+      PROVISION_DIRECTORIES: '1000:1000:0755:/tmp/certs'
     volumes:
       - certs_single:/tmp/certs
     network_mode: none
@@ -10,7 +10,7 @@ services:
   metronomic_kurrentdb_client_test_setup_certs_single:
     image: eventstore/es-gencert-cli:1.0.2
     entrypoint: bash
-    user: "0:0"
+    user: '0:0'
     command: >
       -c "mkdir -p ./certs && cd /certs
       && es-gencert-cli create-ca
@@ -42,8 +42,8 @@ services:
       - KURRENTDB_CERTIFICATE_FILE=/certs/single/node.crt
       - KURRENTDB_CERTIFICATE_PRIVATE_KEY_FILE=/certs/single/node.key
     ports:
-      - "11116:1113"
-      - "22117:2113"
+      - '11116:1113'
+      - '22117:2113'
     volumes:
       - ./certs:/certs
     depends_on:
