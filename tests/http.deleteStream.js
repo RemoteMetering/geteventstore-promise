@@ -1,7 +1,7 @@
 import assert from 'assert';
 import generateEventId from '../lib/utilities/generateEventId.js';
 import getHttpConfig from './support/getHttpConfig.js';
-import sleep from './utilities/sleep.js';
+import waitUntil from './utilities/waitUntil.js';
 import KurrentDB from '../lib/index.js';
 
 describe('Http Client - Delete stream', () => {
@@ -13,7 +13,7 @@ describe('Http Client - Delete stream', () => {
       something: '123'
     });
     await client.deleteStream(testStream);
-    await sleep(100);
+    await waitUntil(async () => (await client.checkStreamExists(testStream)) === false);
     assert.equal(await client.checkStreamExists(testStream), false);
   });
 
@@ -24,9 +24,10 @@ describe('Http Client - Delete stream', () => {
     await client.writeEvent(testStream, 'TestEventType', {
       something: '123'
     });
-    await sleep(150);
+    // The category projection creates $ce-TestDeletedStream asynchronously, so wait for it before deleting.
+    await waitUntil(async () => client.checkStreamExists(`$ce-TestDeletedStream`));
     await client.deleteStream(`$ce-TestDeletedStream`);
-    await sleep(100);
+    await waitUntil(async () => (await client.checkStreamExists(`$ce-TestDeletedStream`)) === false);
     assert.equal(await client.checkStreamExists(`$ce-TestDeletedStream`), false);
   });
 
@@ -38,7 +39,7 @@ describe('Http Client - Delete stream', () => {
       something: '123'
     });
     await client.deleteStream(testStream);
-    await sleep(100);
+    await waitUntil(async () => (await client.checkStreamExists(testStream)) === false);
     return client.writeEvent(testStream, 'TestEventType', {
       something: '456'
     });

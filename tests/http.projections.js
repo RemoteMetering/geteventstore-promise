@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 import KurrentDB from '../lib/index.js';
 import generateEventId from '../lib/utilities/generateEventId.js';
 import getHttpConfig from './support/getHttpConfig.js';
-import sleep from './utilities/sleep.js';
+import waitUntil from './utilities/waitUntil.js';
 import { runningV21 } from './support/v21.js';
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -76,7 +76,7 @@ describe('Projections', () => {
       const client = new KurrentDB.HTTPClient(getHttpConfig());
 
       const stopResponse = await client.projections.stop(assertionProjection);
-      await sleep(1000);
+      await waitUntil(async () => (await client.projections.getInfo(assertionProjection)).status === 'Stopped');
 
       assert.equal(stopResponse.name, assertionProjection);
       const removeResponse = await client.projections.remove(assertionProjection);
@@ -103,9 +103,15 @@ describe('Projections', () => {
         true,
         true
       );
-      await sleep(2000);
       assert.equal(response.name, assertionProjection);
-      const responseWithTrackEmittedStreamsEnabled = await client.projections.getInfo(assertionProjection, true);
+      let responseWithTrackEmittedStreamsEnabled;
+      await waitUntil(async () => {
+        responseWithTrackEmittedStreamsEnabled = await client.projections.getInfo(assertionProjection, true);
+        return (
+          responseWithTrackEmittedStreamsEnabled.config.trackEmittedStreams === true &&
+          responseWithTrackEmittedStreamsEnabled.config.emitEnabled === true
+        );
+      });
       assert.equal(responseWithTrackEmittedStreamsEnabled.config.trackEmittedStreams, true);
       assert.equal(responseWithTrackEmittedStreamsEnabled.config.emitEnabled, true);
     });
@@ -115,7 +121,6 @@ describe('Projections', () => {
       const client = new KurrentDB.HTTPClient(getHttpConfig());
 
       const projectionConfig = await client.projections.config(assertionProjection);
-      await sleep(1000);
 
       assert.equal(projectionConfig.emitEnabled, true);
       assert.equal(projectionConfig.trackEmittedStreams, true);
@@ -148,9 +153,15 @@ describe('Projections', () => {
         true,
         true
       );
-      await sleep(2000);
       assert.equal(response.name, assertionProjection);
-      const responseWithTrackEmittedStreamsEnabled = await client.projections.getInfo(assertionProjection, true);
+      let responseWithTrackEmittedStreamsEnabled;
+      await waitUntil(async () => {
+        responseWithTrackEmittedStreamsEnabled = await client.projections.getInfo(assertionProjection, true);
+        return (
+          responseWithTrackEmittedStreamsEnabled.config.trackEmittedStreams === false &&
+          responseWithTrackEmittedStreamsEnabled.config.emitEnabled === true
+        );
+      });
       assert.equal(responseWithTrackEmittedStreamsEnabled.config.trackEmittedStreams, false);
       assert.equal(responseWithTrackEmittedStreamsEnabled.config.emitEnabled, true);
 
@@ -167,9 +178,12 @@ describe('Projections', () => {
       const client = new KurrentDB.HTTPClient(getHttpConfig());
 
       await client.projections.enableAll();
-      await sleep(1000);
 
-      const projectionsInfo = await client.projections.getAllProjectionsInfo();
+      let projectionsInfo;
+      await waitUntil(async () => {
+        projectionsInfo = await client.projections.getAllProjectionsInfo();
+        return projectionsInfo.projections.every((projection) => projection.status.toLowerCase().includes('running'));
+      });
       projectionsInfo.projections.forEach((projection) => {
         assert.equal(projection.status.toLowerCase().includes('running'), true);
       });
@@ -180,9 +194,12 @@ describe('Projections', () => {
       const client = new KurrentDB.HTTPClient(getHttpConfig());
 
       await client.projections.disableAll();
-      await sleep(1000);
 
-      const projectionsInfo = await client.projections.getAllProjectionsInfo();
+      let projectionsInfo;
+      await waitUntil(async () => {
+        projectionsInfo = await client.projections.getAllProjectionsInfo();
+        return projectionsInfo.projections.every((projection) => projection.status.toLowerCase().includes('stopped'));
+      });
       projectionsInfo.projections.forEach((projection) => {
         assert.equal(projection.status.toLowerCase().includes('stopped'), true);
       });
@@ -209,15 +226,28 @@ describe('Projections', () => {
       });
 
       await client.projections.assert(projectionName, projectionContent);
-      await sleep(500);
+      await waitUntil(async () => {
+        try {
+          return (await client.projections.getInfo(projectionName)).status.toLowerCase().includes('running');
+        } catch {
+          return false;
+        }
+      });
 
       const testStream = `TestProjectionStream-${generateEventId()}`;
       await client.writeEvent(testStream, 'TestProjectionEventType', {
         something: '123'
       });
 
-      await sleep(1000);
-      const projectionState = await client.projections.getState(projectionName);
+      let projectionState;
+      await waitUntil(async () => {
+        try {
+          projectionState = await client.projections.getState(projectionName);
+          return projectionState.data && projectionState.data.something === '123';
+        } catch {
+          return false;
+        }
+      });
       assert.equal(projectionState.data.something, '123');
 
       const stopResponse = await client.projections.stop(projectionName);
@@ -236,19 +266,35 @@ describe('Projections', () => {
       });
 
       await client.projections.assert(projectionName, projectionContent);
-      await sleep(500);
+      await waitUntil(async () => {
+        try {
+          return (await client.projections.getInfo(projectionName)).status.toLowerCase().includes('running');
+        } catch {
+          return false;
+        }
+      });
 
       const testStream = `TestProjectionStream-${generateEventId()}`;
       await client.writeEvent(testStream, 'TestProjectionEventType', {
         something: '123'
       });
 
-      await sleep(4000);
       const options = {
         partition: testStream
       };
 
-      const projectionState = await client.projections.getState(projectionName, options);
+      let projectionState;
+      await waitUntil(
+        async () => {
+          try {
+            projectionState = await client.projections.getState(projectionName, options);
+            return projectionState.data && projectionState.data.something === '123';
+          } catch {
+            return false;
+          }
+        },
+        { timeout: 8000 }
+      );
       assert.equal(projectionState.data.something, '123');
 
       const stopResponse = await client.projections.stop(projectionName);
@@ -279,15 +325,28 @@ describe('Projections', () => {
       });
 
       await client.projections.assert(projectionName, projectionContent);
-      await sleep(500);
+      await waitUntil(async () => {
+        try {
+          return (await client.projections.getInfo(projectionName)).status.toLowerCase().includes('running');
+        } catch {
+          return false;
+        }
+      });
 
       const testStream = `TestProjectionStream-${generateEventId()}`;
       await client.writeEvent(testStream, 'TestProjectionEventType', {
         something: '123'
       });
 
-      await sleep(1000);
-      const projectionState = await client.projections.getResult(projectionName);
+      let projectionState;
+      await waitUntil(async () => {
+        try {
+          projectionState = await client.projections.getResult(projectionName);
+          return String(projectionState.data) === '321';
+        } catch {
+          return false;
+        }
+      });
       assert.equal(projectionState.data, '321');
 
       const stopResponse = await client.projections.stop(projectionName);
@@ -306,19 +365,35 @@ describe('Projections', () => {
       });
 
       await client.projections.assert(projectionName, projectionContent);
-      await sleep(500);
+      await waitUntil(async () => {
+        try {
+          return (await client.projections.getInfo(projectionName)).status.toLowerCase().includes('running');
+        } catch {
+          return false;
+        }
+      });
 
       const testStream = `TestProjectionStream-${generateEventId()}`;
       await client.writeEvent(testStream, 'TestProjectionEventType', {
         something: '123'
       });
 
-      await sleep(4000);
       const options = {
         partition: testStream
       };
 
-      const projectionState = await client.projections.getResult(projectionName, options);
+      let projectionState;
+      await waitUntil(
+        async () => {
+          try {
+            projectionState = await client.projections.getResult(projectionName, options);
+            return String(projectionState.data) === '321';
+          } catch {
+            return false;
+          }
+        },
+        { timeout: 8000 }
+      );
       assert.equal(projectionState.data, '321');
 
       const stopResponse = await client.projections.stop(projectionName);

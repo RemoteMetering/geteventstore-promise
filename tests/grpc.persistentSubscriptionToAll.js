@@ -3,6 +3,7 @@ import assert from 'assert';
 import generateEventId from '../lib/utilities/generateEventId.js';
 import getGRPCConfig from './support/getGRPCConfig.js';
 import sleep from './utilities/sleep.js';
+import waitUntil from './utilities/waitUntil.js';
 import KurrentDB from '../lib/index.js';
 // getPersistentSubscriptionToAllInfo and listPersistentSubscriptionsToAll need a server >= 21.10.1,
 // so tests that read $all subscription info are skipped on the v21 (21.10.0) image.
@@ -43,7 +44,7 @@ describe('gRPC Client - Persistent Subscription to $all', () => {
 
     await sleep(100);
     await client.writeEvents(testStream, events);
-    await sleep(3000);
+    await waitUntil(() => processedEventCount === 10);
 
     if (dropped) {
       await client.closeAllConnections();
@@ -83,7 +84,7 @@ describe('gRPC Client - Persistent Subscription to $all', () => {
       eventFactory.newEvent(eventType, { keep: true }),
       eventFactory.newEvent(`Other-${generateEventId()}`, { keep: false })
     ]);
-    await sleep(3000);
+    await waitUntil(() => received.length > 0);
 
     await subscription.close();
     await client.persistentSubscriptions.removeToAll(groupName);

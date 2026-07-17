@@ -2,7 +2,7 @@ import assert from 'assert';
 import generateEventId from '../lib/utilities/generateEventId.js';
 import chunkArray from '../lib/utilities/chunkArray.js';
 import getHttpConfig from './support/getHttpConfig.js';
-import sleep from './utilities/sleep.js';
+import waitUntil from './utilities/waitUntil.js';
 import KurrentDB from '../lib/index.js';
 
 const eventFactory = new KurrentDB.EventFactory();
@@ -53,8 +53,15 @@ describe('HTTP Client - Persistent Subscription', () => {
 
     await client.writeEvents(testStream, events);
     await client.persistentSubscriptions.assert(testSubscriptionName, testStream);
-    await sleep(1000);
-    const result = await client.persistentSubscriptions.getEvents(testSubscriptionName, testStream, 100);
+    let result;
+    await waitUntil(async () => {
+      try {
+        result = await client.persistentSubscriptions.getEvents(testSubscriptionName, testStream, 100);
+        return result.entries.length === 12;
+      } catch {
+        return false;
+      }
+    });
     assert.equal(12, result.entries.length);
     const chunks = chunkArray(result.entries, 4);
 

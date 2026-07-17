@@ -2,7 +2,7 @@ import assert from 'assert';
 import generateEventId from '../lib/utilities/generateEventId.js';
 import getGRPCConfig from './support/getGRPCConfig.js';
 import KurrentDB from '../lib/index.js';
-import sleep from './utilities/sleep.js';
+import waitUntil from './utilities/waitUntil.js';
 
 const eventFactory = new KurrentDB.EventFactory();
 
@@ -27,10 +27,13 @@ describe('gRPC Client - Deleted Events', () => {
 
     // Wait for the projection to index the events into $et-<type> before deleting the source.
     let indexed = [];
-    for (let attempt = 0; attempt < 100 && indexed.length < numberOfEvents; attempt++) {
-      await sleep(200);
-      indexed = await client.getAllStreamEvents(byTypeStream);
-    }
+    await waitUntil(
+      async () => {
+        indexed = await client.getAllStreamEvents(byTypeStream);
+        return indexed.length >= numberOfEvents;
+      },
+      { timeout: 20000, interval: 200 }
+    );
     assert.equal(indexed.length, numberOfEvents, 'projection did not index the events in time');
 
     // Tombstone the source stream so the indexed links become unresolvable (deleted).

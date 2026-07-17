@@ -89,7 +89,9 @@ before(async function () {
   console.log('Starting KurrentDB stacks...');
 
   await Promise.all([removeStack(singleComposeFileLocation), removeStack(clusterComposeFileLocation)]);
-  await Promise.all([cleanCerts(singleComposeFileLocation), cleanCerts(clusterComposeFileLocation)]);
+  if (global.runningTestsInSecureMode) {
+    await Promise.all([cleanCerts(singleComposeFileLocation), cleanCerts(clusterComposeFileLocation)]);
+  }
   await Promise.all([startStack(singleComposeFileLocation), startStack(clusterComposeFileLocation)]);
 
   while (true) {

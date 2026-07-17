@@ -1,7 +1,7 @@
 import assert from 'assert';
 import generateEventId from '../lib/utilities/generateEventId.js';
 import getGRPCConfig from './support/getGRPCConfig.js';
-import sleep from './utilities/sleep.js';
+import waitUntil from './utilities/waitUntil.js';
 import KurrentDB from '../lib/index.js';
 
 describe('gRPC Client - Delete stream', () => {
@@ -33,7 +33,8 @@ describe('gRPC Client - Delete stream', () => {
       something: '123'
     });
 
-    await sleep(150);
+    // The category projection creates $ce-TestDeletedStream asynchronously, so wait for it before deleting.
+    await waitUntil(async () => client.checkStreamExists(`$ce-TestDeletedStream`));
     await client.deleteStream(`$ce-TestDeletedStream`);
     assert.equal(await client.checkStreamExists(`$ce-TestDeletedStream`), false);
 

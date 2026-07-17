@@ -2,6 +2,7 @@ import assert from 'assert';
 import generateEventId from '../lib/utilities/generateEventId.js';
 import getGRPCConfig from './support/getGRPCConfig.js';
 import sleep from './utilities/sleep.js';
+import waitUntil from './utilities/waitUntil.js';
 import KurrentDB from '../lib/index.js';
 
 const eventFactory = new KurrentDB.EventFactory();
@@ -54,7 +55,7 @@ describe('gRPC Client - Persistent Subscription', () => {
     }
     await sleep(100);
     await client.writeEvents(testStream, events);
-    await sleep(3000);
+    await waitUntil(() => processedEventCount === 20);
 
     if (dropped) {
       await client.closeAllConnections();
@@ -93,7 +94,7 @@ describe('gRPC Client - Persistent Subscription', () => {
     };
     const sub1 = await client.subscribeToPersistentSubscriptionToStream(testStream, groupNameOne, onEv1, () => {});
     const sub2 = await client.subscribeToPersistentSubscriptionToStream(testStream, groupNameTwo, onEv2, () => {});
-    await sleep(3000);
+    await waitUntil(() => processedEventCount1 === 10 && processedEventCount2 === 10);
 
     assert.equal(10, processedEventCount1, 'Expect processed events to be 10 for subscription 1');
     assert.equal(10, processedEventCount2, 'Expect processed events to be 10 for subscription 2');

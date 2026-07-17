@@ -2,6 +2,7 @@ import assert from 'assert';
 import generateEventId from '../lib/utilities/generateEventId.js';
 import getGRPCConfig from './support/getGRPCConfig.js';
 import sleep from './utilities/sleep.js';
+import waitUntil from './utilities/waitUntil.js';
 import KurrentDB from '../lib/index.js';
 import { runningV21 } from './support/v21.js';
 
@@ -43,7 +44,7 @@ describe('gRPC Client - Subscribe To Stream From', () => {
         onLiveProcessingStarted,
         onDropped
       );
-      await sleep(3000);
+      await waitUntil(() => processedEventCount === 10 && (runningV21 || liveProcessingStarted));
       assert(!dropped, 'should not drop');
       assert.equal(10, processedEventCount);
       // The 'caughtUp' notification that drives onLiveProcessingStarted needs a server newer
@@ -91,7 +92,7 @@ describe('gRPC Client - Subscribe To Stream From', () => {
         resolveLinkTos: true
       };
       const sub = await client.subscribeToStreamFrom(`$ce-TestStream`, 5, onEventAppeared, null, onDropped, settings);
-      await sleep(3000);
+      await waitUntil(() => hasProcessedEvents);
       hasReachAssert = true;
       assert(!dropError, dropError);
       assert(hasProcessedEvents, `Should have processed events`);
@@ -115,7 +116,7 @@ describe('gRPC Client - Subscribe To Stream From', () => {
       });
       await sleep(100);
       await client.writeEvent(testStream, 'TestEventType', { something: 1 });
-      await sleep(3000);
+      await waitUntil(() => processedEventCount === 1);
 
       assert.equal(1, processedEventCount, 'expect the event written after subscribing to arrive');
       await sub.close();

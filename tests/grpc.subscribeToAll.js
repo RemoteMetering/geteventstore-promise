@@ -2,6 +2,7 @@ import assert from 'assert';
 import generateEventId from '../lib/utilities/generateEventId.js';
 import getGRPCConfig from './support/getGRPCConfig.js';
 import sleep from './utilities/sleep.js';
+import waitUntil from './utilities/waitUntil.js';
 import KurrentDB, { eventTypeFilter } from '../lib/index.js';
 // The 'caughtUp' notification that drives onLiveProcessingStarted needs a server newer than the
 // v21 (21.10.0) image, so tests that rely on it are skipped there.
@@ -36,7 +37,7 @@ describe('gRPC Client - Subscribe to $all', () => {
 
     await sleep(100);
     await client.writeEvents(testStream, events);
-    await sleep(3000);
+    await waitUntil(() => processedEventCount === 10);
 
     if (dropped) {
       await client.closeAllConnections();
@@ -62,7 +63,7 @@ describe('gRPC Client - Subscribe to $all', () => {
       },
       () => {}
     );
-    await sleep(3000);
+    await waitUntil(() => live);
 
     assert(live, 'expect onLiveProcessingStarted to have fired');
 
@@ -91,7 +92,7 @@ describe('gRPC Client - Subscribe to $all', () => {
       eventFactory.newEvent(eventType, { keep: true }),
       eventFactory.newEvent(`Other-${generateEventId()}`, { keep: false })
     ]);
-    await sleep(3000);
+    await waitUntil(() => received.length > 0);
 
     assert(received.length > 0, 'expect at least the matching event');
     assert(

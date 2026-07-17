@@ -2,6 +2,7 @@ import assert from 'assert';
 import generateEventId from '../lib/utilities/generateEventId.js';
 import getGRPCConfig from './support/getGRPCConfig.js';
 import sleep from './utilities/sleep.js';
+import waitUntil from './utilities/waitUntil.js';
 import KurrentDB, { eventTypeFilter } from '../lib/index.js';
 import { itUnlessV21 } from './support/v21.js';
 
@@ -42,12 +43,12 @@ describe('gRPC Client - Replay parked messages', () => {
       () => {}
     );
 
-    await sleep(4000);
+    await waitUntil(() => parked.size === 5, { timeout: 15000 });
     assert.equal(parked.size, 5, 'expect all 5 messages to have been parked');
 
     replayed = true;
     await client.persistentSubscriptions.replayParkedMessagesToStream(groupName, testStream);
-    await sleep(4000);
+    await waitUntil(() => redelivered > 0, { timeout: 15000 });
 
     assert(redelivered > 0, 'expect parked messages to be redelivered after replay');
 
@@ -89,12 +90,12 @@ describe('gRPC Client - Replay parked messages', () => {
     await sleep(100);
     await client.writeEvents(testStream, events);
 
-    await sleep(4000);
+    await waitUntil(() => parked.size === 5, { timeout: 15000 });
     assert.equal(parked.size, 5, 'expect all 5 messages to have been parked');
 
     replayed = true;
     await client.persistentSubscriptions.replayParkedMessagesToAll(groupName);
-    await sleep(4000);
+    await waitUntil(() => redelivered > 0, { timeout: 15000 });
 
     assert(redelivered > 0, 'expect parked messages to be redelivered after replay');
 

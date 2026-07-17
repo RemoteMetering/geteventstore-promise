@@ -2,6 +2,7 @@ import assert from 'assert';
 import generateEventId from '../lib/utilities/generateEventId.js';
 import getTcpConfig from './support/getTcpConfig.js';
 import sleep from './utilities/sleep.js';
+import waitUntil from './utilities/waitUntil.js';
 import KurrentDB from '../lib/index.js';
 
 const eventFactory = new KurrentDB.EventFactory();
@@ -46,7 +47,7 @@ describe('TCP Client - Subscribe To Stream', () => {
     }
     await sleep(100);
     await client.writeEvents(testStream, events);
-    await sleep(3000);
+    await waitUntil(() => processedEventCount === 10);
 
     if (dropped) {
       await client.closeAllPools();
@@ -81,7 +82,7 @@ describe('TCP Client - Subscribe To Stream', () => {
     const sub2 = await client.subscribeToStream(testStream, onEv2, () => {});
     await sleep(1000);
     await client.writeEvents(testStream, events);
-    await sleep(3000);
+    await waitUntil(() => processedEventCount1 === 10 && processedEventCount2 === 10);
 
     assert.equal(10, processedEventCount1, 'Expect processed events to be 10 for subscription 1');
     assert.equal(10, processedEventCount2, 'Expect processed events to be 10 for subscription 2');

@@ -1,7 +1,7 @@
 import assert from 'assert';
 import generateEventId from '../lib/utilities/generateEventId.js';
 import getGRPCConfig from './support/getGRPCConfig.js';
-import sleep from './utilities/sleep.js';
+import waitUntil from './utilities/waitUntil.js';
 import KurrentDB from '../lib/index.js';
 
 const eventFactory = new KurrentDB.EventFactory();
@@ -134,9 +134,11 @@ describe('gRPC Client - Get Events', () => {
     const deletedStream = 'TestStreamDeleted';
     await client.writeEvent(deletedStream, 'TestEventType', { something: 1 });
 
-    await sleep(500);
-
-    const result = await client.readEventsForward('$streams', 0, 4096, false);
+    let result;
+    await waitUntil(async () => {
+      result = await client.readEventsForward('$streams', 0, 4096, false);
+      return result.events.length > 0;
+    });
     assert(result.events.length > 0, 'More than 0 events expected');
 
     await client.close();
