@@ -25,7 +25,9 @@ describe('TCP Client - Delete stream', () => {
     }
   });
 
-  it('Should return successful on projected stream delete', async () => {
+  it('Should return successful on projected stream delete', async function () {
+    this.timeout(15000);
+
     const client = new KurrentDB.TCPClient(getTcpConfig());
 
     const testStream = `TestDeletedStream-${generateEventId()}`;
@@ -34,7 +36,7 @@ describe('TCP Client - Delete stream', () => {
     });
 
     // The category projection creates $ce-TestDeletedStream asynchronously, so wait for it before deleting.
-    await waitUntil(async () => client.checkStreamExists(`$ce-TestDeletedStream`));
+    await waitUntil(async () => client.checkStreamExists(`$ce-TestDeletedStream`), { timeout: 10000 });
     await client.deleteStream(`$ce-TestDeletedStream`);
     assert.equal(await client.checkStreamExists(`$ce-TestDeletedStream`), false);
 
