@@ -133,12 +133,10 @@ describe('TCP Client - Test Connection', () => {
     });
     await client.close();
 
-    let failed = false;
     try {
       await client.getPool();
-      failed = true;
+      throw new Error('Connection Pool should not exist');
     } catch (err) {
-      if (failed) throw new Error('Connection Pool should not exist');
       assert.equal(err.message, 'Connection Pool not found');
     }
   });
@@ -150,12 +148,10 @@ describe('TCP Client - Test Connection', () => {
 
     await client.closeAllPools();
 
-    let failed = false;
     try {
       await client.getPool();
-      failed = true;
+      throw new Error('Connection Pool should not exist');
     } catch (err) {
-      if (failed) throw new Error('Connection Pool should not exist');
       assert.equal(err.message, 'Connection Pool not found');
     }
   });

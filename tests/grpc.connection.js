@@ -114,12 +114,10 @@ describe('gRPC Client - Test Connection', () => {
     });
     await client.close();
 
-    let failed = false;
     try {
       await client.getConnection();
-      failed = true;
+      throw new Error('Connection should not exist');
     } catch (err) {
-      if (failed) throw new Error('Connection should not exist');
       assert.equal(err.message, 'Connection not found');
     }
   });
@@ -131,12 +129,10 @@ describe('gRPC Client - Test Connection', () => {
 
     await client.closeAllConnections();
 
-    let failed = false;
     try {
       await client.getConnection();
-      failed = true;
+      throw new Error('Connection should not exist');
     } catch (err) {
-      if (failed) throw new Error('Connection should not exist');
       assert.equal(err.message, 'Connection not found');
     }
   });

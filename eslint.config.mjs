@@ -68,14 +68,6 @@ export default [
       ]
     }
   },
-  {
-    // Tests intentionally throw fresh assertion errors from catch blocks,
-    // where the caught error is not a meaningful cause.
-    files: ['tests/**'],
-    rules: {
-      'preserve-caught-error': 'off'
-    }
-  },
   prettierConfig,
   {
     ...pluginJson.configs.recommended,
