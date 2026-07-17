@@ -1,140 +1,144 @@
+import assert from 'assert';
 import generateEventId from '../lib/utilities/generateEventId.js';
 import getGRPCConfig from './support/getGRPCConfig.js';
 import sleep from './utilities/sleep.js';
 import KurrentDB from '../lib/index.js';
-import assert from 'assert';
 
 const eventFactory = new KurrentDB.EventFactory();
 
 describe('gRPC Client - Get Events', () => {
-	const testStream = `TestStream-${generateEventId()}`;
-	const numberOfEvents = 10;
+  const testStream = `TestStream-${generateEventId()}`;
+  const numberOfEvents = 10;
 
-	before(async () => {
-		const client = new KurrentDB.GRPCClient(getGRPCConfig());
+  before(async () => {
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
 
-		const events = [];
+    const events = [];
 
-		for (let i = 1; i <= numberOfEvents; i++) {
-			events.push(eventFactory.newEvent('TestEventType', {
-				something: i
-			}));
-		}
+    for (let i = 1; i <= numberOfEvents; i++) {
+      events.push(
+        eventFactory.newEvent('TestEventType', {
+          something: i
+        })
+      );
+    }
 
-		await client.writeEvents(testStream, events);
+    await client.writeEvents(testStream, events);
 
-		await client.close();
-	});
+    await client.close();
+  });
 
-	it('Should read events reading forward', async () => {
-		const client = new KurrentDB.GRPCClient(getGRPCConfig());
+  it('Should read events reading forward', async () => {
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
 
-		const result = await client.readEventsForward(testStream);
-		assert.equal(result.events.length, 10);
-		assert.equal(result.events[0].data.something, 1);
-		assert.equal('TestEventType', result.events[0].eventType);
-		assert(result.events[0].created);
-		assert(result.events[0].metadata === undefined);
-		assert(result.events[0].isJson !== undefined);
+    const result = await client.readEventsForward(testStream);
+    assert.equal(result.events.length, 10);
+    assert.equal(result.events[0].data.something, 1);
+    assert.equal('TestEventType', result.events[0].eventType);
+    assert(result.events[0].created);
+    assert(result.events[0].metadata === undefined);
+    assert(result.events[0].isJson !== undefined);
 
-		await client.close();
-	});
+    await client.close();
+  });
 
-	it('Should read events reading backward', async () => {
-		const client = new KurrentDB.GRPCClient(getGRPCConfig());
+  it('Should read events reading backward', async () => {
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
 
-		const result = await client.readEventsBackward(testStream);
-		assert.equal(result.events.length, 10);
-		assert.equal(result.events[0].data.something, 10);
+    const result = await client.readEventsBackward(testStream);
+    assert.equal(result.events.length, 10);
+    assert.equal(result.events[0].data.something, 10);
 
-		await client.close();
-	});
+    await client.close();
+  });
 
-	it('Should read last event reading backward with larger size than events', async () => {
-		const client = new KurrentDB.GRPCClient(getGRPCConfig());
+  it('Should read last event reading backward with larger size than events', async () => {
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
 
-		const result = await client.readEventsBackward(testStream, 0, 250);
-		assert.equal(result.events.length, 1);
-		assert.equal(result.events[0].data.something, 1);
+    const result = await client.readEventsBackward(testStream, 0, 250);
+    assert.equal(result.events.length, 1);
+    assert.equal(result.events[0].data.something, 1);
 
-		await client.close();
-	});
+    await client.close();
+  });
 
-	it('Should not get any events when start event is greater than the stream length', async () => {
-		const client = new KurrentDB.GRPCClient(getGRPCConfig());
+  it('Should not get any events when start event is greater than the stream length', async () => {
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
 
-		const result = await client.readEventsForward(testStream, 11);
-		assert.equal(result.events.length, 0);
+    const result = await client.readEventsForward(testStream, 11);
+    assert.equal(result.events.length, 0);
 
-		await client.close();
-	});
+    await client.close();
+  });
 
-	it('Should read events reading backward from a start position', async () => {
-		const client = new KurrentDB.GRPCClient(getGRPCConfig());
+  it('Should read events reading backward from a start position', async () => {
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
 
-		const result = await client.readEventsBackward(testStream, 2);
-		assert.equal(result.events.length, 3);
-		assert.equal(result.events[0].data.something, 3);
+    const result = await client.readEventsBackward(testStream, 2);
+    assert.equal(result.events.length, 3);
+    assert.equal(result.events[0].data.something, 3);
 
-		await client.close();
-	});
+    await client.close();
+  });
 
-	it('Should read events reading backward with a count greater than the stream length', async () => {
-		const client = new KurrentDB.GRPCClient(getGRPCConfig());
+  it('Should read events reading backward with a count greater than the stream length', async () => {
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
 
-		const result = await client.readEventsBackward(testStream, undefined, 10000);
-		assert.equal(result.events.length, 10);
-		assert.equal(result.events[0].data.something, 10);
+    const result = await client.readEventsBackward(testStream, undefined, 10000);
+    assert.equal(result.events.length, 10);
+    assert.equal(result.events[0].data.something, 10);
 
-		await client.close();
-	});
+    await client.close();
+  });
 
-	it('Should read events reading forward with a count greater than the stream length return a maximum of 4096', async function () {
-		this.timeout(40000);
-		const client = new KurrentDB.GRPCClient(getGRPCConfig());
+  it('Should read events reading forward with a count greater than the stream length return a maximum of 4096', async function () {
+    this.timeout(40000);
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
 
-		const testStream = `TestStream-${generateEventId()}`;
-		const numberOfEvents = 5000;
-		const events = [];
+    const largeStream = `TestStream-${generateEventId()}`;
+    const largeStreamEventCount = 5000;
+    const events = [];
 
-		for (let i = 1; i <= numberOfEvents; i++) {
-			events.push(eventFactory.newEvent('TestEventType', {
-				something: i
-			}));
-		}
+    for (let i = 1; i <= largeStreamEventCount; i++) {
+      events.push(
+        eventFactory.newEvent('TestEventType', {
+          something: i
+        })
+      );
+    }
 
-		await client.writeEvents(testStream, events);
-		const result = await client.readEventsForward(testStream, undefined, 5000);
-		assert.equal(result.events.length, 4096);
-		assert.equal(result.events[0].data.something, 1);
-		assert.equal(result.events[4095].data.something, 4096);
+    await client.writeEvents(largeStream, events);
+    const result = await client.readEventsForward(largeStream, undefined, 5000);
+    assert.equal(result.events.length, 4096);
+    assert.equal(result.events[0].data.something, 1);
+    assert.equal(result.events[4095].data.something, 4096);
 
-		await client.close();
-	});
+    await client.close();
+  });
 
-	it('Should read linked to events and map correctly', async () => {
-		const client = new KurrentDB.GRPCClient(getGRPCConfig());
+  it('Should read linked to events and map correctly', async () => {
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
 
-		const result = await client.readEventsForward('$ce-TestStream', 0, 1);
-		assert.equal(result.events.length, 1);
-		assert(result.events[0].data.something);
-		assert.equal(0, result.events[0].positionEventNumber, 'Position event number should be a number');
-		assert.equal('$ce-TestStream', result.events[0].positionStreamId);
+    const result = await client.readEventsForward('$ce-TestStream', 0, 1);
+    assert.equal(result.events.length, 1);
+    assert(result.events[0].data.something);
+    assert.equal(0, result.events[0].positionEventNumber, 'Position event number should be a number');
+    assert.equal('$ce-TestStream', result.events[0].positionStreamId);
 
-		await client.close();
-	});
+    await client.close();
+  });
 
-	it('Should read system and deleted events without resolveLinkTos', async () => {
-		const client = new KurrentDB.GRPCClient(getGRPCConfig());
+  it('Should read system and deleted events without resolveLinkTos', async () => {
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
 
-		const deletedStream = 'TestStreamDeleted';
-		await client.writeEvent(deletedStream, 'TestEventType', { something: 1 });
+    const deletedStream = 'TestStreamDeleted';
+    await client.writeEvent(deletedStream, 'TestEventType', { something: 1 });
 
-		await sleep(500);
+    await sleep(500);
 
-		const result = await client.readEventsForward('$streams', 0, 4096, false);
-		assert(result.events.length > 0, 'More than 0 events expected');
+    const result = await client.readEventsForward('$streams', 0, 4096, false);
+    assert(result.events.length > 0, 'More than 0 events expected');
 
-		await client.close();
-	});
+    await client.close();
+  });
 });

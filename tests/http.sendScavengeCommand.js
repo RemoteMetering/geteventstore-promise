@@ -5,8 +5,8 @@ const describeForScavenge = process.env.TESTS_V21 === 'true' ? describe : descri
 
 // Set KURRENTDB_MEM_DB=false to test on LTS
 describeForScavenge('Http Client - Send Scavenge Command', () => {
-	it('Should send scavenge command', () => {
-		const client = new KurrentDB.HTTPClient(getHttpConfig());
-		return client.admin.scavenge();
-	});
+  it('Should send scavenge command', () => {
+    const client = new KurrentDB.HTTPClient(getHttpConfig());
+    return client.admin.scavenge();
+  });
 });

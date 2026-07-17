@@ -1,321 +1,341 @@
+import assert from 'assert';
 import generateEventId from '../lib/utilities/generateEventId.js';
 import getTcpConfig from './support/getTcpConfig.js';
 import KurrentDB from '../lib/index.js';
-import assert from 'assert';
 
 const eventFactory = new KurrentDB.EventFactory();
 
 describe('TCP Client - Event Enumerator', () => {
-	describe('Forward: Reading events', () => {
-		it('Read next events', async() => {
-			const client = new KurrentDB.TCPClient(getTcpConfig());
-
-			const events = [];
-			for (let k = 0; k < 100; k++) {
-				events.push(eventFactory.newEvent('TestEventType', {
-					id: k
-				}));
-			}
-
-			const testStream = `TestStream-${generateEventId()}`;
-			await client.writeEvents(testStream, events);
-
-			const enumerator = client.eventEnumerator(testStream);
-			let result = await enumerator.next(20);
-			assert.equal(result.events.length, 20);
-			assert.equal(result.events[0].data.id, 0);
-			assert.equal(result.events[19].data.id, 19);
-
-			result = await enumerator.next(20);
-			assert.equal(result.events.length, 20);
-			assert.equal(result.events[0].data.id, 20);
-			assert.equal(result.events[19].data.id, 39);
-
-			await client.close();
-		});
-
-		it('Read first 10 events, next 20 events, previous 30 events', async() => {
-			const client = new KurrentDB.TCPClient(getTcpConfig());
-
-			const events = [];
-			for (let k = 0; k < 100; k++) {
-				events.push(eventFactory.newEvent('TestEventType', {
-					id: k
-				}));
-			}
-
-			const testStream = `TestStream-${generateEventId()}`;
-			await client.writeEvents(testStream, events);
-
-			const enumerator = client.eventEnumerator(testStream);
-			let result = await enumerator.first(10);
-			assert.equal(result.events.length, 10);
-			assert.equal(result.events[0].data.id, 0);
-			assert.equal(result.events[9].data.id, 9);
-
-			result = await enumerator.next(20);
-			assert.equal(result.events.length, 20);
-			assert.equal(result.events[0].data.id, 10);
-			assert.equal(result.events[19].data.id, 29);
-
-			result = await enumerator.previous(30);
-			assert.equal(result.events.length, 30);
-			assert.equal(result.events[0].data.id, 0);
-			assert.equal(result.events[29].data.id, 29);
-
-			await client.close();
-		});
-
-		it('Read last 10 events, previous 30 events, next 30 events', async() => {
-			const client = new KurrentDB.TCPClient(getTcpConfig());
-
-			const events = [];
-			for (let k = 0; k < 100; k++) {
-				events.push(eventFactory.newEvent('TestEventType', {
-					id: k
-				}));
-			}
-
-			const testStream = `TestStream-${generateEventId()}`;
-			await client.writeEvents(testStream, events);
-
-			const enumerator = client.eventEnumerator(testStream);
-			let result = await enumerator.last(10);
-			assert.equal(result.events.length, 10);
-			assert.equal(result.events[0].data.id, 90);
-			assert.equal(result.events[9].data.id, 99);
-
-			result = await enumerator.previous(30);
-			assert.equal(result.events.length, 30);
-			assert.equal(result.events[0].data.id, 70);
-			assert.equal(result.events[29].data.id, 99);
-
-			result = await enumerator.next(30);
-			assert.equal(result.events.length, 30);
-			assert.equal(result.events[0].data.id, 70);
-			assert.equal(result.events[29].data.id, 99);
-
-			await client.close();
-		});
-
-		it('Read first and last batch', async() => {
-			const client = new KurrentDB.TCPClient(getTcpConfig());
-
-			const events = [];
-			for (let k = 0; k < 100; k++) {
-				events.push(eventFactory.newEvent('TestEventType', {
-					id: k
-				}));
-			}
-
-			const testStream = `TestStream-${generateEventId()}`;
-			await client.writeEvents(testStream, events);
-
-			const enumerator = client.eventEnumerator(testStream);
-			let result = await enumerator.first(20);
-			assert.equal(result.events.length, 20);
-			assert.equal(result.events[0].data.id, 0);
-			assert.equal(result.events[19].data.id, 19);
-
-			result = await enumerator.last(20);
-			assert.equal(result.events.length, 20);
-			assert.equal(result.events[0].data.id, 80);
-			assert.equal(result.events[19].data.id, 99);
-
-			await client.close();
-		});
-
-		it('Handle out of bounds Enumeration Request ', async() => {
-			const client = new KurrentDB.TCPClient(getTcpConfig());
-
-			const events = [];
-			for (let k = 0; k < 100; k++) {
-				events.push(eventFactory.newEvent('TestEventType', {
-					id: k
-				}));
-			}
-
-			const testStream = `TestStream-${generateEventId()}`;
-			await client.writeEvents(testStream, events);
-
-			const enumerator = client.eventEnumerator(testStream);
-			let result = await enumerator.first(95);
-			assert.equal(result.events.length, 95);
-			assert.equal(result.events[0].data.id, 0);
-			assert.equal(result.events[94].data.id, 94);
-
-			result = await enumerator.next(20);
-			assert.equal(result.events.length, 5);
-			assert.equal(result.events[0].data.id, 95);
-			assert.equal(result.events[4].data.id, 99);
-
-			result = await enumerator.first(10);
-			assert.equal(result.events.length, 10);
-			assert.equal(result.events[0].data.id, 0);
-			assert.equal(result.events[9].data.id, 9);
-
-			result = await enumerator.previous(20);
-			assert.equal(result.events.length, 10);
-			assert.equal(result.events[0].data.id, 0);
-			assert.equal(result.events[9].data.id, 9);
-
-			await client.close();
-		});
-	});
-
-	describe('Backward: Reading events', () => {
-		it('Read next events', async() => {
-			const client = new KurrentDB.TCPClient(getTcpConfig());
-
-			const events = [];
-			for (let k = 0; k < 100; k++) {
-				events.push(eventFactory.newEvent('TestEventType', {
-					id: k
-				}));
-			}
-
-			const testStream = `TestStream-${generateEventId()}`;
-			await client.writeEvents(testStream, events);
-
-			const enumerator = client.eventEnumerator(testStream, 'backward');
-			let result = await enumerator.next(20);
-			assert.equal(result.events.length, 20);
-			assert.equal(result.events[0].data.id, 99);
-			assert.equal(result.events[19].data.id, 80);
-
-			result = await enumerator.next(20);
-			assert.equal(result.events.length, 20);
-			assert.equal(result.events[0].data.id, 79);
-			assert.equal(result.events[19].data.id, 60);
-
-			await client.close();
-		});
-
-		it('Read first 10 events, next 20 events, previous 30 events', async() => {
-			const client = new KurrentDB.TCPClient(getTcpConfig());
-
-			const events = [];
-			for (let k = 0; k < 100; k++) {
-				events.push(eventFactory.newEvent('TestEventType', {
-					id: k
-				}));
-			}
-
-			const testStream = `TestStream-${generateEventId()}`;
-			await client.writeEvents(testStream, events);
-
-			const enumerator = client.eventEnumerator(testStream, 'backward');
-			let result = await enumerator.first(10);
-			assert.equal(result.events.length, 10);
-			assert.equal(result.events[0].data.id, 99);
-			assert.equal(result.events[9].data.id, 90);
-
-			result = await enumerator.next(20);
-			assert.equal(result.events.length, 20);
-			assert.equal(result.events[0].data.id, 89);
-			assert.equal(result.events[19].data.id, 70);
-
-			result = await enumerator.previous(30);
-			assert.equal(result.events.length, 30);
-			assert.equal(result.events[0].data.id, 99);
-			assert.equal(result.events[29].data.id, 70);
-
-			await client.close();
-		});
-
-		it('Read last 10 events, previous 20 events, next 30 events', async() => {
-			const client = new KurrentDB.TCPClient(getTcpConfig());
-
-			const events = [];
-			for (let k = 0; k < 100; k++) {
-				events.push(eventFactory.newEvent('TestEventType', {
-					id: k
-				}));
-			}
-
-			const testStream = `TestStream-${generateEventId()}`;
-			await client.writeEvents(testStream, events);
-
-			const enumerator = client.eventEnumerator(testStream, 'backward');
-			let result = await enumerator.last(10);
-			assert.equal(result.events.length, 10);
-			assert.equal(result.events[0].data.id, 9);
-			assert.equal(result.events[9].data.id, 0);
-
-			result = await enumerator.previous(30);
-			assert.equal(result.events.length, 30);
-			assert.equal(result.events[0].data.id, 29);
-			assert.equal(result.events[29].data.id, 0);
-
-			result = await enumerator.next(30);
-			assert.equal(result.events.length, 30);
-			assert.equal(result.events[0].data.id, 29);
-			assert.equal(result.events[29].data.id, 0);
-
-			await client.close();
-		});
-
-		it('Read first and last batch', async() => {
-			const client = new KurrentDB.TCPClient(getTcpConfig());
-
-			const events = [];
-			for (let k = 0; k < 100; k++) {
-				events.push(eventFactory.newEvent('TestEventType', {
-					id: k
-				}));
-			}
-
-			const testStream = `TestStream-${generateEventId()}`;
-			await client.writeEvents(testStream, events);
-
-			const enumerator = client.eventEnumerator(testStream, 'backward');
-			let result = await enumerator.first(20);
-			assert.equal(result.events.length, 20);
-			assert.equal(result.events[0].data.id, 99);
-			assert.equal(result.events[19].data.id, 80);
-
-			result = await enumerator.last(20);
-			assert.equal(result.events.length, 20);
-			assert.equal(result.events[0].data.id, 19);
-			assert.equal(result.events[19].data.id, 0);
-
-			await client.close();
-		});
-
-		it('Handle out of bounds Enumeration Request ', async() => {
-			const client = new KurrentDB.TCPClient(getTcpConfig());
-
-			const events = [];
-			for (let k = 0; k < 100; k++) {
-				events.push(eventFactory.newEvent('TestEventType', {
-					id: k
-				}));
-			}
-
-			const testStream = `TestStream-${generateEventId()}`;
-			await client.writeEvents(testStream, events);
-			const enumerator = client.eventEnumerator(testStream, 'backward');
-			let result = await enumerator.first(95);
-			assert.equal(result.events.length, 95);
-			assert.equal(result.events[0].data.id, 99);
-			assert.equal(result.events[94].data.id, 5);
-
-			result = await enumerator.next(20);
-			assert.equal(result.events.length, 5);
-			assert.equal(result.events[0].data.id, 4);
-			assert.equal(result.events[4].data.id, 0);
-
-			result = await enumerator.first(10);
-			assert.equal(result.events.length, 10);
-			assert.equal(result.events[0].data.id, 99);
-			assert.equal(result.events[9].data.id, 90);
-
-			result = await enumerator.previous(20);
-			assert.equal(result.events.length, 10);
-			assert.equal(result.events[0].data.id, 99);
-			assert.equal(result.events[9].data.id, 90);
-
-			await client.close();
-		});
-	});
+  describe('Forward: Reading events', () => {
+    it('Read next events', async () => {
+      const client = new KurrentDB.TCPClient(getTcpConfig());
+
+      const events = [];
+      for (let k = 0; k < 100; k++) {
+        events.push(
+          eventFactory.newEvent('TestEventType', {
+            id: k
+          })
+        );
+      }
+
+      const testStream = `TestStream-${generateEventId()}`;
+      await client.writeEvents(testStream, events);
+
+      const enumerator = client.eventEnumerator(testStream);
+      let result = await enumerator.next(20);
+      assert.equal(result.events.length, 20);
+      assert.equal(result.events[0].data.id, 0);
+      assert.equal(result.events[19].data.id, 19);
+
+      result = await enumerator.next(20);
+      assert.equal(result.events.length, 20);
+      assert.equal(result.events[0].data.id, 20);
+      assert.equal(result.events[19].data.id, 39);
+
+      await client.close();
+    });
+
+    it('Read first 10 events, next 20 events, previous 30 events', async () => {
+      const client = new KurrentDB.TCPClient(getTcpConfig());
+
+      const events = [];
+      for (let k = 0; k < 100; k++) {
+        events.push(
+          eventFactory.newEvent('TestEventType', {
+            id: k
+          })
+        );
+      }
+
+      const testStream = `TestStream-${generateEventId()}`;
+      await client.writeEvents(testStream, events);
+
+      const enumerator = client.eventEnumerator(testStream);
+      let result = await enumerator.first(10);
+      assert.equal(result.events.length, 10);
+      assert.equal(result.events[0].data.id, 0);
+      assert.equal(result.events[9].data.id, 9);
+
+      result = await enumerator.next(20);
+      assert.equal(result.events.length, 20);
+      assert.equal(result.events[0].data.id, 10);
+      assert.equal(result.events[19].data.id, 29);
+
+      result = await enumerator.previous(30);
+      assert.equal(result.events.length, 30);
+      assert.equal(result.events[0].data.id, 0);
+      assert.equal(result.events[29].data.id, 29);
+
+      await client.close();
+    });
+
+    it('Read last 10 events, previous 30 events, next 30 events', async () => {
+      const client = new KurrentDB.TCPClient(getTcpConfig());
+
+      const events = [];
+      for (let k = 0; k < 100; k++) {
+        events.push(
+          eventFactory.newEvent('TestEventType', {
+            id: k
+          })
+        );
+      }
+
+      const testStream = `TestStream-${generateEventId()}`;
+      await client.writeEvents(testStream, events);
+
+      const enumerator = client.eventEnumerator(testStream);
+      let result = await enumerator.last(10);
+      assert.equal(result.events.length, 10);
+      assert.equal(result.events[0].data.id, 90);
+      assert.equal(result.events[9].data.id, 99);
+
+      result = await enumerator.previous(30);
+      assert.equal(result.events.length, 30);
+      assert.equal(result.events[0].data.id, 70);
+      assert.equal(result.events[29].data.id, 99);
+
+      result = await enumerator.next(30);
+      assert.equal(result.events.length, 30);
+      assert.equal(result.events[0].data.id, 70);
+      assert.equal(result.events[29].data.id, 99);
+
+      await client.close();
+    });
+
+    it('Read first and last batch', async () => {
+      const client = new KurrentDB.TCPClient(getTcpConfig());
+
+      const events = [];
+      for (let k = 0; k < 100; k++) {
+        events.push(
+          eventFactory.newEvent('TestEventType', {
+            id: k
+          })
+        );
+      }
+
+      const testStream = `TestStream-${generateEventId()}`;
+      await client.writeEvents(testStream, events);
+
+      const enumerator = client.eventEnumerator(testStream);
+      let result = await enumerator.first(20);
+      assert.equal(result.events.length, 20);
+      assert.equal(result.events[0].data.id, 0);
+      assert.equal(result.events[19].data.id, 19);
+
+      result = await enumerator.last(20);
+      assert.equal(result.events.length, 20);
+      assert.equal(result.events[0].data.id, 80);
+      assert.equal(result.events[19].data.id, 99);
+
+      await client.close();
+    });
+
+    it('Handle out of bounds Enumeration Request ', async () => {
+      const client = new KurrentDB.TCPClient(getTcpConfig());
+
+      const events = [];
+      for (let k = 0; k < 100; k++) {
+        events.push(
+          eventFactory.newEvent('TestEventType', {
+            id: k
+          })
+        );
+      }
+
+      const testStream = `TestStream-${generateEventId()}`;
+      await client.writeEvents(testStream, events);
+
+      const enumerator = client.eventEnumerator(testStream);
+      let result = await enumerator.first(95);
+      assert.equal(result.events.length, 95);
+      assert.equal(result.events[0].data.id, 0);
+      assert.equal(result.events[94].data.id, 94);
+
+      result = await enumerator.next(20);
+      assert.equal(result.events.length, 5);
+      assert.equal(result.events[0].data.id, 95);
+      assert.equal(result.events[4].data.id, 99);
+
+      result = await enumerator.first(10);
+      assert.equal(result.events.length, 10);
+      assert.equal(result.events[0].data.id, 0);
+      assert.equal(result.events[9].data.id, 9);
+
+      result = await enumerator.previous(20);
+      assert.equal(result.events.length, 10);
+      assert.equal(result.events[0].data.id, 0);
+      assert.equal(result.events[9].data.id, 9);
+
+      await client.close();
+    });
+  });
+
+  describe('Backward: Reading events', () => {
+    it('Read next events', async () => {
+      const client = new KurrentDB.TCPClient(getTcpConfig());
+
+      const events = [];
+      for (let k = 0; k < 100; k++) {
+        events.push(
+          eventFactory.newEvent('TestEventType', {
+            id: k
+          })
+        );
+      }
+
+      const testStream = `TestStream-${generateEventId()}`;
+      await client.writeEvents(testStream, events);
+
+      const enumerator = client.eventEnumerator(testStream, 'backward');
+      let result = await enumerator.next(20);
+      assert.equal(result.events.length, 20);
+      assert.equal(result.events[0].data.id, 99);
+      assert.equal(result.events[19].data.id, 80);
+
+      result = await enumerator.next(20);
+      assert.equal(result.events.length, 20);
+      assert.equal(result.events[0].data.id, 79);
+      assert.equal(result.events[19].data.id, 60);
+
+      await client.close();
+    });
+
+    it('Read first 10 events, next 20 events, previous 30 events', async () => {
+      const client = new KurrentDB.TCPClient(getTcpConfig());
+
+      const events = [];
+      for (let k = 0; k < 100; k++) {
+        events.push(
+          eventFactory.newEvent('TestEventType', {
+            id: k
+          })
+        );
+      }
+
+      const testStream = `TestStream-${generateEventId()}`;
+      await client.writeEvents(testStream, events);
+
+      const enumerator = client.eventEnumerator(testStream, 'backward');
+      let result = await enumerator.first(10);
+      assert.equal(result.events.length, 10);
+      assert.equal(result.events[0].data.id, 99);
+      assert.equal(result.events[9].data.id, 90);
+
+      result = await enumerator.next(20);
+      assert.equal(result.events.length, 20);
+      assert.equal(result.events[0].data.id, 89);
+      assert.equal(result.events[19].data.id, 70);
+
+      result = await enumerator.previous(30);
+      assert.equal(result.events.length, 30);
+      assert.equal(result.events[0].data.id, 99);
+      assert.equal(result.events[29].data.id, 70);
+
+      await client.close();
+    });
+
+    it('Read last 10 events, previous 20 events, next 30 events', async () => {
+      const client = new KurrentDB.TCPClient(getTcpConfig());
+
+      const events = [];
+      for (let k = 0; k < 100; k++) {
+        events.push(
+          eventFactory.newEvent('TestEventType', {
+            id: k
+          })
+        );
+      }
+
+      const testStream = `TestStream-${generateEventId()}`;
+      await client.writeEvents(testStream, events);
+
+      const enumerator = client.eventEnumerator(testStream, 'backward');
+      let result = await enumerator.last(10);
+      assert.equal(result.events.length, 10);
+      assert.equal(result.events[0].data.id, 9);
+      assert.equal(result.events[9].data.id, 0);
+
+      result = await enumerator.previous(30);
+      assert.equal(result.events.length, 30);
+      assert.equal(result.events[0].data.id, 29);
+      assert.equal(result.events[29].data.id, 0);
+
+      result = await enumerator.next(30);
+      assert.equal(result.events.length, 30);
+      assert.equal(result.events[0].data.id, 29);
+      assert.equal(result.events[29].data.id, 0);
+
+      await client.close();
+    });
+
+    it('Read first and last batch', async () => {
+      const client = new KurrentDB.TCPClient(getTcpConfig());
+
+      const events = [];
+      for (let k = 0; k < 100; k++) {
+        events.push(
+          eventFactory.newEvent('TestEventType', {
+            id: k
+          })
+        );
+      }
+
+      const testStream = `TestStream-${generateEventId()}`;
+      await client.writeEvents(testStream, events);
+
+      const enumerator = client.eventEnumerator(testStream, 'backward');
+      let result = await enumerator.first(20);
+      assert.equal(result.events.length, 20);
+      assert.equal(result.events[0].data.id, 99);
+      assert.equal(result.events[19].data.id, 80);
+
+      result = await enumerator.last(20);
+      assert.equal(result.events.length, 20);
+      assert.equal(result.events[0].data.id, 19);
+      assert.equal(result.events[19].data.id, 0);
+
+      await client.close();
+    });
+
+    it('Handle out of bounds Enumeration Request ', async () => {
+      const client = new KurrentDB.TCPClient(getTcpConfig());
+
+      const events = [];
+      for (let k = 0; k < 100; k++) {
+        events.push(
+          eventFactory.newEvent('TestEventType', {
+            id: k
+          })
+        );
+      }
+
+      const testStream = `TestStream-${generateEventId()}`;
+      await client.writeEvents(testStream, events);
+      const enumerator = client.eventEnumerator(testStream, 'backward');
+      let result = await enumerator.first(95);
+      assert.equal(result.events.length, 95);
+      assert.equal(result.events[0].data.id, 99);
+      assert.equal(result.events[94].data.id, 5);
+
+      result = await enumerator.next(20);
+      assert.equal(result.events.length, 5);
+      assert.equal(result.events[0].data.id, 4);
+      assert.equal(result.events[4].data.id, 0);
+
+      result = await enumerator.first(10);
+      assert.equal(result.events.length, 10);
+      assert.equal(result.events[0].data.id, 99);
+      assert.equal(result.events[9].data.id, 90);
+
+      result = await enumerator.previous(20);
+      assert.equal(result.events.length, 10);
+      assert.equal(result.events[0].data.id, 99);
+      assert.equal(result.events[9].data.id, 90);
+
+      await client.close();
+    });
+  });
 });
