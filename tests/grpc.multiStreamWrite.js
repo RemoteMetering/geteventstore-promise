@@ -2,12 +2,11 @@ import assert from 'assert';
 import generateEventId from '../lib/utilities/generateEventId.js';
 import getGRPCConfig from './support/getGRPCConfig.js';
 import KurrentDB from '../lib/index.js';
+import { describeUnlessV21 } from './support/v21.js';
 
 const eventFactory = new KurrentDB.EventFactory();
 
-const describeMultiStreamWrite = process.env.TESTS_V21 === 'true' ? describe.skip : describe;
-
-describeMultiStreamWrite('gRPC Client - Multi Stream Write', () => {
+describeUnlessV21('gRPC Client - Multi Stream Write', () => {
   it('Writes to multiple new streams in one transaction and reads the events back', async () => {
     const client = new KurrentDB.GRPCClient(getGRPCConfig());
 

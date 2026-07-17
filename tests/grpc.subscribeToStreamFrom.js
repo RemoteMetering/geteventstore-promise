@@ -3,6 +3,7 @@ import generateEventId from '../lib/utilities/generateEventId.js';
 import getGRPCConfig from './support/getGRPCConfig.js';
 import sleep from './utilities/sleep.js';
 import KurrentDB from '../lib/index.js';
+import { runningV21 } from './support/v21.js';
 
 const eventFactory = new KurrentDB.EventFactory();
 
@@ -46,8 +47,8 @@ describe('gRPC Client - Subscribe To Stream From', () => {
       assert(!dropped, 'should not drop');
       assert.equal(10, processedEventCount);
       // The 'caughtUp' notification that drives onLiveProcessingStarted needs a server newer
-      if (process.env.TESTS_V21 !== 'true')
-        assert(liveProcessingStarted, 'expect live processing callback after catching up');
+      // than the v21 (21.10.0) image, so only assert it on the current server.
+      if (!runningV21) assert(liveProcessingStarted, 'expect live processing callback after catching up');
       assert(sub, 'Subscription Expected');
       hasPassed = true;
       await sub.close();

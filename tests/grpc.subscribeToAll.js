@@ -3,11 +3,11 @@ import generateEventId from '../lib/utilities/generateEventId.js';
 import getGRPCConfig from './support/getGRPCConfig.js';
 import sleep from './utilities/sleep.js';
 import KurrentDB, { eventTypeFilter } from '../lib/index.js';
+// The 'caughtUp' notification that drives onLiveProcessingStarted needs a server newer than the
+// v21 (21.10.0) image, so tests that rely on it are skipped there.
+import { itUnlessV21 } from './support/v21.js';
 
 const eventFactory = new KurrentDB.EventFactory();
-
-// The 'caughtUp' notification that drives onLiveProcessingStarted needs a server newer than the
-const itUnlessV21 = process.env.TESTS_V21 === 'true' ? it.skip : it;
 
 describe('gRPC Client - Subscribe to $all', () => {
   it('Should receive events written to $all after the subscription starts', async function () {

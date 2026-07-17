@@ -3,6 +3,7 @@ import generateEventId from '../lib/utilities/generateEventId.js';
 import getGRPCConfig from './support/getGRPCConfig.js';
 import sleep from './utilities/sleep.js';
 import KurrentDB, { eventTypeFilter } from '../lib/index.js';
+import { itUnlessV21 } from './support/v21.js';
 
 const eventFactory = new KurrentDB.EventFactory();
 
@@ -55,7 +56,7 @@ describe('gRPC Client - Replay parked messages', () => {
     await client.close();
   });
 
-  it('replayParkedMessagesToAll should redeliver parked messages', async function () {
+  itUnlessV21('replayParkedMessagesToAll should redeliver parked messages', async function () {
     this.timeout(30 * 1000);
     const client = new KurrentDB.GRPCClient(getGRPCConfig());
     const groupName = `ReplayAllGroup-${generateEventId()}`;

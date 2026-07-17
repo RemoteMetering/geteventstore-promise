@@ -4,10 +4,11 @@ import generateEventId from '../lib/utilities/generateEventId.js';
 import getGRPCConfig from './support/getGRPCConfig.js';
 import sleep from './utilities/sleep.js';
 import KurrentDB from '../lib/index.js';
+// getPersistentSubscriptionToAllInfo and listPersistentSubscriptionsToAll need a server >= 21.10.1,
+// so tests that read $all subscription info are skipped on the v21 (21.10.0) image.
+import { itUnlessV21 } from './support/v21.js';
 
 const eventFactory = new KurrentDB.EventFactory();
-
-const itUnlessV21 = process.env.TESTS_V21 === 'true' ? it.skip : it;
 
 describe('gRPC Client - Persistent Subscription to $all', () => {
   it('Should receive events written to $all after the subscription starts', async function () {

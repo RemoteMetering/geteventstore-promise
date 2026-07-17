@@ -2,14 +2,12 @@ import { spawn } from 'child_process';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import sleep from './utilities/sleep.js';
+import { runningV21, version } from './support/v21.js';
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 global.runningTestsInSecureMode = process.env.TESTS_RUN_SECURE === 'true';
 const securityMode = global.runningTestsInSecureMode ? 'secure' : 'insecure';
-
-const runningV21 = process.env.TESTS_V21 === 'true';
-const version = runningV21 ? 'v21' : 'lts';
 
 const singleReadyMatch = runningV21 ? '"InaugurationManager" in state (Leader' : 'InaugurationManager in state (Leader';
 

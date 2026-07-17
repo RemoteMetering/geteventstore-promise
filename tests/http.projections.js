@@ -7,6 +7,7 @@ import KurrentDB from '../lib/index.js';
 import generateEventId from '../lib/utilities/generateEventId.js';
 import getHttpConfig from './support/getHttpConfig.js';
 import sleep from './utilities/sleep.js';
+import { runningV21 } from './support/v21.js';
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -122,7 +123,7 @@ describe('Projections', () => {
       assert.equal(projectionConfig.checkpointUnhandledBytesThreshold, 10000000);
       assert.equal(projectionConfig.pendingEventsThreshold, 5000);
       assert.equal(projectionConfig.maxWriteBatchLength, 500);
-      if (process.env.TESTS_V21 !== 'true') assert.equal(projectionConfig.label, 'Projections');
+      if (!runningV21) assert.equal(projectionConfig.label, 'Projections');
     });
 
     it('Should remove one-time projection', async function () {
