@@ -46,10 +46,31 @@ describe('gRPC Client - Test Connection', () => {
     await client.close();
   });
 
-  it('Should not connect on incorrect hostname', async function () {
-    this.timeout(60 * 1000);
+  it('Should connect and write event with the extended tuning params set', async function () {
+    this.timeout(30 * 1000);
     const config = getGRPCConfig();
-    config.maxReconnections = 2;
+    // Transport neutral params only, so this holds in both secure and insecure runs.
+    config.keepAliveInterval = 12000;
+    config.keepAliveTimeout = 8000;
+    config.defaultDeadline = 15000;
+    config.nodePreference = 'leader';
+    config.throwOnAppendFailure = true;
+
+    const client = new KurrentDB.GRPCClient(config);
+
+    const testStream = `TestStream-${generateEventId()}`;
+    await client.writeEvent(testStream, 'TestEventType', {
+      something: '123'
+    });
+
+    await client.close();
+  });
+
+  it('Should not connect on incorrect hostname', async function () {
+    this.timeout(10 * 1000);
+    const config = getGRPCConfig();
+    config.maxDiscoverAttempts = 1;
+    config.gossipTimeout = 1;
     config.hostname = 'madetofailhostname.fakedomain.af';
 
     const client = new KurrentDB.GRPCClient(config);
@@ -68,9 +89,10 @@ describe('gRPC Client - Test Connection', () => {
   });
 
   it('Should not connect on incorrect port', async function () {
-    this.timeout(60 * 1000);
+    this.timeout(10 * 1000);
     const config = getGRPCConfig();
-    config.maxReconnections = 2;
+    config.maxDiscoverAttempts = 1;
+    config.gossipTimeout = 1;
     config.port = 9999;
 
     const client = new KurrentDB.GRPCClient(config);

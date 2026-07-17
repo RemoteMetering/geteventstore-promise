@@ -99,6 +99,17 @@ export interface GRPCConfig {
   connectionName?: string;
   connectionNameGenerator?: () => string | Promise<string>;
   includeDeleted?: boolean;
+  maxDiscoverAttempts?: number;
+  gossipTimeout?: number;
+  discoveryInterval?: number;
+  keepAliveInterval?: number;
+  keepAliveTimeout?: number;
+  defaultDeadline?: number;
+  nodePreference?: 'leader' | 'follower' | 'read_only_replica' | 'random';
+  throwOnAppendFailure?: boolean;
+  tlsVerifyCert?: boolean;
+  userCertFile?: string;
+  userKeyFile?: string;
 }
 
 export interface HTTPWriteEventOptions {
