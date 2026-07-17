@@ -6,7 +6,7 @@ The package ships three clients over three transports:
 
 - **gRPC** (`GRPCClient`) talks to modern KurrentDB. This is the recommended transport for new work. Uses the official [@kurrent/kurrentdb-client](https://www.npmjs.com/package/@kurrent/kurrentdb-client) package.
 - **HTTP** (`HTTPClient`) talks to the KurrentDB HTTP API.
-- **TCP** (`TCPClient`) talks to the legacy KurrentDB TCP API. Uses the [node-eventstore-client](https://www.npmjs.com/package/node-eventstore-client) package.
+- **TCP** (`TCPClient`) talks to the KurrentDB Legacy TCP API. This API is supported on KurrentDB >= 24.6 on a licensed server through a plugin. Uses the [node-eventstore-client](https://www.npmjs.com/package/node-eventstore-client) package.
 
 All three expose the same core methods, so you can switch transport through configuration alone.
 
@@ -249,7 +249,9 @@ Available on the HTTP client only.
 
 ---
 
-# TCP Client (Legacy)
+# TCP Client
+
+The TCP transport is supported on KurrentDB >= 24.6 on a licensed server through a plugin.
 
 ## Config
 
