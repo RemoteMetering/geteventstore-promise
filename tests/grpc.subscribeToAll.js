@@ -6,6 +6,9 @@ import KurrentDB, { eventTypeFilter } from '../lib/index.js';
 
 const eventFactory = new KurrentDB.EventFactory();
 
+// The 'caughtUp' notification that drives onLiveProcessingStarted needs a server newer than the
+const itUnlessV21 = process.env.TESTS_V21 === 'true' ? it.skip : it;
+
 describe('gRPC Client - Subscribe to $all', () => {
   it('Should receive events written to $all after the subscription starts', async function () {
     this.timeout(20 * 1000);
@@ -46,7 +49,7 @@ describe('gRPC Client - Subscribe to $all', () => {
     await client.close();
   });
 
-  it('Should fire onLiveProcessingStarted once caught up', async function () {
+  itUnlessV21('Should fire onLiveProcessingStarted once caught up', async function () {
     this.timeout(20 * 1000);
     const client = new KurrentDB.GRPCClient(getGRPCConfig());
     let live = false;

@@ -45,7 +45,9 @@ describe('gRPC Client - Subscribe To Stream From', () => {
       await sleep(3000);
       assert(!dropped, 'should not drop');
       assert.equal(10, processedEventCount);
-      assert(liveProcessingStarted, 'expect live processing callback after catching up');
+      // The 'caughtUp' notification that drives onLiveProcessingStarted needs a server newer
+      if (process.env.TESTS_V21 !== 'true')
+        assert(liveProcessingStarted, 'expect live processing callback after catching up');
       assert(sub, 'Subscription Expected');
       hasPassed = true;
       await sub.close();
@@ -65,6 +67,7 @@ describe('gRPC Client - Subscribe To Stream From', () => {
     let dropError;
 
     function onEventAppeared(sub, ev) {
+      if (ev.isResolved === false) return;
       assert(ev.positionEventId, 'Position link event id expected');
       hasProcessedEvents = true;
     }

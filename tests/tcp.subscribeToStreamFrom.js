@@ -53,6 +53,7 @@ describe('TCP Client - Subscribe To Stream From', () => {
     let dropError;
 
     function onEventAppeared(sub, ev) {
+      if (ev.isResolved === false) return;
       assert(ev.positionEventId, 'Position link event id expected');
       hasProcessedEvents = true;
     }

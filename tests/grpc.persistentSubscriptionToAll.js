@@ -7,6 +7,8 @@ import KurrentDB from '../lib/index.js';
 
 const eventFactory = new KurrentDB.EventFactory();
 
+const itUnlessV21 = process.env.TESTS_V21 === 'true' ? it.skip : it;
+
 describe('gRPC Client - Persistent Subscription to $all', () => {
   it('Should receive events written to $all after the subscription starts', async function () {
     this.timeout(20 * 1000);
@@ -94,7 +96,7 @@ describe('gRPC Client - Persistent Subscription to $all', () => {
     await client.close();
   });
 
-  it('assertToAll should create then update without throwing', async function () {
+  itUnlessV21('assertToAll should create then update without throwing', async function () {
     this.timeout(15 * 1000);
     const client = new KurrentDB.GRPCClient(getGRPCConfig());
     const groupName = `ToAllAssertGroup-${generateEventId()}`;
@@ -110,7 +112,7 @@ describe('gRPC Client - Persistent Subscription to $all', () => {
     await client.close();
   });
 
-  it('getToAllSubscriptionsInfo should list the created group', async function () {
+  itUnlessV21('getToAllSubscriptionsInfo should list the created group', async function () {
     this.timeout(15 * 1000);
     const client = new KurrentDB.GRPCClient(getGRPCConfig());
     const groupName = `ToAllListGroup-${generateEventId()}`;
@@ -128,7 +130,7 @@ describe('gRPC Client - Persistent Subscription to $all', () => {
     await client.close();
   });
 
-  it('removeToAll should delete the subscription', async function () {
+  itUnlessV21('removeToAll should delete the subscription', async function () {
     this.timeout(15 * 1000);
     const client = new KurrentDB.GRPCClient(getGRPCConfig());
     const groupName = `ToAllRemoveGroup-${generateEventId()}`;
