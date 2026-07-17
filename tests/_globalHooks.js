@@ -27,7 +27,6 @@ const clusterComposeFileLocation = path.join(
   'cluster',
   `docker-compose-${securityMode}.yml`
 );
-let eventstore;
 
 const startStack = async (filePath) =>
   new Promise((resolve, reject) => {
@@ -86,7 +85,6 @@ const isContainerReady = async (containerName, readyOutputMatch) =>
 
 before(async function () {
   this.timeout(60 * 1000);
-  if (eventstore) return;
 
   console.log('Starting KurrentDB stacks...');
 
