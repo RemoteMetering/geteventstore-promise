@@ -12,6 +12,18 @@ import { runningV21 } from './support/v21.js';
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 describe('Projections', () => {
+  // Ensure projections are running after tests complete
+  after(async function () {
+    this.timeout(10 * 1000);
+    const client = new KurrentDB.HTTPClient(getHttpConfig());
+
+    await client.projections.enableAll();
+    await waitUntil(async () => {
+      const projectionsInfo = await client.projections.getAllProjectionsInfo();
+      return projectionsInfo.projections.every((projection) => projection.status.toLowerCase().includes('running'));
+    });
+  });
+
   describe('Default Settings', () => {
     const assertionProjection = generateEventId();
     const assertionProjectionContent = fs.readFileSync(`${dirname}/support/testProjection.js`, {
@@ -145,18 +157,19 @@ describe('Projections', () => {
       this.timeout(10 * 1000);
       const client = new KurrentDB.HTTPClient(getHttpConfig());
 
+      const oneTimeProjection = generateEventId();
       const response = await client.projections.assert(
-        assertionProjection,
+        oneTimeProjection,
         assertionProjectionContent,
         'onetime',
         true,
         true,
         true
       );
-      assert.equal(response.name, assertionProjection);
+      assert.equal(response.name, oneTimeProjection);
       let responseWithTrackEmittedStreamsEnabled;
       await waitUntil(async () => {
-        responseWithTrackEmittedStreamsEnabled = await client.projections.getInfo(assertionProjection, true);
+        responseWithTrackEmittedStreamsEnabled = await client.projections.getInfo(oneTimeProjection, true);
         return (
           responseWithTrackEmittedStreamsEnabled.config.trackEmittedStreams === false &&
           responseWithTrackEmittedStreamsEnabled.config.emitEnabled === true
@@ -165,10 +178,10 @@ describe('Projections', () => {
       assert.equal(responseWithTrackEmittedStreamsEnabled.config.trackEmittedStreams, false);
       assert.equal(responseWithTrackEmittedStreamsEnabled.config.emitEnabled, true);
 
-      const stopResponse = await client.projections.stop(assertionProjection);
-      assert.equal(stopResponse.name, assertionProjection);
-      const removeResponse = await client.projections.remove(assertionProjection);
-      assert.equal(removeResponse.name, assertionProjection);
+      const stopResponse = await client.projections.stop(oneTimeProjection);
+      assert.equal(stopResponse.name, oneTimeProjection);
+      const removeResponse = await client.projections.remove(oneTimeProjection);
+      assert.equal(removeResponse.name, oneTimeProjection);
     });
   });
 
@@ -220,7 +233,7 @@ describe('Projections', () => {
       this.timeout(10 * 1000);
       const client = new KurrentDB.HTTPClient(getHttpConfig());
 
-      const projectionName = 'TestProjection';
+      const projectionName = `TestProjection${generateEventId()}`;
       const projectionContent = fs.readFileSync(`${dirname}/support/testProjection.js`, {
         encoding: 'utf8'
       });
@@ -319,7 +332,7 @@ describe('Projections', () => {
       this.timeout(10 * 1000);
       const client = new KurrentDB.HTTPClient(getHttpConfig());
 
-      const projectionName = 'TestProjection';
+      const projectionName = `TestProjection${generateEventId()}`;
       const projectionContent = fs.readFileSync(`${dirname}/support/testProjection.js`, {
         encoding: 'utf8'
       });
