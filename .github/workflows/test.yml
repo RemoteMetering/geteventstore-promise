@@ -22,8 +22,8 @@ permissions:
   contents: read
 
 env:
-  PNPM_VERSION: 9
-  NODE_VERSION: 20
+  PNPM_VERSION: 11
+  NODE_VERSION: 24
 
 jobs:
   lint:
