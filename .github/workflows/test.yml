@@ -1,0 +1,79 @@
+# CI for @metronomic/kurrentdb-client.
+#
+# Three jobs run on every push and pull request:
+#   lint     - eslint and prettier, no server needed
+#   test     - the default suite (pnpm test) against the community 26.1 image, both
+#              insecure and secure, TCP excluded (the community image ships no TCP interface)
+#   coverage - the full surface (pnpm coverage) across both images, secure. It runs the
+#              26.1 image (TCP excluded) then the 21.10 image (TCP included) into one shared
+#              c8 temp directory, so the merged report reflects the whole codebase
+#
+# The test suites start KurrentDB themselves through tests/_globalHooks.js, which shells out
+# to `docker compose` (v2), so the runner only needs Docker. GitHub-hosted ubuntu runners
+# already ship both Docker and the compose v2 plugin.
+name: Tests
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  PNPM_VERSION: 9
+  NODE_VERSION: 20
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm format:check
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Run default suite (26.1, insecure then secure, TCP excluded)
+        run: pnpm test
+
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Run full surface with coverage (26.1 then 21.10, secure)
+        run: pnpm coverage
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage
+          if-no-files-found: ignore
