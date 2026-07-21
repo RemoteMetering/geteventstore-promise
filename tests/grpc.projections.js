@@ -11,6 +11,19 @@ import waitUntil from './utilities/waitUntil.js';
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 describe('gRPC Client - Projections', () => {
+  after(async function () {
+    this.timeout(10 * 1000);
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
+
+    await client.projections.enableAll();
+    await waitUntil(async () => {
+      const projections = await client.projections.getAllProjectionsInfo();
+      return projections.every((projection) => projection.status.toLowerCase().includes('running'));
+    });
+
+    await client.close();
+  });
+
   describe('Default Settings', () => {
     const assertionProjection = generateEventId();
     const assertionProjectionContent = fs.readFileSync(`${dirname}/support/testProjection.js`, {
@@ -124,7 +137,132 @@ describe('gRPC Client - Projections', () => {
     });
   });
 
+  describe('Global Projections Operations', () => {
+    it('Should enable all projections', async function () {
+      this.timeout(10 * 1000);
+      const client = new KurrentDB.GRPCClient(getGRPCConfig());
+
+      await client.projections.enableAll();
+
+      let projections;
+      await waitUntil(async () => {
+        projections = await client.projections.getAllProjectionsInfo();
+        return projections.every((projection) => projection.status.toLowerCase().includes('running'));
+      });
+      projections.forEach((projection) => {
+        assert.equal(projection.status.toLowerCase().includes('running'), true);
+      });
+
+      await client.close();
+    });
+
+    it('Should disable all projections', async function () {
+      this.timeout(10 * 1000);
+      const client = new KurrentDB.GRPCClient(getGRPCConfig());
+
+      await client.projections.disableAll();
+
+      let projections;
+      await waitUntil(async () => {
+        projections = await client.projections.getAllProjectionsInfo();
+        return projections.every((projection) => projection.status.toLowerCase().includes('stopped'));
+      });
+      projections.forEach((projection) => {
+        assert.equal(projection.status.toLowerCase().includes('stopped'), true);
+      });
+
+      await client.close();
+    });
+  });
+
   describe('General', () => {
+    const assertionProjectionContent = fs.readFileSync(`${dirname}/support/testProjection.js`, {
+      encoding: 'utf8'
+    });
+
+    it('Should reject assert when name is not provided', async function () {
+      this.timeout(10 * 1000);
+      const client = new KurrentDB.GRPCClient(getGRPCConfig());
+
+      await assert.rejects(() => client.projections.assert(undefined, assertionProjectionContent), /Name not provided/);
+
+      await client.close();
+    });
+
+    it('Should reject assert when projection content is not provided', async function () {
+      this.timeout(10 * 1000);
+      const client = new KurrentDB.GRPCClient(getGRPCConfig());
+
+      await assert.rejects(
+        () => client.projections.assert(`AssertNoContent-${generateEventId()}`),
+        /Projection Content not provided/
+      );
+
+      await client.close();
+    });
+
+    it('Should create a disabled projection when enabled is false', async function () {
+      this.timeout(10 * 1000);
+      const client = new KurrentDB.GRPCClient(getGRPCConfig());
+      const projectionName = `DisabledProjection-${generateEventId()}`;
+
+      await client.projections.assert(projectionName, assertionProjectionContent, 'continuous', false);
+      await waitUntil(async () => (await client.projections.getInfo(projectionName)).status === 'Stopped');
+
+      const projectionInfo = await client.projections.getInfo(projectionName);
+      assert.equal(projectionInfo.status, 'Stopped');
+
+      await client.projections.remove(projectionName);
+      await client.close();
+    });
+
+    it('Should disable an existing projection when updated with enabled false', async function () {
+      this.timeout(10 * 1000);
+      const client = new KurrentDB.GRPCClient(getGRPCConfig());
+      const projectionName = `UpdateDisableProjection-${generateEventId()}`;
+
+      await client.projections.assert(projectionName, assertionProjectionContent);
+      await waitUntil(async () =>
+        (await client.projections.getInfo(projectionName)).status.toLowerCase().includes('running')
+      );
+
+      await client.projections.assert(projectionName, assertionProjectionContent, 'continuous', false);
+      await waitUntil(async () => (await client.projections.getInfo(projectionName)).status === 'Stopped');
+
+      const projectionInfo = await client.projections.getInfo(projectionName);
+      assert.equal(projectionInfo.status, 'Stopped');
+
+      await client.projections.remove(projectionName);
+      await client.close();
+    });
+
+    it('Should create a projection with emit and track emitted streams enabled', async function () {
+      this.timeout(10 * 1000);
+      const client = new KurrentDB.GRPCClient(getGRPCConfig());
+      const projectionName = `EmitProjection-${generateEventId()}`;
+
+      await client.projections.assert(
+        projectionName,
+        assertionProjectionContent,
+        'continuous',
+        true,
+        undefined,
+        true,
+        true
+      );
+      await waitUntil(async () =>
+        (await client.projections.getInfo(projectionName)).status.toLowerCase().includes('running')
+      );
+
+      const projectionInfo = await client.projections.getInfo(projectionName);
+      assert.equal(projectionInfo.name, projectionName);
+
+      await client.projections.stop(projectionName);
+      await waitUntil(async () => (await client.projections.getInfo(projectionName)).status === 'Stopped');
+      await client.projections.remove(projectionName);
+      await client.close();
+    });
+
     it('Should return all eventstore projections information', async function () {
       this.timeout(10 * 1000);
       const client = new KurrentDB.GRPCClient(getGRPCConfig());

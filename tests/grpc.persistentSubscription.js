@@ -4,6 +4,7 @@ import getGRPCConfig from './support/getGRPCConfig.js';
 import sleep from './utilities/sleep.js';
 import waitUntil from './utilities/waitUntil.js';
 import KurrentDB from '../lib/index.js';
+import { itUnlessV21 } from './support/v21.js';
 
 const eventFactory = new KurrentDB.EventFactory();
 
@@ -118,5 +119,63 @@ describe('gRPC Client - Persistent Subscription', () => {
     }
 
     throw new Error(`Should have failed because subscription does not exist`);
+  });
+
+  it('getSubscriptionInfo should return info for a stream subscription', async function () {
+    this.timeout(15 * 1000);
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
+    const groupName = `InfoGroup-${generateEventId()}`;
+    const testStream = `TestStream-${generateEventId()}`;
+
+    await client.writeEvents(testStream, [eventFactory.newEvent('TestEventType', { id: 1 })]);
+    await client.createPersistentSubscriptionToStream(testStream, groupName);
+
+    const info = await client.persistentSubscriptions.getSubscriptionInfo(groupName, testStream);
+    assert.equal(info.groupName, groupName);
+    // The gRPC info object names the stream eventSource, unlike the HTTP shape's eventStreamId.
+    assert.equal(info.eventSource, testStream);
+
+    await client.persistentSubscriptions.remove(groupName, testStream);
+    await client.close();
+  });
+
+  it('getStreamSubscriptionsInfo should list subscriptions for a stream', async function () {
+    this.timeout(15 * 1000);
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
+    const groupName = `StreamInfoGroup-${generateEventId()}`;
+    const testStream = `TestStream-${generateEventId()}`;
+
+    await client.writeEvents(testStream, [eventFactory.newEvent('TestEventType', { id: 1 })]);
+    await client.createPersistentSubscriptionToStream(testStream, groupName);
+
+    const results = await client.persistentSubscriptions.getStreamSubscriptionsInfo(testStream);
+    assert(Array.isArray(results), 'expect an array of subscriptions');
+    assert(
+      results.some((subscription) => subscription.groupName === groupName),
+      'expect the created group in the stream subscription list'
+    );
+
+    await client.persistentSubscriptions.remove(groupName, testStream);
+    await client.close();
+  });
+
+  itUnlessV21('getAllSubscriptionsInfo should list the created subscription', async function () {
+    this.timeout(15 * 1000);
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
+    const groupName = `AllInfoGroup-${generateEventId()}`;
+    const testStream = `TestStream-${generateEventId()}`;
+
+    await client.writeEvents(testStream, [eventFactory.newEvent('TestEventType', { id: 1 })]);
+    await client.createPersistentSubscriptionToStream(testStream, groupName);
+
+    const results = await client.persistentSubscriptions.getAllSubscriptionsInfo();
+    assert(Array.isArray(results), 'expect an array of subscriptions');
+    assert(
+      results.some((subscription) => subscription.groupName === groupName),
+      'expect the created group in the full subscription list'
+    );
+
+    await client.persistentSubscriptions.remove(groupName, testStream);
+    await client.close();
   });
 });

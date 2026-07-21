@@ -28,6 +28,34 @@ describe('TCP Client - Set stream metadata', () => {
     await client.close();
   });
 
+  it('Should set an ACL that reads back with friendly role names', async function () {
+    this.timeout(5000);
+    const client = new KurrentDB.TCPClient(getTcpConfig());
+
+    const testStream = `TestStream-${generateEventId()}`;
+    const acl = {
+      readRoles: ['$admins', 'reader'],
+      writeRoles: ['writer'],
+      deleteRoles: ['$admins'],
+      metaReadRoles: ['reader'],
+      metaWriteRoles: ['$admins']
+    };
+    await client.setStreamMetadata(testStream, { maxCount: 5, acl });
+
+    // The TCP client has no getStreamMetadata
+    const grpcClient = new KurrentDB.GRPCClient(getGRPCConfig());
+    const result = await grpcClient.getStreamMetadata(testStream);
+    assert.deepEqual(result.metadata.acl.readRoles, acl.readRoles);
+    assert.deepEqual(result.metadata.acl.writeRoles, acl.writeRoles);
+    assert.deepEqual(result.metadata.acl.deleteRoles, acl.deleteRoles);
+    assert.deepEqual(result.metadata.acl.metaReadRoles, acl.metaReadRoles);
+    assert.deepEqual(result.metadata.acl.metaWriteRoles, acl.metaWriteRoles);
+    assert.equal(result.metadata.maxCount, 5);
+
+    await grpcClient.close();
+    await client.close();
+  });
+
   it('Should fail promise if no metadata provided', async () => {
     const client = new KurrentDB.TCPClient(getTcpConfig());
 
