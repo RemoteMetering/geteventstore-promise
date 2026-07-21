@@ -1,5 +1,3 @@
-version: '3.5'
-
 services:
   metronomic_kurrentdb_client_test_single:
     image: eventstore/eventstore:21.10.0-buster-slim

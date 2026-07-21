@@ -30,7 +30,7 @@ const clusterComposeFileLocation = path.join(
 
 const startStack = async (filePath) =>
   new Promise((resolve, reject) => {
-    const proc = spawn('docker-compose', ['--file', filePath, 'up', '-d'], {
+    const proc = spawn('docker', ['compose', '--file', filePath, 'up', '-d'], {
       cwd: undefined,
       stdio: ['ignore', 'ignore', process.stderr]
     });
@@ -40,7 +40,7 @@ const startStack = async (filePath) =>
 
 const removeStack = async (filePath) =>
   new Promise((resolve, reject) => {
-    const proc = spawn('docker-compose', ['--file', filePath, 'down', '--remove-orphans'], {
+    const proc = spawn('docker', ['compose', '--file', filePath, 'down', '--remove-orphans'], {
       cwd: undefined,
       stdio: ['ignore', 'ignore', process.stderr]
     });
