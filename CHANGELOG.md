@@ -35,6 +35,13 @@
 - Persistent subscriptions to `$all`, with optional server-side filtering by event type or stream prefix. Adds `createPersistentSubscriptionToAll` and `subscribeToPersistentSubscriptionToAll`, plus `assertToAll`, `removeToAll`, `getToAllSubscriptionInfo`, and `getToAllSubscriptionsInfo` on `persistentSubscriptions`. Needs KurrentDB 21.10 or later
 - Projections
 
+#### Behaviour
+
+The gRPC read surface matches the HTTP and TCP clients on four points, rather than passing the
+underlying client's shapes straight through.
+
+- `readEventsForward` and `readEventsBackward` return `isEndOfStream`, `readDirection`, `fromEventNumber` and `nextEventNumber` alongside `events`, as the HTTP and TCP clients do. gRPC reports no head-of-stream flag, so `isEndOfStream` is derived from a batch coming back shorter than the requested count, and the count is taken before `includeDeleted` filtering so the metadata still describes what the server returned. `readAllEventsForward` and `readAllEventsBackward` still return `events` only, because a revision based `nextEventNumber` has no meaning against `$all`, where positions are commit and prepare pairs
+
 # 4.0.1 (2021-09-28)
 
 ## TCP

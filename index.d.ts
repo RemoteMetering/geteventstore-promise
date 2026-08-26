@@ -170,6 +170,14 @@ export interface GRPCReadResult {
   events: Event[];
 }
 
+export interface GRPCStreamReadResult {
+  events: Event[];
+  isEndOfStream: boolean;
+  readDirection: ReadDirection;
+  fromEventNumber: number | string;
+  nextEventNumber: number;
+}
+
 export interface HTTPReadResultAuthor {
   name: string;
 }
@@ -610,13 +618,13 @@ export class GRPCClient {
     startPosition?: number,
     count?: number,
     resolveLinkTos?: boolean
-  ): Promise<GRPCReadResult>;
+  ): Promise<GRPCStreamReadResult>;
   readEventsBackward(
     streamName: string,
     startPosition?: number,
     count?: number,
     resolveLinkTos?: boolean
-  ): Promise<GRPCReadResult>;
+  ): Promise<GRPCStreamReadResult>;
   readAllEvents(
     startPosition?: ReadPosition,
     count?: number,

@@ -1,6 +1,7 @@
 import assert from 'assert';
 import generateEventId from '../lib/utilities/generateEventId.js';
 import getGRPCConfig from './support/getGRPCConfig.js';
+import waitUntil from './utilities/waitUntil.js';
 import KurrentDB from '../lib/index.js';
 
 const eventFactory = new KurrentDB.EventFactory();
@@ -51,4 +52,38 @@ describe('gRPC Client - Get All Stream Events', () => {
 
     await client.close();
   }).timeout(5000);
+
+  it('Should read a stream that does not exist as an empty array rather than throwing', async () => {
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
+
+    const evs = await client.getAllStreamEvents(`DoesNotExist-${generateEventId()}`);
+    assert.deepEqual(evs, []);
+
+    await client.close();
+  });
+
+  it('Should page a linked to stream to completion using the link revision', async () => {
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
+
+    const category = `Linked${generateEventId().replace(/-/g, '')}`;
+    const written = 30;
+    for (let k = 0; k < written; k++) {
+      await client.writeEvent(`${category}-${k}`, 'TestEventType', { id: k });
+    }
+
+    let evs;
+    await waitUntil(
+      async () => {
+        evs = await client.getAllStreamEvents(`$ce-${category}`, 10);
+        return evs.length === written;
+      },
+      { timeout: 20000 }
+    );
+
+    assert.equal(evs.length, written);
+    const ids = evs.map((ev) => ev.data.id).sort((a, b) => a - b);
+    assert.deepEqual(ids, [...Array(written).keys()], 'every linked event is read exactly once');
+
+    await client.close();
+  }).timeout(30000);
 });

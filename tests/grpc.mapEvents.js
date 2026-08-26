@@ -50,6 +50,52 @@ describe('gRPC Client - mapEvent', () => {
   it('Should return null when neither event nor link is present', () => {
     assert.equal(mapEvent({}), null);
   });
+
+  it('Should narrow revisions to Number rather than leaving them BigInt', () => {
+    const live = mapEvent(liveResolvedEvent);
+    assert.equal(typeof live.eventNumber, 'number');
+
+    const deleted = mapEvent(deletedResolvedEvent);
+    assert.equal(typeof deleted.eventNumber, 'number');
+
+    const linked = mapEvent({ ...liveResolvedEvent, link: deletedResolvedEvent.link });
+    assert.equal(typeof linked.positionEventNumber, 'number');
+    assert.equal(linked.positionEventNumber, 5);
+  });
+
+  it('Should decode a non JSON payload to a string, as the HTTP and TCP clients do', () => {
+    const linkBody = '0@TestStream';
+    const mapped = mapEvent({
+      event: {
+        streamId: '$streams',
+        id: '00000000-0000-0000-0000-000000000003',
+        revision: 0n,
+        type: '$>',
+        created: 16000000000000,
+        isJson: false,
+        data: new Uint8Array(Buffer.from(linkBody))
+      }
+    });
+
+    assert.equal(mapped.data, linkBody);
+    assert.equal(mapped.data.split('@')[1], 'TestStream');
+  });
+
+  it('Should leave a JSON payload untouched, including one that is itself an array', () => {
+    const mapped = mapEvent({
+      event: {
+        streamId: 'TestStream',
+        id: '00000000-0000-0000-0000-000000000004',
+        revision: 0n,
+        type: 'TestEventType',
+        created: 16000000000000,
+        isJson: true,
+        data: [1, 2, 3]
+      }
+    });
+
+    assert.deepEqual(mapped.data, [1, 2, 3]);
+  });
 });
 
 describe('gRPC Client - keepEvent', () => {
