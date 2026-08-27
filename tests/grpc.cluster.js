@@ -6,6 +6,19 @@ import KurrentDB from '../lib/index.js';
 
 const eventFactory = new KurrentDB.EventFactory();
 
+// A cluster call that reaches a node which has just stopped being leader fails with NotLeaderError.
+// The SDK repoints its channel at the new leader before throwing, so the caller is expected to
+// retry, and the retry lands on the leader. Leadership moves while a freshly started cluster
+// settles, so every cluster call here goes through this.
+const retryOnNotLeader = async (operation) => {
+  try {
+    return await operation();
+  } catch (err) {
+    if (err.type !== 'not-leader') throw err;
+    return operation();
+  }
+};
+
 describe('gRPC Client - Cluster', () => {
   it('Write and read events using gossip seeds', async function () {
     this.timeout(5 * 1000);
@@ -14,9 +27,9 @@ describe('gRPC Client - Cluster', () => {
 
     const events = [eventFactory.newEvent('TestEventType', { something: '456' })];
     const testStream = `TestStream-${generateEventId()}`;
-    await client.writeEvents(testStream, events);
+    await retryOnNotLeader(() => client.writeEvents(testStream, events));
 
-    const evs = await client.getEvents(testStream);
+    const evs = await retryOnNotLeader(() => client.getEvents(testStream));
     assert.equal(evs[0].data.something, '456');
 
     await client.close();
@@ -29,9 +42,9 @@ describe('gRPC Client - Cluster', () => {
 
     const events = [eventFactory.newEvent('TestEventType', { something: '456' })];
     const testStream = `TestStream-${generateEventId()}`;
-    await client.writeEvents(testStream, events);
+    await retryOnNotLeader(() => client.writeEvents(testStream, events));
 
-    const evs = await client.getEvents(testStream);
+    const evs = await retryOnNotLeader(() => client.getEvents(testStream));
     assert.equal(evs[0].data.something, '456');
 
     await client.close();
