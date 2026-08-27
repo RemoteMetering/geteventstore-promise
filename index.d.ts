@@ -71,6 +71,7 @@ export interface HTTPConfig {
   protocol?: string;
   hostname: string;
   port: number;
+  timeout?: number;
   validateServer?: boolean;
   credentials: UserCredentials;
 }
@@ -153,6 +154,16 @@ export interface GRPCConsistencyCheck {
 
 export interface TCPWriteEventsOptions extends TCPWriteEventOptions {
   transactionWriteSize?: number;
+}
+
+// node-eventstore-client returns 64-bit event numbers as Long values. Declared structurally
+// because 'long' is a transitive dependency and is not resolvable from this package.
+export interface Long {
+  low: number;
+  high: number;
+  unsigned: boolean;
+  toNumber(): number;
+  toString(radix?: number): string;
 }
 
 export interface TCPReadResult {

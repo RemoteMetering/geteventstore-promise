@@ -75,9 +75,6 @@
     "include": [
       "lib/**"
     ],
-    "exclude": [
-      "lib/AggRoot.js"
-    ],
     "all": true
   },
   "engines": {
