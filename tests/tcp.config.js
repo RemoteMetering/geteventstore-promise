@@ -26,7 +26,7 @@ describe('TCP Client - Config', () => {
       };
       // Constructed purely to trigger the config assertion
       new KurrentDB.TCPClient(config);
-      done();
+      done('Config should not pass assertion');
     } catch (err) {
       assert.equal(err === undefined, false);
       assert.equal(err.message, 'TCP client - hostname property not provided');
@@ -42,7 +42,7 @@ describe('TCP Client - Config', () => {
       };
       // Constructed purely to trigger the config assertion
       new KurrentDB.TCPClient(config);
-      done();
+      done('Config should not pass assertion');
     } catch (err) {
       assert.equal(err === undefined, false);
       assert.equal(err.message, 'TCP client - credentials property not provided');

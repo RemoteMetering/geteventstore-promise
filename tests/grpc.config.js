@@ -26,7 +26,7 @@ describe('gRPC Client - Config', () => {
       };
       // Constructed purely to trigger the config assertion
       new KurrentDB.GRPCClient(config);
-      done();
+      done('Config should not pass assertion');
     } catch (err) {
       assert.equal(err === undefined, false);
       assert.equal(err.message, 'gRPC client - hostname property not provided');
@@ -42,7 +42,7 @@ describe('gRPC Client - Config', () => {
       };
       // Constructed purely to trigger the config assertion
       new KurrentDB.GRPCClient(config);
-      done();
+      done('Config should not pass assertion');
     } catch (err) {
       assert.equal(err === undefined, false);
       assert.equal(err.message, 'gRPC client - credentials property not provided');

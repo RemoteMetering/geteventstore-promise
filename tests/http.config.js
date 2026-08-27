@@ -26,7 +26,7 @@ describe('Http Client - Config', () => {
       };
       // Constructed purely to trigger the config assertion
       new KurrentDB.HTTPClient(config);
-      done();
+      done('Config should not pass assertion');
     } catch (err) {
       assert.equal(err === undefined, false);
       assert.equal(err.message, 'HTTP client - hostname property not provided');
@@ -42,7 +42,7 @@ describe('Http Client - Config', () => {
       };
       // Constructed purely to trigger the config assertion
       new KurrentDB.HTTPClient(config);
-      done();
+      done('Config should not pass assertion');
     } catch (err) {
       assert.equal(err === undefined, false);
       assert.equal(err.message, 'HTTP client - credentials property not provided');
