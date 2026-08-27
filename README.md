@@ -95,6 +95,10 @@ Available on the gRPC and HTTP clients. `config` is HTTP only, and `getInfo`'s `
 - disableAll()
 - getAllProjectionsInfo()
 
+Two `assert` arguments are accepted but ignored, and they differ by client. `enabled` is honoured on gRPC only, so an HTTP `assert` always leaves the projection running. `checkpointsEnabled` is ignored on both, because HTTP forces it on for continuous projections and gRPC supports continuous projections only.
+
+`enableAll` and `disableAll` also differ. The HTTP client lists all non-transient projections, so one-time projections are included. The gRPC client lists continuous projections only, so one-time projections are skipped.
+
 `restartSubsystem` is available on the gRPC and HTTP clients. It restarts the server's projection subsystem.
 
 - restartSubsystem()
@@ -217,6 +221,7 @@ await client.readAllEventsForward('start', 1000, false, excludeSystemEvents());
 const client = new KurrentDB.HTTPClient({
   hostname: 'localhost',
   port: 2113,
+  timeout: 5000, // optional, milliseconds
   credentials: {
     username: 'admin',
     password: 'changeit'
@@ -235,6 +240,8 @@ const secureClient = new KurrentDB.HTTPClient({
   }
 });
 ```
+
+`timeout` applies to the stream calls only, namely the read and write methods, `setStreamMetadata`, `checkStreamExists`, `deleteStream` and `ping`. The `projections`, `persistentSubscriptions` and `admin` calls do not pass it and have no timeout.
 
 ## Admin methods (only issues commands)
 

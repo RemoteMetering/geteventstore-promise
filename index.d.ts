@@ -218,9 +218,26 @@ export interface ProjectionStateOptions {
   partition?: string;
 }
 
-export interface PersistentSubscriptionOptions {
+export interface HTTPPersistentSubscriptionOptions {
   resolveLinkTos?: boolean;
   startFrom?: number;
+  extraStatistics?: boolean;
+  messageTimeoutMilliseconds?: number;
+  maxRetryCount?: number;
+  liveBufferSize?: number;
+  readBatchSize?: number;
+  bufferSize?: number;
+  checkPointAfterMilliseconds?: number;
+  minCheckPointCount?: number;
+  maxCheckPointCount?: number;
+  maxSubscriberCount?: number;
+  namedConsumerStrategy?: string;
+}
+
+export interface GRPCPersistentSubscriptionOptions {
+  resolveLinkTos?: boolean;
+  startFrom?: number | bigint | 'start' | 'end';
+  startPosition?: number | bigint | 'start' | 'end';
   extraStatistics?: boolean;
   messageTimeout?: number;
   maxRetryCount?: number;
@@ -228,14 +245,21 @@ export interface PersistentSubscriptionOptions {
   readBatchSize?: number;
   historyBufferSize?: number;
   checkPointAfter?: number;
-  minCheckPointCount?: number;
-  maxCheckPointCount?: number;
+  checkPointLowerBound?: number;
+  checkPointUpperBound?: number;
   maxSubscriberCount?: number;
-  namedConsumerStrategy?: string;
+  consumerStrategyName?: string;
 }
+
+/**
+ * @deprecated Mixed both clients' names, so six of its options were silently discarded whichever
+ * client you used. Use HTTPPersistentSubscriptionOptions or GRPCPersistentSubscriptionOptions.
+ */
+export type PersistentSubscriptionOptions = HTTPPersistentSubscriptionOptions & GRPCPersistentSubscriptionOptions;
 
 export type AllPosition = 'start' | 'end' | { commit: bigint; prepare: bigint };
 
+// gRPC only, and already uses the SDK's setting names.
 export interface PersistentSubscriptionToAllOptions {
   resolveLinkTos?: boolean;
   startFrom?: AllPosition;
@@ -453,7 +477,7 @@ export class HTTPClient {
     assert(
       name: string,
       streamName: string,
-      options?: PersistentSubscriptionOptions
+      options?: HTTPPersistentSubscriptionOptions
     ): Promise<PersistentSubscriptionAssertResult>;
     remove(name: string, streamName: string): Promise<void>;
     getEvents(
@@ -732,7 +756,7 @@ export class GRPCClient {
   createPersistentSubscriptionToStream(
     streamName: string,
     groupName: string,
-    settings?: PersistentSubscriptionOptions
+    settings?: GRPCPersistentSubscriptionOptions
   ): Promise<void>;
   createPersistentSubscriptionToAll(groupName: string, settings?: PersistentSubscriptionToAllOptions): Promise<void>;
   subscribeToPersistentSubscriptionToStream(
@@ -740,7 +764,7 @@ export class GRPCClient {
     groupName: string,
     onEventAppeared?: MappedEventAppearedCallback<PersistentSubscriptionToStream>,
     onDropped?: GRPCSubscriptionDroppedCallback<PersistentSubscriptionToStream>,
-    settings?: PersistentSubscriptionOptions,
+    settings?: { bufferSize?: number },
     duplexOptions?: object
   ): Promise<PersistentSubscriptionToStream>;
   subscribeToPersistentSubscriptionToAll(
@@ -773,7 +797,7 @@ export class GRPCClient {
     restartSubsystem(): Promise<void>;
   };
   persistentSubscriptions: {
-    assert(name: string, streamName: string, options?: PersistentSubscriptionOptions): Promise<void>;
+    assert(name: string, streamName: string, options?: GRPCPersistentSubscriptionOptions): Promise<void>;
     assertToAll(name: string, options?: PersistentSubscriptionToAllOptions): Promise<void>;
     remove(name: string, streamName: string): Promise<void>;
     removeToAll(name: string): Promise<void>;
