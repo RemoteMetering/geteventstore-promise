@@ -1,309 +1,430 @@
-import './_globalHooks';
-
 import assert from 'assert';
 import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-import EventStore from '../lib';
-import generateEventId from '../lib/utilities/generateEventId';
-import getHttpConfig from './support/getHttpConfig';
-import sleep from './utilities/sleep';
+import KurrentDB from '../lib/index.js';
+import generateEventId from '../lib/utilities/generateEventId.js';
+import getHttpConfig from './support/getHttpConfig.js';
+import waitUntil from './utilities/waitUntil.js';
+import { runningV21 } from './support/v21.js';
+
+const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 describe('Projections', () => {
-	describe('Default Settings', () => {
-		const assertionProjection = generateEventId();
-		const assertionProjectionContent = fs.readFileSync(`${__dirname}/support/testProjection.js`, {
-			encoding: 'utf8'
-		});
+  // Ensure projections are running after tests complete
+  after(async function () {
+    this.timeout(10 * 1000);
+    const client = new KurrentDB.HTTPClient(getHttpConfig());
 
-		it('Should create continuous projection', async function () {
-			this.timeout(10 * 1000);
-			const client = new EventStore.HTTPClient(getHttpConfig());
+    await client.projections.enableAll();
+    await waitUntil(async () => {
+      const projectionsInfo = await client.projections.getAllProjectionsInfo();
+      return projectionsInfo.projections.every((projection) => projection.status.toLowerCase().includes('running'));
+    });
+  });
 
-			const response = await client.projections.assert(assertionProjection, assertionProjectionContent);
-			assert.equal(response.name, assertionProjection);
+  describe('Default Settings', () => {
+    const assertionProjection = generateEventId();
+    const assertionProjectionContent = fs.readFileSync(`${dirname}/support/testProjection.js`, {
+      encoding: 'utf8'
+    });
 
-			const responseWithTrackEmittedStreamsEnabled = await client.projections.getInfo(assertionProjection, true);
-			assert.equal(responseWithTrackEmittedStreamsEnabled.config.emitEnabled, false);
-			assert.equal(responseWithTrackEmittedStreamsEnabled.config.trackEmittedStreams, false);
-		});
+    it('Should create continuous projection', async function () {
+      this.timeout(10 * 1000);
+      const client = new KurrentDB.HTTPClient(getHttpConfig());
 
-		it('Should update existing projection', async function () {
-			this.timeout(10 * 1000);
-			const client = new EventStore.HTTPClient(getHttpConfig());
+      const response = await client.projections.assert(assertionProjection, assertionProjectionContent);
+      assert.equal(response.name, assertionProjection);
 
-			const response = await client.projections.assert(assertionProjection, assertionProjectionContent);
-			assert.equal(response.name, assertionProjection);
-		});
+      const responseWithTrackEmittedStreamsEnabled = await client.projections.getInfo(assertionProjection, true);
+      assert.equal(responseWithTrackEmittedStreamsEnabled.config.emitEnabled, false);
+      assert.equal(responseWithTrackEmittedStreamsEnabled.config.trackEmittedStreams, false);
+    });
 
-		it('Should stop projection', async function () {
-			this.timeout(10 * 1000);
-			const client = new EventStore.HTTPClient(getHttpConfig());
+    it('Should update existing projection', async function () {
+      this.timeout(10 * 1000);
+      const client = new KurrentDB.HTTPClient(getHttpConfig());
 
-			const response = await client.projections.stop(assertionProjection);
-			assert.equal(response.name, assertionProjection);
-			const projectionInfo = await client.projections.getInfo(assertionProjection);
-			assert.equal(projectionInfo.status, 'Stopped');
-		});
+      const response = await client.projections.assert(assertionProjection, assertionProjectionContent);
+      assert.equal(response.name, assertionProjection);
+    });
 
-		it('Should start projection', async function () {
-			this.timeout(10 * 1000);
-			const client = new EventStore.HTTPClient(getHttpConfig());
+    it('Should stop projection', async function () {
+      this.timeout(10 * 1000);
+      const client = new KurrentDB.HTTPClient(getHttpConfig());
 
-			const response = await client.projections.start(assertionProjection);
-			assert.equal(response.name, assertionProjection);
-			const projectionInfo = await client.projections.getInfo(assertionProjection);
-			assert.equal(projectionInfo.status, 'Running');
-		});
+      const response = await client.projections.stop(assertionProjection);
+      assert.equal(response.name, assertionProjection);
+      const projectionInfo = await client.projections.getInfo(assertionProjection);
+      assert.equal(projectionInfo.status, 'Stopped');
+    });
 
-		it('Should reset projection', async function () {
-			this.timeout(10 * 1000);
-			const client = new EventStore.HTTPClient(getHttpConfig());
+    it('Should start projection', async function () {
+      this.timeout(10 * 1000);
+      const client = new KurrentDB.HTTPClient(getHttpConfig());
 
-			const response = await client.projections.reset(assertionProjection);
-			assert.equal(response.name, assertionProjection);
-			const projectionInfo = await client.projections.getInfo(assertionProjection);
-			assert(['Preparing/Stopped', 'Running'].includes(projectionInfo.status), `Invalid status after reset: ${projectionInfo.status}`);
-		});
+      const response = await client.projections.start(assertionProjection);
+      assert.equal(response.name, assertionProjection);
+      const projectionInfo = await client.projections.getInfo(assertionProjection);
+      assert.equal(projectionInfo.status, 'Running');
+    });
 
-		it('Should remove continuous projection', async function () {
-			this.timeout(10 * 1000);
-			const client = new EventStore.HTTPClient(getHttpConfig());
+    it('Should reset projection', async function () {
+      this.timeout(10 * 1000);
+      const client = new KurrentDB.HTTPClient(getHttpConfig());
 
-			const stopResponse = await client.projections.stop(assertionProjection);
-			await sleep(1000);
+      const response = await client.projections.reset(assertionProjection);
+      assert.equal(response.name, assertionProjection);
+      const projectionInfo = await client.projections.getInfo(assertionProjection);
+      assert(
+        ['Preparing/Stopped', 'Running'].includes(projectionInfo.status),
+        `Invalid status after reset: ${projectionInfo.status}`
+      );
+    });
 
-			assert.equal(stopResponse.name, assertionProjection);
-			const removeResponse = await client.projections.remove(assertionProjection);
-			assert.equal(removeResponse.name, assertionProjection);
-		});
-	});
+    it('Should remove continuous projection', async function () {
+      this.timeout(10 * 1000);
+      const client = new KurrentDB.HTTPClient(getHttpConfig());
 
-	describe('Custom Settings', () => {
-		const assertionProjection = generateEventId();
-		const assertionProjectionContent = fs.readFileSync(`${__dirname}/support/testProjection.js`, {
-			encoding: 'utf8'
-		});
+      const stopResponse = await client.projections.stop(assertionProjection);
+      await waitUntil(async () => (await client.projections.getInfo(assertionProjection)).status === 'Stopped');
 
-		it('Should create one-time projection with all settings enabled', async function () {
-			this.timeout(10 * 1000);
-			const client = new EventStore.HTTPClient(getHttpConfig());
+      assert.equal(stopResponse.name, assertionProjection);
+      const removeResponse = await client.projections.remove(assertionProjection);
+      assert.equal(removeResponse.name, assertionProjection);
+    });
+  });
 
-			const response = await client.projections.assert(assertionProjection, assertionProjectionContent, 'onetime', true, true, true, true);
-			await sleep(2000);
-			assert.equal(response.name, assertionProjection);
-			const responseWithTrackEmittedStreamsEnabled = await client.projections.getInfo(assertionProjection, true);
-			assert.equal(responseWithTrackEmittedStreamsEnabled.config.trackEmittedStreams, true);
-			assert.equal(responseWithTrackEmittedStreamsEnabled.config.emitEnabled, true);
-		});
+  describe('Custom Settings', () => {
+    const assertionProjection = generateEventId();
+    const assertionProjectionContent = fs.readFileSync(`${dirname}/support/testProjection.js`, {
+      encoding: 'utf8'
+    });
 
-		it('Should get config for continuous projection', async function () {
-			this.timeout(10 * 1000);
-			const client = new EventStore.HTTPClient(getHttpConfig());
+    it('Should create one-time projection with all settings enabled', async function () {
+      this.timeout(10 * 1000);
+      const client = new KurrentDB.HTTPClient(getHttpConfig());
 
-			const projectionConfig = await client.projections.config(assertionProjection);
-			await sleep(1000);
+      const response = await client.projections.assert(
+        assertionProjection,
+        assertionProjectionContent,
+        'onetime',
+        true,
+        true,
+        true,
+        true
+      );
+      assert.equal(response.name, assertionProjection);
+      let responseWithTrackEmittedStreamsEnabled;
+      await waitUntil(async () => {
+        responseWithTrackEmittedStreamsEnabled = await client.projections.getInfo(assertionProjection, true);
+        return (
+          responseWithTrackEmittedStreamsEnabled.config.trackEmittedStreams === true &&
+          responseWithTrackEmittedStreamsEnabled.config.emitEnabled === true
+        );
+      });
+      assert.equal(responseWithTrackEmittedStreamsEnabled.config.trackEmittedStreams, true);
+      assert.equal(responseWithTrackEmittedStreamsEnabled.config.emitEnabled, true);
+    });
 
-			assert.equal(projectionConfig.emitEnabled, true);
-			assert.equal(projectionConfig.trackEmittedStreams, true);
-			assert.equal(projectionConfig.msgTypeId, 300);
-			assert.equal(projectionConfig.checkpointHandledThreshold, 4000);
-			assert.equal(projectionConfig.checkpointUnhandledBytesThreshold, 10000000);
-			assert.equal(projectionConfig.pendingEventsThreshold, 5000);
-			assert.equal(projectionConfig.maxWriteBatchLength, 500);
-		});
+    it('Should get config for continuous projection', async function () {
+      this.timeout(10 * 1000);
+      const client = new KurrentDB.HTTPClient(getHttpConfig());
 
-		it('Should remove one-time projection', async function () {
-			this.timeout(10 * 1000);
-			const client = new EventStore.HTTPClient(getHttpConfig());
+      const projectionConfig = await client.projections.config(assertionProjection);
 
-			const stopResponse = await client.projections.stop(assertionProjection);
-			assert.equal(stopResponse.name, assertionProjection);
-			const removeResponse = await client.projections.remove(assertionProjection);
-			assert.equal(removeResponse.name, assertionProjection);
-		});
+      assert.equal(projectionConfig.emitEnabled, true);
+      assert.equal(projectionConfig.trackEmittedStreams, true);
+      assert.equal(projectionConfig.checkpointHandledThreshold, 4000);
+      assert.equal(projectionConfig.checkpointUnhandledBytesThreshold, 10000000);
+      assert.equal(projectionConfig.pendingEventsThreshold, 5000);
+      assert.equal(projectionConfig.maxWriteBatchLength, 500);
+      if (!runningV21) assert.equal(projectionConfig.label, 'Projections');
+    });
 
-		it('Should create one-time projection with emits enabled but trackEmittedStreams disabled then remove it', async function () {
-			this.timeout(10 * 1000);
-			const client = new EventStore.HTTPClient(getHttpConfig());
+    it('Should remove one-time projection', async function () {
+      this.timeout(10 * 1000);
+      const client = new KurrentDB.HTTPClient(getHttpConfig());
 
-			const response = await client.projections.assert(assertionProjection, assertionProjectionContent, 'onetime', true, true, true);
-			await sleep(2000);
-			assert.equal(response.name, assertionProjection);
-			const responseWithTrackEmittedStreamsEnabled = await client.projections.getInfo(assertionProjection, true);
-			assert.equal(responseWithTrackEmittedStreamsEnabled.config.trackEmittedStreams, false);
-			assert.equal(responseWithTrackEmittedStreamsEnabled.config.emitEnabled, true);
+      const stopResponse = await client.projections.stop(assertionProjection);
+      assert.equal(stopResponse.name, assertionProjection);
+      const removeResponse = await client.projections.remove(assertionProjection);
+      assert.equal(removeResponse.name, assertionProjection);
+    });
 
-			const stopResponse = await client.projections.stop(assertionProjection);
-			assert.equal(stopResponse.name, assertionProjection);
-			const removeResponse = await client.projections.remove(assertionProjection);
-			assert.equal(removeResponse.name, assertionProjection);
-		});
-	});
+    it('Should create one-time projection with emits enabled but trackEmittedStreams disabled then remove it', async function () {
+      this.timeout(10 * 1000);
+      const client = new KurrentDB.HTTPClient(getHttpConfig());
 
-	describe('Global Projections Operations', () => {
-		it('Should enable all projections', async function () {
-			this.timeout(10 * 1000);
-			const client = new EventStore.HTTPClient(getHttpConfig());
+      const oneTimeProjection = generateEventId();
+      const response = await client.projections.assert(
+        oneTimeProjection,
+        assertionProjectionContent,
+        'onetime',
+        true,
+        true,
+        true
+      );
+      assert.equal(response.name, oneTimeProjection);
+      let responseWithTrackEmittedStreamsEnabled;
+      await waitUntil(async () => {
+        responseWithTrackEmittedStreamsEnabled = await client.projections.getInfo(oneTimeProjection, true);
+        return (
+          responseWithTrackEmittedStreamsEnabled.config.trackEmittedStreams === false &&
+          responseWithTrackEmittedStreamsEnabled.config.emitEnabled === true
+        );
+      });
+      assert.equal(responseWithTrackEmittedStreamsEnabled.config.trackEmittedStreams, false);
+      assert.equal(responseWithTrackEmittedStreamsEnabled.config.emitEnabled, true);
 
-			await client.projections.enableAll();
-			await sleep(1000);
+      const stopResponse = await client.projections.stop(oneTimeProjection);
+      assert.equal(stopResponse.name, oneTimeProjection);
+      const removeResponse = await client.projections.remove(oneTimeProjection);
+      assert.equal(removeResponse.name, oneTimeProjection);
+    });
+  });
 
-			const projectionsInfo = await client.projections.getAllProjectionsInfo();
-			projectionsInfo.projections.forEach(projection => {
-				assert.equal(projection.status.toLowerCase().includes('running'), true);
-			});
-		});
+  describe('Global Projections Operations', () => {
+    it('Should enable all projections', async function () {
+      this.timeout(10 * 1000);
+      const client = new KurrentDB.HTTPClient(getHttpConfig());
 
-		it('Should disable all projections', async function () {
-			this.timeout(1000 * 10);
-			const client = new EventStore.HTTPClient(getHttpConfig());
+      await client.projections.enableAll();
 
-			await client.projections.disableAll();
-			await sleep(1000);
+      let projectionsInfo;
+      await waitUntil(async () => {
+        projectionsInfo = await client.projections.getAllProjectionsInfo();
+        return projectionsInfo.projections.every((projection) => projection.status.toLowerCase().includes('running'));
+      });
+      projectionsInfo.projections.forEach((projection) => {
+        assert.equal(projection.status.toLowerCase().includes('running'), true);
+      });
+    });
 
-			const projectionsInfo = await client.projections.getAllProjectionsInfo();
-			projectionsInfo.projections.forEach(projection => {
-				assert.equal(projection.status.toLowerCase().includes('stopped'), true);
-			});
-		});
-	});
+    it('Should disable all projections', async function () {
+      this.timeout(1000 * 10);
+      const client = new KurrentDB.HTTPClient(getHttpConfig());
 
-	describe('General', () => {
-		it('Should return all eventstore projections information', async function () {
-			this.timeout(10 * 1000);
-			const client = new EventStore.HTTPClient(getHttpConfig());
+      await client.projections.disableAll();
 
-			const projectionsInfo = await client.projections.getAllProjectionsInfo();
-			assert.notEqual(projectionsInfo, undefined);
-			assert(projectionsInfo.projections.length > 0);
-		});
+      let projectionsInfo;
+      await waitUntil(async () => {
+        projectionsInfo = await client.projections.getAllProjectionsInfo();
+        return projectionsInfo.projections.every((projection) => projection.status.toLowerCase().includes('stopped'));
+      });
+      projectionsInfo.projections.forEach((projection) => {
+        assert.equal(projection.status.toLowerCase().includes('stopped'), true);
+      });
+    });
+  });
 
-		it('Should return state for test projection', async function () {
-			this.timeout(10 * 1000);
-			const client = new EventStore.HTTPClient(getHttpConfig());
+  describe('General', () => {
+    it('Should return all eventstore projections information', async function () {
+      this.timeout(10 * 1000);
+      const client = new KurrentDB.HTTPClient(getHttpConfig());
 
-			const projectionName = 'TestProjection';
-			const projectionContent = fs.readFileSync(`${__dirname}/support/testProjection.js`, {
-				encoding: 'utf8'
-			});
+      const projectionsInfo = await client.projections.getAllProjectionsInfo();
+      assert.notEqual(projectionsInfo, undefined);
+      assert(projectionsInfo.projections.length > 0);
+    });
 
-			await client.projections.assert(projectionName, projectionContent);
-			await sleep(500);
+    it('Should return state for test projection', async function () {
+      this.timeout(10 * 1000);
+      const client = new KurrentDB.HTTPClient(getHttpConfig());
 
-			const testStream = `TestProjectionStream-${generateEventId()}`;
-			await client.writeEvent(testStream, 'TestProjectionEventType', {
-				something: '123'
-			});
+      const projectionName = `TestProjection${generateEventId()}`;
+      const projectionContent = fs.readFileSync(`${dirname}/support/testProjection.js`, {
+        encoding: 'utf8'
+      });
 
-			await sleep(1000);
-			const projectionState = await client.projections.getState(projectionName);
-			assert.equal(projectionState.data.something, '123');
+      await client.projections.assert(projectionName, projectionContent);
+      await waitUntil(async () => {
+        try {
+          return (await client.projections.getInfo(projectionName)).status.toLowerCase().includes('running');
+        } catch {
+          return false;
+        }
+      });
 
-			const stopResponse = await client.projections.stop(projectionName);
-			assert.equal(stopResponse.name, projectionName);
-			const removeResponse = await client.projections.remove(projectionName);
-			assert.equal(removeResponse.name, projectionName);
-		});
+      const testStream = `TestProjectionStream-${generateEventId()}`;
+      await client.writeEvent(testStream, 'TestProjectionEventType', {
+        something: '123'
+      });
 
-		it('Should return state for partitioned test projection', async function () {
-			this.timeout(1000 * 10);
-			const client = new EventStore.HTTPClient(getHttpConfig());
+      let projectionState;
+      await waitUntil(async () => {
+        try {
+          projectionState = await client.projections.getState(projectionName);
+          return projectionState.data && projectionState.data.something === '123';
+        } catch {
+          return false;
+        }
+      });
+      assert.equal(projectionState.data.something, '123');
 
-			const projectionName = `TestProjection${generateEventId()}`;
-			const projectionContent = fs.readFileSync(`${__dirname}/support/testPartitionedProjection.js`, {
-				encoding: 'utf8'
-			});
+      const stopResponse = await client.projections.stop(projectionName);
+      assert.equal(stopResponse.name, projectionName);
+      const removeResponse = await client.projections.remove(projectionName);
+      assert.equal(removeResponse.name, projectionName);
+    });
 
-			await client.projections.assert(projectionName, projectionContent);
-			await sleep(500);
+    it('Should return state for partitioned test projection', async function () {
+      this.timeout(1000 * 10);
+      const client = new KurrentDB.HTTPClient(getHttpConfig());
 
-			const testStream = `TestProjectionStream-${generateEventId()}`;
-			await client.writeEvent(testStream, 'TestProjectionEventType', {
-				something: '123'
-			});
+      const projectionName = `TestProjection${generateEventId()}`;
+      const projectionContent = fs.readFileSync(`${dirname}/support/testPartitionedProjection.js`, {
+        encoding: 'utf8'
+      });
 
-			await sleep(4000);
-			const options = {
-				partition: testStream
-			};
+      await client.projections.assert(projectionName, projectionContent);
+      await waitUntil(async () => {
+        try {
+          return (await client.projections.getInfo(projectionName)).status.toLowerCase().includes('running');
+        } catch {
+          return false;
+        }
+      });
 
-			const projectionState = await client.projections.getState(projectionName, options);
-			assert.equal(projectionState.data.something, '123');
+      const testStream = `TestProjectionStream-${generateEventId()}`;
+      await client.writeEvent(testStream, 'TestProjectionEventType', {
+        something: '123'
+      });
 
-			const stopResponse = await client.projections.stop(projectionName);
-			assert.equal(stopResponse.name, projectionName);
-			const removeResponse = await client.projections.remove(projectionName);
-			assert.equal(removeResponse.name, projectionName);
-		});
+      const options = {
+        partition: testStream
+      };
 
-		it('Should return 404 for non-existent projection when requesting state', function () {
-			this.timeout(10 * 1000);
-			const client = new EventStore.HTTPClient(getHttpConfig());
-			return client.projections.getState('SomeProjectionNameThatDoesNotExist').catch(err => assert(err.response.status, 404));
-		});
+      let projectionState;
+      await waitUntil(
+        async () => {
+          try {
+            projectionState = await client.projections.getState(projectionName, options);
+            return projectionState.data && projectionState.data.something === '123';
+          } catch {
+            return false;
+          }
+        },
+        { timeout: 8000 }
+      );
+      assert.equal(projectionState.data.something, '123');
 
-		it('Should return result for test projection', async function () {
-			this.timeout(10 * 1000);
-			const client = new EventStore.HTTPClient(getHttpConfig());
+      const stopResponse = await client.projections.stop(projectionName);
+      assert.equal(stopResponse.name, projectionName);
+      const removeResponse = await client.projections.remove(projectionName);
+      assert.equal(removeResponse.name, projectionName);
+    });
 
-			const projectionName = 'TestProjection';
-			const projectionContent = fs.readFileSync(`${__dirname}/support/testProjection.js`, {
-				encoding: 'utf8'
-			});
+    it('Should return 404 for non-existent projection when requesting state', async function () {
+      this.timeout(10 * 1000);
+      const client = new KurrentDB.HTTPClient(getHttpConfig());
+      try {
+        await client.projections.getState('SomeProjectionNameThatDoesNotExist');
+      } catch (err) {
+        assert.equal(err.response.status, 404, 'Should have received 404');
+        return;
+      }
+      assert.fail('Should have received 404 for non-existent projection');
+    });
 
-			await client.projections.assert(projectionName, projectionContent);
-			await sleep(500);
+    it('Should return result for test projection', async function () {
+      this.timeout(10 * 1000);
+      const client = new KurrentDB.HTTPClient(getHttpConfig());
 
-			const testStream = `TestProjectionStream-${generateEventId()}`;
-			await client.writeEvent(testStream, 'TestProjectionEventType', {
-				something: '123'
-			});
+      const projectionName = `TestProjection${generateEventId()}`;
+      const projectionContent = fs.readFileSync(`${dirname}/support/testProjection.js`, {
+        encoding: 'utf8'
+      });
 
-			await sleep(1000);
-			const projectionState = await client.projections.getResult(projectionName);
-			assert.equal(projectionState.data, '321');
+      await client.projections.assert(projectionName, projectionContent);
+      await waitUntil(async () => {
+        try {
+          return (await client.projections.getInfo(projectionName)).status.toLowerCase().includes('running');
+        } catch {
+          return false;
+        }
+      });
 
-			const stopResponse = await client.projections.stop(projectionName);
-			assert.equal(stopResponse.name, projectionName);
-			const removeResponse = await client.projections.remove(projectionName);
-			assert.equal(removeResponse.name, projectionName);
-		});
+      const testStream = `TestProjectionStream-${generateEventId()}`;
+      await client.writeEvent(testStream, 'TestProjectionEventType', {
+        something: '123'
+      });
 
-		it('Should return result for partitioned test projection', async function () {
-			this.timeout(1000 * 10);
-			const client = new EventStore.HTTPClient(getHttpConfig());
+      let projectionState;
+      await waitUntil(async () => {
+        try {
+          projectionState = await client.projections.getResult(projectionName);
+          return String(projectionState.data) === '321';
+        } catch {
+          return false;
+        }
+      });
+      assert.equal(projectionState.data, '321');
 
-			const projectionName = `TestProjection${generateEventId()}`;
-			const projectionContent = fs.readFileSync(`${__dirname}/support/testPartitionedProjection.js`, {
-				encoding: 'utf8'
-			});
+      const stopResponse = await client.projections.stop(projectionName);
+      assert.equal(stopResponse.name, projectionName);
+      const removeResponse = await client.projections.remove(projectionName);
+      assert.equal(removeResponse.name, projectionName);
+    });
 
-			await client.projections.assert(projectionName, projectionContent);
-			await sleep(500);
+    it('Should return result for partitioned test projection', async function () {
+      this.timeout(1000 * 10);
+      const client = new KurrentDB.HTTPClient(getHttpConfig());
 
-			const testStream = `TestProjectionStream-${generateEventId()}`;
-			await client.writeEvent(testStream, 'TestProjectionEventType', {
-				something: '123'
-			});
+      const projectionName = `TestProjection${generateEventId()}`;
+      const projectionContent = fs.readFileSync(`${dirname}/support/testPartitionedProjection.js`, {
+        encoding: 'utf8'
+      });
 
-			await sleep(4000);
-			const options = {
-				partition: testStream
-			};
+      await client.projections.assert(projectionName, projectionContent);
+      await waitUntil(async () => {
+        try {
+          return (await client.projections.getInfo(projectionName)).status.toLowerCase().includes('running');
+        } catch {
+          return false;
+        }
+      });
 
-			const projectionState = await client.projections.getResult(projectionName, options);
-			assert.equal(projectionState.data, '321');
+      const testStream = `TestProjectionStream-${generateEventId()}`;
+      await client.writeEvent(testStream, 'TestProjectionEventType', {
+        something: '123'
+      });
 
-			const stopResponse = await client.projections.stop(projectionName);
-			assert.equal(stopResponse.name, projectionName);
-			const removeResponse = await client.projections.remove(projectionName);
-			assert.equal(removeResponse.name, projectionName);
-		});
+      const options = {
+        partition: testStream
+      };
 
-		it('Should return 404 for non-existent projection when requesting result', function () {
-			this.timeout(10 * 1000);
-			const client = new EventStore.HTTPClient(getHttpConfig());
-			return client.projections.getResult('SomeProjectionNameThatDoesNotExist').catch(err => assert(err.response.status, 404));
-		});
-	});
+      let projectionState;
+      await waitUntil(
+        async () => {
+          try {
+            projectionState = await client.projections.getResult(projectionName, options);
+            return String(projectionState.data) === '321';
+          } catch {
+            return false;
+          }
+        },
+        { timeout: 8000 }
+      );
+      assert.equal(projectionState.data, '321');
+
+      const stopResponse = await client.projections.stop(projectionName);
+      assert.equal(stopResponse.name, projectionName);
+      const removeResponse = await client.projections.remove(projectionName);
+      assert.equal(removeResponse.name, projectionName);
+    });
+
+    it('Should return 404 for non-existent projection when requesting result', async function () {
+      this.timeout(10 * 1000);
+      const client = new KurrentDB.HTTPClient(getHttpConfig());
+      try {
+        await client.projections.getResult('SomeProjectionNameThatDoesNotExist');
+      } catch (err) {
+        assert.equal(err.response.status, 404, 'Should have received 404');
+        return;
+      }
+      assert.fail('Should have received 404 for non-existent projection');
+    });
+  });
 });

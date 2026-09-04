@@ -1,0 +1,33 @@
+services:
+  metronomic_kurrentdb_client_test_single:
+    image: eventstore/eventstore:21.10.0-buster-slim
+    container_name: metronomic_kurrentdb_client_test_single
+    environment:
+      - EVENTSTORE_INSECURE=true
+      - EVENTSTORE_MEM_DB=true
+      - EVENTSTORE_CLUSTER_SIZE=1
+      - EVENTSTORE_RUN_PROJECTIONS=All
+      - EVENTSTORE_START_STANDARD_PROJECTIONS=true
+      - EVENTSTORE_INT_IP=172.30.239.11
+      - EVENTSTORE_ENABLE_EXTERNAL_TCP=true
+      - EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP=true
+      - EVENTSTORE_DISCOVER_VIA_DNS=false
+      - EVENTSTORE_ADVERTISE_HOST_TO_CLIENT_AS=127.0.0.1
+      - EVENTSTORE_HTTP_PORT_ADVERTISE_AS=22117
+      # Added for when testing v5
+    #   - EVENTSTORE_EXT_HTTP_PORT_ADVERTISE_AS=2117
+    ports:
+      - '11116:1113'
+      - '22117:2113'
+    networks:
+      singleclusternetwork:
+        ipv4_address: 172.30.239.11
+
+networks:
+  singleclusternetwork:
+    name: metronomic_kurrentdb_client_test_single_eventstoredb.local
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.30.239.0/24

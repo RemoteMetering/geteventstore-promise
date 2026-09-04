@@ -1,95 +1,131 @@
-import './_globalHooks';
-
-import generateEventId from '../lib/utilities/generateEventId';
-import getTcpConfig from './support/getTcpConfig';
-import sleep from './utilities/sleep';
-import EventStore from '../lib';
 import assert from 'assert';
+import generateEventId from '../lib/utilities/generateEventId.js';
+import getTcpConfig from './support/getTcpConfig.js';
+import waitUntil from './utilities/waitUntil.js';
+import KurrentDB from '../lib/index.js';
 
 describe('TCP Client - Delete stream', () => {
-	it('Should return successful on stream delete', () => {
-		const client = new EventStore.TCPClient(getTcpConfig());
+  it('Should return successful on stream delete', async () => {
+    const client = new KurrentDB.TCPClient(getTcpConfig());
 
-		const testStream = `TestStream-${generateEventId()}`;
-		return client.writeEvent(testStream, 'TestEventType', {
-			something: '123'
-		}).then(() => client.deleteStream(testStream).then(() => client.checkStreamExists(testStream).then(exists => {
-			assert.equal(false, exists);
-		})).catch(err => {
-			assert.fail(err.message);
-		})).finally(() => client.close());
-	});
+    const testStream = `TestStream-${generateEventId()}`;
+    try {
+      await client.writeEvent(testStream, 'TestEventType', {
+        something: '123'
+      });
+      try {
+        await client.deleteStream(testStream);
+        const exists = await client.checkStreamExists(testStream);
+        assert.equal(false, exists);
+      } catch (err) {
+        assert.fail(err.message);
+      }
+    } finally {
+      await client.close();
+    }
+  });
 
-	it('Should return successful on projected stream delete', async () => {
-		const client = new EventStore.TCPClient(getTcpConfig());
+  it('Should return successful on projected stream delete', async function () {
+    this.timeout(15000);
 
-		const testStream = `TestDeletedStream-${generateEventId()}`;
-		await client.writeEvent(testStream, 'TestEventType', {
-			something: '123'
-		});
+    const client = new KurrentDB.TCPClient(getTcpConfig());
 
-		await sleep(150);
-		await client.deleteStream(`$ce-TestDeletedStream`);
-		assert.equal(await client.checkStreamExists(`$ce-TestDeletedStream`), false);
+    const testStream = `TestDeletedStream-${generateEventId()}`;
+    await client.writeEvent(testStream, 'TestEventType', {
+      something: '123'
+    });
 
-		await client.close();
-	});
+    // The category projection creates $ce-TestDeletedStream asynchronously, so wait for it before deleting.
+    await waitUntil(async () => client.checkStreamExists(`$ce-TestDeletedStream`), { timeout: 10000 });
+    await client.deleteStream(`$ce-TestDeletedStream`);
+    assert.equal(await client.checkStreamExists(`$ce-TestDeletedStream`), false);
 
-	it('Should return successful on writing to a stream that has been soft deleted', () => {
-		const client = new EventStore.TCPClient(getTcpConfig());
+    await client.close();
+  });
 
-		const testStream = `TestStream-${generateEventId()}`;
+  it('Should return successful on writing to a stream that has been soft deleted', async () => {
+    const client = new KurrentDB.TCPClient(getTcpConfig());
 
-		return client.writeEvent(testStream, 'TestEventType', {
-			something: '123'
-		}).then(() => client.deleteStream(testStream).then(() => client.writeEvent(testStream, 'TestEventType', {
-			something: '456'
-		})).catch(err => {
-			assert.fail(err.message);
-		})).finally(() => client.close());
-	});
+    const testStream = `TestStream-${generateEventId()}`;
 
-	it('Should return successful on stream delete hard delete', callback => {
-		const client = new EventStore.TCPClient(getTcpConfig());
+    try {
+      await client.writeEvent(testStream, 'TestEventType', {
+        something: '123'
+      });
+      try {
+        await client.deleteStream(testStream);
+        await client.writeEvent(testStream, 'TestEventType', {
+          something: '456'
+        });
+      } catch (err) {
+        assert.fail(err.message);
+      }
+    } finally {
+      await client.close();
+    }
+  });
 
-		const testStream = `TestStream-${generateEventId()}`;
-		client.writeEvent(testStream, 'TestEventType', {
-			something: '123'
-		}).then(() => client.deleteStream(testStream, true)
-			.then(() => client.checkStreamExists(testStream))
-			.then(() => {
-				callback('Should not have returned resolved promise');
-			}).catch(err => {
-				assert(err.message.includes('hard deleted'), 'Expected "hard deleted"');
-				callback();
-			}).catch(callback)).catch(callback).finally(() => client.close());
-	});
+  it('Should return successful on stream delete hard delete', async () => {
+    const client = new KurrentDB.TCPClient(getTcpConfig());
 
-	it('Should fail when a stream does not exist', () => {
-		const client = new EventStore.TCPClient(getTcpConfig());
+    const testStream = `TestStream-${generateEventId()}`;
+    try {
+      await client.writeEvent(testStream, 'TestEventType', {
+        something: '123'
+      });
+      await client.deleteStream(testStream, true);
 
-		const testStream = `TestStream-${generateEventId()}`;
+      try {
+        await client.checkStreamExists(testStream);
+      } catch (err) {
+        assert(err.message.includes('hard deleted'), 'Expected "hard deleted"');
+        return;
+      }
+      assert.fail('Should not have returned resolved promise');
+    } finally {
+      await client.close();
+    }
+  });
 
-		return client.deleteStream(testStream).then(() => {
-			assert.fail('Should have failed because stream does not exist');
-		}).catch(err => {
-			assert(err);
-		}).finally(() => client.close());
-	});
+  it('Should fail when a stream does not exist', async () => {
+    const client = new KurrentDB.TCPClient(getTcpConfig());
 
-	it('Should return "StreamDeletedError" when a writing to a stream that has been hard deleted', () => {
-		const client = new EventStore.TCPClient(getTcpConfig());
+    const testStream = `TestStream-${generateEventId()}`;
 
-		const testStream = `TestStream-${generateEventId()}`;
+    let succeeded = false;
+    try {
+      await client.deleteStream(testStream);
+      succeeded = true;
+    } catch (err) {
+      assert(err);
+    } finally {
+      await client.close();
+    }
+    assert(!succeeded, 'Should have failed because stream does not exist');
+  });
 
-		return client.writeEvent(testStream, 'TestEventType', {
-			something: '123'
-		}).then(() => client.deleteStream(testStream, true).then(() => client.writeEvent(testStream, 'TestEventType', {
-			something: '456'
-		}).then(() => {
-			assert.fail('Should have failed because stream does not exist');
-		})).catch(err => {
-			assert.equal('StreamDeletedError', err.name);
-		})).finally(() => client.close());
-	});
+  it('Should return "StreamDeletedError" when a writing to a stream that has been hard deleted', async () => {
+    const client = new KurrentDB.TCPClient(getTcpConfig());
+
+    const testStream = `TestStream-${generateEventId()}`;
+
+    try {
+      await client.writeEvent(testStream, 'TestEventType', {
+        something: '123'
+      });
+      await client.deleteStream(testStream, true);
+
+      try {
+        await client.writeEvent(testStream, 'TestEventType', {
+          something: '456'
+        });
+      } catch (err) {
+        assert.equal('StreamDeletedError', err.name);
+        return;
+      }
+      assert.fail('Should have failed because stream does not exist');
+    } finally {
+      await client.close();
+    }
+  });
 });

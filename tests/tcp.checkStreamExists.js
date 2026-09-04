@@ -1,30 +1,28 @@
-import './_globalHooks';
-
-import generateEventId from '../lib/utilities/generateEventId';
-import getTcpConfig from './support/getTcpConfig';
-import EventStore from '../lib';
 import assert from 'assert';
+import generateEventId from '../lib/utilities/generateEventId.js';
+import getTcpConfig from './support/getTcpConfig.js';
+import KurrentDB from '../lib/index.js';
 
 describe('TCP Client - Check Stream Exist', () => {
-	it('Should return true when a stream exists', async function() {
-		this.timeout(5000);
-		const client = new EventStore.TCPClient(getTcpConfig());
+  it('Should return true when a stream exists', async function () {
+    this.timeout(5000);
+    const client = new KurrentDB.TCPClient(getTcpConfig());
 
-		const testStream = `TestStream-${generateEventId()}`;
-		await client.writeEvent(testStream, 'TestEventType', {
-			something: '123'
-		});
-		assert.equal(await client.checkStreamExists(testStream), true);
+    const testStream = `TestStream-${generateEventId()}`;
+    await client.writeEvent(testStream, 'TestEventType', {
+      something: '123'
+    });
+    assert.equal(await client.checkStreamExists(testStream), true);
 
-		await client.close();
-	});
+    await client.close();
+  });
 
-	it('Should return false when a stream does not exist', async function() {
-		this.timeout(5000);
-		const client = new EventStore.TCPClient(getTcpConfig());
+  it('Should return false when a stream does not exist', async function () {
+    this.timeout(5000);
+    const client = new KurrentDB.TCPClient(getTcpConfig());
 
-		assert.equal(await client.checkStreamExists('Non_existentStream'), false);
+    assert.equal(await client.checkStreamExists('Non_existentStream'), false);
 
-		await client.close();
-	});
+    await client.close();
+  });
 });
