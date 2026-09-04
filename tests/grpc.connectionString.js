@@ -94,8 +94,8 @@ describe('gRPC Client - Connection String Builder', () => {
     config.userCertFile = '/certs/user.crt';
     config.userKeyFile = '/certs/user.key';
     const params = paramsOf(buildConnectionString(config));
-    assert.strictEqual(params.userCertFile, '/certs/user.crt');
-    assert.strictEqual(params.userKeyFile, '/certs/user.key');
+    assert.strictEqual(params.userCertFile, encodeURIComponent('/certs/user.crt'));
+    assert.strictEqual(params.userKeyFile, encodeURIComponent('/certs/user.key'));
   });
 
   it('Should omit params that are not provided', () => {
@@ -124,5 +124,16 @@ describe('gRPC Client - Connection String Builder', () => {
     config.credentials = { username: 'us@r', password: 'p@ss:w/rd?&#%' };
     const { defaultCredentials } = parseConnectionString(buildConnectionString(config));
     assert.deepStrictEqual(defaultCredentials, config.credentials);
+  });
+  it('Should round trip file paths and connection names holding special characters', () => {
+    const config = baseConfig();
+    config.tlsCAFile = '/certs/r&d ca?.pem';
+    config.userCertFile = '/certs/r&d user.crt';
+    config.userKeyFile = '/certs/100%/user.key';
+    const parsed = parseConnectionString(buildConnectionString(config, 'reader&writer?1'));
+    assert.strictEqual(parsed.tlsCAFile, config.tlsCAFile);
+    assert.strictEqual(parsed.userCertFile, config.userCertFile);
+    assert.strictEqual(parsed.userKeyFile, config.userKeyFile);
+    assert.strictEqual(parsed.connectionName, 'reader&writer?1');
   });
 });
