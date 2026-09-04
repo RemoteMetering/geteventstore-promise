@@ -346,7 +346,7 @@ export interface MappedEventAppearedCallback<TSubscription> {
 }
 
 export interface GRPCSubscriptionDroppedCallback<TSubscription> {
-  (subscription: TSubscription): void | Promise<void>;
+  (subscription: TSubscription, error?: Error): void | Promise<void>;
 }
 
 export interface EventEnumeratorResult {

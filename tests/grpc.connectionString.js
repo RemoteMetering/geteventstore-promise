@@ -1,4 +1,5 @@
 import assert from 'assert';
+import { parseConnectionString } from '@kurrent/kurrentdb-client/dist/Client/parseConnectionString.js';
 import { buildConnectionString } from '../lib/grpcClient/connectionManager.js';
 
 // Mirrors the internal _config shape the GRPCClient constructor produces.
@@ -6,7 +7,7 @@ const baseConfig = () => ({
   protocol: 'kurrentdb+discover',
   host: 'localhost',
   port: 22117,
-  auth: 'admin:changeit',
+  credentials: { username: 'admin', password: 'changeit' },
   useSslConnection: false
 });
 
@@ -106,5 +107,22 @@ describe('gRPC Client - Connection String Builder', () => {
     assert.ok(!('throwOnAppendFailure' in params));
     assert.ok(!('userCertFile' in params));
     assert.ok(!('userKeyFile' in params));
+  });
+
+  it('Should percent encode special characters in the credentials', () => {
+    const config = baseConfig();
+    config.credentials = { username: 'us@r', password: 'p@ss:w/rd?&#%' };
+    const connectionString = buildConnectionString(config);
+    assert.strictEqual(
+      connectionString,
+      'kurrentdb+discover://us%40r:p%40ss%3Aw%2Frd%3F%26%23%25@localhost:22117?tls=false'
+    );
+  });
+
+  it('Should round trip special character credentials through the KurrentDB parser', () => {
+    const config = baseConfig();
+    config.credentials = { username: 'us@r', password: 'p@ss:w/rd?&#%' };
+    const { defaultCredentials } = parseConnectionString(buildConnectionString(config));
+    assert.deepStrictEqual(defaultCredentials, config.credentials);
   });
 });
