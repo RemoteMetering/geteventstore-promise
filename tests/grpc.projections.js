@@ -38,6 +38,8 @@ describe('gRPC Client - Projections', () => {
 
       const projectionInfo = await client.projections.getInfo(assertionProjection);
       assert.equal(projectionInfo.name, assertionProjection);
+      // BigInt handling
+      assert.doesNotThrow(() => JSON.stringify(projectionInfo), 'projection info must be JSON serialisable');
 
       await client.close();
     });

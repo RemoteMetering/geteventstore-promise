@@ -84,6 +84,17 @@ describe('gRPC Client - Get All Stream Events', () => {
     const ids = evs.map((ev) => ev.data.id).sort((a, b) => a - b);
     assert.deepEqual(ids, [...Array(written).keys()], 'every linked event is read exactly once');
 
+    // BigInt handling
+    assert.doesNotThrow(() => JSON.stringify(evs), 'a linked stream read must be JSON serialisable');
+    const plain = JSON.parse(JSON.stringify(evs));
+    assert.equal(typeof plain[0].commitPosition, 'string');
+    assert.equal(plain[0].commitPosition, String(evs[0].commitPosition), 'the position round-trips as a string');
+    assert.equal(
+      new Date(evs[0].created).getUTCFullYear(),
+      new Date().getUTCFullYear(),
+      'created is the real write time, not a tick value divided twice'
+    );
+
     await client.close();
   }).timeout(30000);
 });

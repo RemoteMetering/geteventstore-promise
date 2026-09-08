@@ -16,8 +16,16 @@ describe('gRPC Client - Subscribe To Stream', () => {
     let hasPassed = false;
     let dropped = false;
 
-    function onEventAppeared() {
+    let serialisationError;
+
+    function onEventAppeared(_subscription, event) {
       processedEventCount += 1;
+      // BigInt handling - Assert
+      try {
+        JSON.stringify(event);
+      } catch (err) {
+        serialisationError = err;
+      }
     }
 
     function onDropped() {
@@ -56,6 +64,8 @@ describe('gRPC Client - Subscribe To Stream', () => {
 
     assert.equal(20, processedEventCount, 'expect processed events to be 20');
     assert(subscription, 'Subscription Expected');
+    // BigInt handling
+    assert.equal(serialisationError, undefined, 'every delivered event must be JSON serialisable');
     hasPassed = true;
     await subscription.close();
     await client.close();

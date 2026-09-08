@@ -134,6 +134,8 @@ describe('gRPC Client - Persistent Subscription', () => {
     assert.equal(info.groupName, groupName);
     // The gRPC info object names the stream eventSource, unlike the HTTP shape's eventStreamId.
     assert.equal(info.eventSource, testStream);
+    // BigInt handling
+    assert.doesNotThrow(() => JSON.stringify(info), 'subscription info must be JSON serialisable');
 
     await client.persistentSubscriptions.remove(groupName, testStream);
     await client.close();

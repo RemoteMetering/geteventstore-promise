@@ -16,10 +16,15 @@ describe('gRPC Client - Write Events', () => {
     ];
 
     const testStream = `TestStream-${generateEventId()}`;
-    await client.writeEvents(testStream, events);
+    const result = await client.writeEvents(testStream, events);
 
     const evs = await client.getEvents(testStream);
     assert.equal(evs[0].data.something, '456');
+
+    // BigInt handling
+    assert.equal(typeof result.nextExpectedRevision, 'bigint');
+    assert.doesNotThrow(() => JSON.stringify(result), 'the write result must be JSON serialisable');
+    assert.equal(JSON.parse(JSON.stringify(result)).nextExpectedRevision, String(result.nextExpectedRevision));
 
     await client.close();
   });

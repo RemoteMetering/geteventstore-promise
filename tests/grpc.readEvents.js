@@ -35,9 +35,16 @@ describe('gRPC Client - Get Events', () => {
     assert.equal(result.events.length, 10);
     assert.equal(result.events[0].data.something, 1);
     assert.equal('TestEventType', result.events[0].eventType);
-    assert(result.events[0].created);
     assert(result.events[0].metadata === undefined);
     assert(result.events[0].isJson !== undefined);
+
+    // BigInt handling
+    assert.doesNotThrow(() => JSON.stringify(result), 'the read must be JSON serialisable');
+    assert.equal(
+      new Date(result.events[0].created).getUTCFullYear(),
+      new Date().getUTCFullYear(),
+      'created is the real write time, not a tick value divided twice'
+    );
 
     await client.close();
   });

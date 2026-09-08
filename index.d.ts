@@ -21,6 +21,7 @@ import {
   StreamMetadata,
   SetStreamMetadataOptions,
   ReadPosition,
+  Position,
   KurrentDBClient
 } from '@kurrent/kurrentdb-client';
 
@@ -32,6 +33,13 @@ export interface NewEvent {
   data: object;
   metadata?: object;
 }
+
+/**
+ * A gRPC client return value that keeps its BigInt fields as BigInt but serialises them as decimal
+ * strings through a non-enumerable toJSON, so JSON.stringify works on it. The strings feed straight
+ * back into any method taking a revision or position, which call BigInt() on their input.
+ */
+export type JsonSafe<T> = T & { toJSON?(): Record<string, unknown> };
 
 export interface Event {
   streamId: string;
@@ -49,6 +57,10 @@ export interface Event {
   positionCreated?: string;
   positionCausedBy?: string;
   positionCorrelationId?: string;
+  // gRPC client only. Both stay BigInt, and toJSON narrows them to decimal strings.
+  position?: Position;
+  commitPosition?: bigint;
+  toJSON?(): Record<string, unknown>;
 }
 
 export type ProjectionMode = 'onetime' | 'continuous';
@@ -607,12 +619,12 @@ export class TCPClient {
 
 export class GRPCClient {
   constructor(config: GRPCConfig);
-  getStreamMetadata(streamName: string): Promise<GetStreamMetadataResult>;
+  getStreamMetadata(streamName: string): Promise<JsonSafe<GetStreamMetadataResult>>;
   setStreamMetadata(
     streamName: string,
     metadata: StreamMetadata,
     options?: SetStreamMetadataOptions
-  ): Promise<GRPCAppendResult>;
+  ): Promise<JsonSafe<GRPCAppendResult>>;
   checkStreamExists(streamName: string): Promise<boolean>;
   writeEvent(
     streamName: string,
@@ -620,13 +632,17 @@ export class GRPCClient {
     data: object,
     metaData?: object,
     options?: GRPCWriteEventOptions
-  ): Promise<GRPCAppendResult>;
-  writeEvents(streamName: string, events: NewEvent[], options?: GRPCWriteEventOptions): Promise<GRPCAppendResult>;
-  multiStreamWrite(writes: GRPCMultiStreamWrite[]): Promise<GRPCMultiAppendResult>;
+  ): Promise<JsonSafe<GRPCAppendResult>>;
+  writeEvents(
+    streamName: string,
+    events: NewEvent[],
+    options?: GRPCWriteEventOptions
+  ): Promise<JsonSafe<GRPCAppendResult>>;
+  multiStreamWrite(writes: GRPCMultiStreamWrite[]): Promise<JsonSafe<GRPCMultiAppendResult>>;
   multiStreamWriteCrossStreamConsistency(
     writes: GRPCMultiStreamWriteRecord[],
     checks?: GRPCConsistencyCheck[]
-  ): Promise<GRPCMultiAppendResult>;
+  ): Promise<JsonSafe<GRPCMultiAppendResult>>;
   getAllStreamEvents(
     streamName: string,
     chunkSize?: number,
@@ -731,7 +747,7 @@ export class GRPCClient {
     resolveLinkTos?: boolean,
     filter?: Filter
   ): AsyncIterableIterator<Event>;
-  deleteStream(streamName: string, hardDelete?: boolean): Promise<GRPCDeleteResult>;
+  deleteStream(streamName: string, hardDelete?: boolean): Promise<JsonSafe<GRPCDeleteResult>>;
   subscribeToStream(
     streamName: string,
     onEventAppeared?: MappedEventAppearedCallback<StreamSubscription>,
@@ -779,10 +795,10 @@ export class GRPCClient {
     stop(name: string): Promise<void>;
     reset(name: string): Promise<void>;
     remove(name: string, deleteCheckpointStream?: boolean, deleteStateStream?: boolean): Promise<void>;
-    getAllProjectionsInfo(): Promise<ProjectionDetails[]>;
+    getAllProjectionsInfo(): Promise<JsonSafe<ProjectionDetails[]>>;
     getState(name: string, options?: ProjectionStateOptions): Promise<object>;
     getResult(name: string, options?: ProjectionStateOptions): Promise<object>;
-    getInfo(name: string): Promise<ProjectionDetails | undefined>;
+    getInfo(name: string): Promise<JsonSafe<ProjectionDetails> | undefined>;
     assert(
       name: string,
       projectionContent: string,
@@ -801,11 +817,11 @@ export class GRPCClient {
     assertToAll(name: string, options?: PersistentSubscriptionToAllOptions): Promise<void>;
     remove(name: string, streamName: string): Promise<void>;
     removeToAll(name: string): Promise<void>;
-    getSubscriptionInfo(name: string, streamName: string): Promise<PersistentSubscriptionInfo>;
-    getToAllSubscriptionInfo(name: string): Promise<PersistentSubscriptionInfo>;
-    getAllSubscriptionsInfo(): Promise<PersistentSubscriptionInfo[]>;
-    getToAllSubscriptionsInfo(): Promise<PersistentSubscriptionInfo[]>;
-    getStreamSubscriptionsInfo(streamName: string): Promise<PersistentSubscriptionInfo[]>;
+    getSubscriptionInfo(name: string, streamName: string): Promise<JsonSafe<PersistentSubscriptionInfo>>;
+    getToAllSubscriptionInfo(name: string): Promise<JsonSafe<PersistentSubscriptionInfo>>;
+    getAllSubscriptionsInfo(): Promise<JsonSafe<PersistentSubscriptionInfo[]>>;
+    getToAllSubscriptionsInfo(): Promise<JsonSafe<PersistentSubscriptionInfo[]>>;
+    getStreamSubscriptionsInfo(streamName: string): Promise<JsonSafe<PersistentSubscriptionInfo[]>>;
     replayParkedMessagesToStream(
       name: string,
       streamName: string,

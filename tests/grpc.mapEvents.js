@@ -1,17 +1,21 @@
 import assert from 'assert';
-import { mapEvent, keepEvent } from '../lib/grpcClient/utilities/mapEvents.js';
+import { mapEvent, keepEvent, toCreated } from '../lib/grpcClient/utilities/mapEvents.js';
 
 describe('gRPC Client - mapEvent', () => {
+  // The SDK hands the record over with created already converted from .NET ticks to a Date.
+  const created = new Date('2020-09-13T12:26:40.000Z');
+
   const liveResolvedEvent = {
     event: {
       streamId: 'TestStream',
       id: '00000000-0000-0000-0000-000000000001',
       revision: 2n,
       type: 'TestEventType',
-      created: 16000000000000,
+      created,
       metadata: '{"trace":"abc"}',
       isJson: true,
-      data: { something: 1 }
+      data: { something: 1 },
+      position: { commit: 42n, prepare: 42n }
     }
   };
 
@@ -22,11 +26,14 @@ describe('gRPC Client - mapEvent', () => {
       id: '00000000-0000-0000-0000-000000000002',
       revision: 5n,
       type: '$>',
-      created: 16000000000000,
+      created,
       position: { commit: 42n, prepare: 42n }
     },
     commitPosition: 42n
   };
+
+  // A live event read through a projection stream, so both event and link are populated.
+  const linkedResolvedEvent = { ...liveResolvedEvent, link: deletedResolvedEvent.link, commitPosition: 42n };
 
   it('Should map a live event without an isResolved flag', () => {
     const mapped = mapEvent(liveResolvedEvent);
@@ -58,7 +65,7 @@ describe('gRPC Client - mapEvent', () => {
     const deleted = mapEvent(deletedResolvedEvent);
     assert.equal(typeof deleted.eventNumber, 'number');
 
-    const linked = mapEvent({ ...liveResolvedEvent, link: deletedResolvedEvent.link });
+    const linked = mapEvent(linkedResolvedEvent);
     assert.equal(typeof linked.positionEventNumber, 'number');
     assert.equal(linked.positionEventNumber, 5);
   });
@@ -71,7 +78,7 @@ describe('gRPC Client - mapEvent', () => {
         id: '00000000-0000-0000-0000-000000000003',
         revision: 0n,
         type: '$>',
-        created: 16000000000000,
+        created,
         isJson: false,
         data: new Uint8Array(Buffer.from(linkBody))
       }
@@ -88,13 +95,59 @@ describe('gRPC Client - mapEvent', () => {
         id: '00000000-0000-0000-0000-000000000004',
         revision: 0n,
         type: 'TestEventType',
-        created: 16000000000000,
+        created,
         isJson: true,
         data: [1, 2, 3]
       }
     });
 
     assert.deepEqual(mapped.data, [1, 2, 3]);
+  });
+
+  // The SDK already converted the .NET ticks, so dividing again put every created in 1970.
+  it('Should use the created Date the SDK supplies rather than dividing it again', () => {
+    assert.equal(mapEvent(liveResolvedEvent).created, '2020-09-13T12:26:40.000Z');
+    assert.equal(mapEvent(deletedResolvedEvent).created, '2020-09-13T12:26:40.000Z');
+    assert.equal(mapEvent(linkedResolvedEvent).positionCreated, '2020-09-13T12:26:40.000Z');
+  });
+
+  it('Should accept a raw tick value for created, as a number or a BigInt', () => {
+    assert.equal(toCreated(16000000000000), toCreated(16000000000000n));
+    assert.equal(toCreated(null), undefined);
+    assert.equal(toCreated(undefined), undefined);
+  });
+
+  it('Should keep position and commitPosition as BigInt on the event itself', () => {
+    const mapped = mapEvent(linkedResolvedEvent);
+    assert.equal(typeof mapped.commitPosition, 'bigint');
+    assert.equal(typeof mapped.position.commit, 'bigint');
+    assert.equal(typeof mapped.position.prepare, 'bigint');
+  });
+
+  // BigInt handling
+  it('Should serialise a linked event, narrowing its BigInts to decimal strings', () => {
+    const mapped = mapEvent(linkedResolvedEvent);
+    const plain = JSON.parse(JSON.stringify(mapped));
+
+    assert.equal(plain.commitPosition, '42');
+    assert.deepEqual(plain.position, { commit: '42', prepare: '42' });
+    assert.equal(BigInt(plain.commitPosition), mapped.commitPosition, 'the string round-trips back to the BigInt');
+  });
+
+  it('Should serialise a deleted event and an array of events', () => {
+    assert.doesNotThrow(() => JSON.stringify(mapEvent(deletedResolvedEvent)));
+    assert.doesNotThrow(() => JSON.stringify([mapEvent(linkedResolvedEvent), mapEvent(deletedResolvedEvent)]));
+  });
+
+  it('Should serialise a position on its own, not only as part of an event', () => {
+    const mapped = mapEvent(deletedResolvedEvent);
+    assert.equal(JSON.stringify(mapped.position), '{"commit":"42","prepare":"42"}');
+  });
+
+  it('Should keep toJSON off the enumerable keys so the event shape is unchanged', () => {
+    const mapped = mapEvent(linkedResolvedEvent);
+    assert.equal(Object.keys(mapped).includes('toJSON'), false);
+    assert.equal(JSON.stringify(Object.keys(mapped)).includes('toJSON'), false);
   });
 });
 
