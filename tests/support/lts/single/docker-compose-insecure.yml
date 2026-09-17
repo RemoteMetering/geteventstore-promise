@@ -1,0 +1,30 @@
+services:
+  metronomic_kurrentdb_client_test_single:
+    image: kurrentplatform/kurrentdb:26.1
+    container_name: metronomic_kurrentdb_client_test_single
+    environment:
+      - KURRENTDB_INSECURE=true
+      - KURRENTDB_MEM_DB=true
+      - KURRENTDB_CLUSTER_SIZE=1
+      - KURRENTDB_RUN_PROJECTIONS=All
+      - KURRENTDB_START_STANDARD_PROJECTIONS=true
+      - KURRENTDB_REPLICATION_IP=172.30.239.11
+      - KURRENTDB_ENABLE_ATOM_PUB_OVER_HTTP=true
+      - KURRENTDB_DISCOVER_VIA_DNS=false
+      - KURRENTDB_ADVERTISE_HOST_TO_CLIENT_AS=127.0.0.1
+      - KURRENTDB_NODE_PORT_ADVERTISE_AS=22117
+    ports:
+      - '11116:1113'
+      - '22117:2113'
+    networks:
+      singleclusternetwork:
+        ipv4_address: 172.30.239.11
+
+networks:
+  singleclusternetwork:
+    name: metronomic_kurrentdb_client_test_single_kurrentdb.local
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.30.239.0/24

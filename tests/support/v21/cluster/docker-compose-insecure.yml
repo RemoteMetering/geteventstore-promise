@@ -1,0 +1,87 @@
+services:
+  metronomic_kurrentdb_client_test_cluster_node1: &template
+    image: eventstore/eventstore:21.10.0-buster-slim
+    container_name: metronomic_kurrentdb_client_test_cluster_node1
+    env_file:
+      - vars.env
+    environment:
+      - EVENTSTORE_INSECURE=true
+      - EVENTSTORE_INT_IP=172.30.240.11
+      - EVENTSTORE_ADVERTISE_HTTP_PORT_TO_CLIENT_AS=22137
+      - EVENTSTORE_ADVERTISE_TCP_PORT_TO_CLIENT_AS=11136
+      - EVENTSTORE_GOSSIP_SEED=172.30.240.12:2113,172.30.240.13:2113
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'curl --fail --insecure http://metronomic_kurrentdb_client_test_cluster_node1:2113/health/live || exit 1'
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+    ports:
+      - '11136:1113'
+      - '22137:2113'
+    restart: always
+    networks:
+      clusternetwork:
+        ipv4_address: 172.30.240.11
+
+  metronomic_kurrentdb_client_test_cluster_node2:
+    <<: *template
+    container_name: metronomic_kurrentdb_client_test_cluster_node2
+    environment:
+      - EVENTSTORE_INSECURE=true
+      - EVENTSTORE_INT_IP=172.30.240.12
+      - EVENTSTORE_ADVERTISE_HTTP_PORT_TO_CLIENT_AS=22157
+      - EVENTSTORE_ADVERTISE_TCP_PORT_TO_CLIENT_AS=11156
+      - EVENTSTORE_GOSSIP_SEED=172.30.240.11:2113,172.30.240.13:2113
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'curl --fail --insecure http://metronomic_kurrentdb_client_test_cluster_node2:2113/health/live || exit 1'
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+    ports:
+      - '11156:1113'
+      - '22157:2113'
+    networks:
+      clusternetwork:
+        ipv4_address: 172.30.240.12
+
+  metronomic_kurrentdb_client_test_cluster_node3:
+    <<: *template
+    container_name: metronomic_kurrentdb_client_test_cluster_node3
+    environment:
+      - EVENTSTORE_INSECURE=true
+      - EVENTSTORE_INT_IP=172.30.240.13
+      - EVENTSTORE_ADVERTISE_HTTP_PORT_TO_CLIENT_AS=22177
+      - EVENTSTORE_ADVERTISE_TCP_PORT_TO_CLIENT_AS=11176
+      - EVENTSTORE_GOSSIP_SEED=172.30.240.11:2113,172.30.240.12:2113
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'curl --fail --insecure http://metronomic_kurrentdb_client_test_cluster_node3:2113/health/live || exit 1'
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+    ports:
+      - '11176:1113'
+      - '22177:2113'
+    networks:
+      clusternetwork:
+        ipv4_address: 172.30.240.13
+
+networks:
+  clusternetwork:
+    name: metronomic_kurrentdb_client_test_cluster_eventstoredb.local
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.30.240.0/24
