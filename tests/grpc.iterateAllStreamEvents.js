@@ -1,4 +1,5 @@
 import assert from 'assert';
+import { KurrentDBClient } from '@kurrent/kurrentdb-client';
 import generateEventId from '../lib/utilities/generateEventId.js';
 import getGRPCConfig from './support/getGRPCConfig.js';
 import KurrentDB from '../lib/index.js';
@@ -76,5 +77,28 @@ describe('gRPC Client - Iterate All Stream Events', () => {
     assert.equal(firstTen[9].data.id, 9);
 
     await client.close();
+  }).timeout(5000);
+
+  it('Should stop after a short chunk without an extra empty read', async () => {
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
+    const testStream = `TestStream-${generateEventId()}`;
+    const originalReadStream = KurrentDBClient.prototype.readStream;
+    let reads = 0;
+
+    try {
+      await client.writeEvents(testStream, buildEvents(250));
+      // Count reads of this stream only, so other traffic on the shared client cannot skew it.
+      KurrentDBClient.prototype.readStream = function countedReadStream(streamName, ...rest) {
+        if (streamName === testStream) reads += 1;
+        return originalReadStream.call(this, streamName, ...rest);
+      };
+
+      const evs = await collect(client.iterateAllStreamEvents(testStream, 100));
+      assert.equal(evs.length, 250);
+      assert.equal(reads, 3, 'chunks of 100, 100 and 50, with no fourth empty read');
+    } finally {
+      KurrentDBClient.prototype.readStream = originalReadStream;
+      await client.close();
+    }
   }).timeout(5000);
 });

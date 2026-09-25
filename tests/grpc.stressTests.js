@@ -2,6 +2,7 @@ import assert from 'assert';
 import generateEventId from '../lib/utilities/generateEventId.js';
 import getGRPCConfig from './support/getGRPCConfig.js';
 import KurrentDB from '../lib/index.js';
+import { itUnlessV21 } from './support/v21.js';
 
 const eventFactory = new KurrentDB.EventFactory();
 
@@ -64,7 +65,8 @@ describe('gRPC Client - Stress Tests', () => {
     await client.close();
   });
 
-  it('Writes a batch of 50 events of 1 MiB each in one append', async function () {
+  // The 21.10 server's maximum append size is below 50 MiB, so it rejects this append outright.
+  itUnlessV21('Writes a batch of 50 events of 1 MiB each in one append', async function () {
     this.timeout(120 * 1000);
     // About 50 MiB takes longer to send than the 10 second default deadline allows on slow machines
     const client = new KurrentDB.GRPCClient({ ...getGRPCConfig(), defaultDeadline: 110 * 1000 });

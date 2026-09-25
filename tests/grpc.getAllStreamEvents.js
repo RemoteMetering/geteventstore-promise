@@ -3,6 +3,7 @@ import generateEventId from '../lib/utilities/generateEventId.js';
 import getGRPCConfig from './support/getGRPCConfig.js';
 import waitUntil from './utilities/waitUntil.js';
 import KurrentDB from '../lib/index.js';
+import { runningV21 } from './support/v21.js';
 
 const eventFactory = new KurrentDB.EventFactory();
 
@@ -87,8 +88,11 @@ describe('gRPC Client - Get All Stream Events', () => {
     // BigInt handling
     assert.doesNotThrow(() => JSON.stringify(evs), 'a linked stream read must be JSON serialisable');
     const plain = JSON.parse(JSON.stringify(evs));
-    assert.equal(typeof plain[0].commitPosition, 'string');
-    assert.equal(plain[0].commitPosition, String(evs[0].commitPosition), 'the position round-trips as a string');
+    // The 21.10 server returns no commit position for events read through a link on a stream read.
+    if (!runningV21) {
+      assert.equal(typeof plain[0].commitPosition, 'string');
+      assert.equal(plain[0].commitPosition, String(evs[0].commitPosition), 'the position round-trips as a string');
+    }
     assert.equal(
       new Date(evs[0].created).getUTCFullYear(),
       new Date().getUTCFullYear(),
