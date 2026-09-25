@@ -137,6 +137,9 @@ export interface StreamMetadataOptions {
   expectedVersion?: number;
 }
 
+// writeEvents commits the whole array atomically, even when the client splits it into
+// batchAppendSizeInBytes chunks on the wire. Very large appends can exceed the server's write
+// timeout, which surfaces as a deadline-exceeded error.
 export interface GRPCWriteEventOptions {
   expectedVersion?: number;
   batchAppendSizeInBytes?: number;

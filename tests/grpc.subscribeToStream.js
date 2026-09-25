@@ -55,14 +55,16 @@ describe('gRPC Client - Subscribe To Stream', () => {
     }
     await sleep(100);
     await client.writeEvents(testStream, events);
-    await waitUntil(() => processedEventCount === 20);
+    await waitUntil(() => processedEventCount === 10);
+    // Give any replayed history time to arrive, so a regression shows up as an over-count.
+    await sleep(500);
 
     if (dropped) {
       await client.closeAllConnections();
       assert.fail('should not drop');
     }
 
-    assert.equal(20, processedEventCount, 'expect processed events to be 20');
+    assert.equal(10, processedEventCount, 'expect only the 10 events written after subscribing');
     assert(subscription, 'Subscription Expected');
     // BigInt handling
     assert.equal(serialisationError, undefined, 'every delivered event must be JSON serialisable');
@@ -79,8 +81,6 @@ describe('gRPC Client - Subscribe To Stream', () => {
     const events = [];
     for (let k = 0; k < 10; k++) events.push(eventFactory.newEvent('TestEventType', { id: k }));
 
-    await client.writeEvents(testStream, events);
-
     let processedEventCount1 = 0;
     let processedEventCount2 = 0;
     const onEv1 = () => {
@@ -91,6 +91,8 @@ describe('gRPC Client - Subscribe To Stream', () => {
     };
     const sub1 = await client.subscribeToStream(testStream, onEv1, () => {});
     const sub2 = await client.subscribeToStream(testStream, onEv2, () => {});
+    await sleep(100);
+    await client.writeEvents(testStream, events);
     await waitUntil(() => processedEventCount1 === 10 && processedEventCount2 === 10);
 
     assert.equal(10, processedEventCount1, 'Expect processed events to be 10 for subscription 1');
