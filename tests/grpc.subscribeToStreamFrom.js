@@ -208,4 +208,66 @@ describe('gRPC Client - Subscribe To Stream From', () => {
       await client.closeAllConnections();
     }
   });
+
+  it('Should report live processing only after an async handler finishes the catch-up events', async function () {
+    this.timeout(15 * 1000);
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
+    const testStream = `TestStream-${generateEventId()}`;
+    const seen = [];
+
+    try {
+      const events = [];
+      for (let k = 0; k < 5; k++) events.push(eventFactory.newEvent('TestEventType', { id: k }));
+      await client.writeEvents(testStream, events);
+
+      const sub = await client.subscribeToStreamFrom(
+        testStream,
+        undefined,
+        async (_sub, ev) => {
+          await sleep(30);
+          seen.push(ev.data.id);
+        },
+        () => seen.push('live')
+      );
+      await waitUntil(() => seen.includes('live'));
+
+      assert.deepEqual(seen, [0, 1, 2, 3, 4, 'live']);
+      await sub.close();
+    } finally {
+      await client.closeAllConnections();
+    }
+  });
+
+  it('Should treat -1 as the start of the stream, as the TCP client does', async function () {
+    this.timeout(15 * 1000);
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
+    const testStream = `TestStream-${generateEventId()}`;
+    const seen = [];
+
+    try {
+      const events = [];
+      for (let k = 0; k < 3; k++) events.push(eventFactory.newEvent('TestEventType', { id: k }));
+      await client.writeEvents(testStream, events);
+
+      const sub = await client.subscribeToStreamFrom(testStream, -1, (_sub, ev) => seen.push(ev.data.id));
+      await waitUntil(() => seen.length === 3);
+
+      assert.deepEqual(seen, [0, 1, 2]);
+      await sub.close();
+    } finally {
+      await client.closeAllConnections();
+    }
+  });
+
+  it('Should reject a start that is not a revision', async () => {
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
+    try {
+      await assert.rejects(
+        client.subscribeToStreamFrom('AnyStream', 'WRONG', () => {}),
+        /fromEventNumber' not valid/
+      );
+    } finally {
+      await client.closeAllConnections();
+    }
+  });
 });
