@@ -279,3 +279,28 @@ describe('gRPC Client - Get Events', () => {
     await client.close();
   });
 });
+
+describe('gRPC Client - Read Events start position validation', () => {
+  it('Should reject a start position that is not a revision rather than reading from the start', async () => {
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
+    try {
+      await assert.rejects(client.readEventsBackward('AnyStream', -5), /'startPosition' not valid/);
+      await assert.rejects(client.getEvents('AnyStream', 'abc'), /'startPosition' not valid/);
+    } finally {
+      await client.close();
+    }
+  });
+
+  it('Should keep a revision above 2^53 exact instead of rounding it', async () => {
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
+    const testStream = `TestStream-${generateEventId()}`;
+    try {
+      await client.writeEvent(testStream, 'TestEventType', { something: 1 });
+      const result = await client.readEventsForward(testStream, '9007199254740993', 10);
+      assert.equal(result.events.length, 0);
+      assert.equal(result.fromEventNumber, 9007199254740993n);
+    } finally {
+      await client.close();
+    }
+  });
+});
