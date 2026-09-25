@@ -1,6 +1,6 @@
 import assert from 'assert';
 import { parseConnectionString } from '@kurrent/kurrentdb-client/dist/Client/parseConnectionString.js';
-import { buildConnectionString } from '../lib/grpcClient/connectionManager.js';
+import connectionManager, { buildConnectionString } from '../lib/grpcClient/connectionManager.js';
 
 // Mirrors the internal _config shape the GRPCClient constructor produces.
 const baseConfig = () => ({
@@ -21,6 +21,14 @@ describe('gRPC Client - Connection String Builder', () => {
   it('Should build a single node base string with only tls when no tuning params are set', () => {
     const connectionString = buildConnectionString(baseConfig());
     assert.strictEqual(connectionString, 'kurrentdb+discover://admin:changeit@localhost:22117?tls=false');
+  });
+
+  it('Should default tls to false when useSslConnection is omitted', () => {
+    const config = baseConfig();
+    delete config.useSslConnection;
+    const connectionString = buildConnectionString(config);
+    assert.strictEqual(paramsOf(connectionString).tls, 'false');
+    assert.doesNotThrow(() => parseConnectionString(connectionString));
   });
 
   it('Should build a gossip seeds string from the seed list', () => {
@@ -135,5 +143,44 @@ describe('gRPC Client - Connection String Builder', () => {
     assert.strictEqual(parsed.userCertFile, config.userCertFile);
     assert.strictEqual(parsed.userKeyFile, config.userKeyFile);
     assert.strictEqual(parsed.connectionName, 'reader&writer?1');
+  });
+});
+
+describe('gRPC Client - Connection Manager', () => {
+  it('Should retry client creation after a failed attempt', async () => {
+    const config = baseConfig();
+    let calls = 0;
+    config.connectionNameGenerator = async () => {
+      calls += 1;
+      if (calls === 1) throw new Error('generator failed');
+      return 'RETRIED';
+    };
+    await assert.rejects(connectionManager.getOrCreate(config), /generator failed/);
+    const client = await connectionManager.getOrCreate(config);
+    assert.ok(client);
+    assert.strictEqual(calls, 2);
+    await connectionManager.close(config)();
+  });
+
+  it('Should dispose healthy clients when another client failed to create', async () => {
+    const healthyConfig = baseConfig();
+    const failingConfig = baseConfig();
+    failingConfig.connectionNameGenerator = async () => {
+      throw new Error('generator failed');
+    };
+    const healthy = await connectionManager.getOrCreate(healthyConfig);
+    let disposed = false;
+    const dispose = healthy.dispose.bind(healthy);
+    healthy.dispose = async () => {
+      disposed = true;
+      return dispose();
+    };
+    // Hold the failed promise in the cache by closing before its rejection handler runs.
+    const failing = connectionManager.getOrCreate(failingConfig);
+    const closing = connectionManager.closeAllConnections();
+    await assert.rejects(failing, /generator failed/);
+    await closing;
+    assert.strictEqual(disposed, true);
+    await assert.rejects(connectionManager.getConnection(healthyConfig)(), /Connection not found/);
   });
 });
