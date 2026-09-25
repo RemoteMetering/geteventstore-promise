@@ -166,6 +166,16 @@ describe('gRPC Client - mapEvent', () => {
     assert.strictEqual(first.toJSON, second.toJSON);
     assert.equal(JSON.parse(JSON.stringify(second)).position.commit, '42');
   });
+  it('Should keep commitPosition off a spread copy so the copy still serialises', () => {
+    const mapped = mapEvent({ ...liveResolvedEvent, commitPosition: 42n });
+    assert.equal(mapped.commitPosition, 42n);
+    assert.equal(JSON.parse(JSON.stringify(mapped)).commitPosition, '42');
+
+    const copy = { ...mapped, receivedAt: 'now' };
+    assert.equal('commitPosition' in copy, false);
+    // position keeps its own toJSON through the copy, so the whole copy serialises.
+    assert.equal(JSON.parse(JSON.stringify(copy)).position.commit, '42');
+  });
 });
 
 describe('gRPC Client - keepEvent', () => {

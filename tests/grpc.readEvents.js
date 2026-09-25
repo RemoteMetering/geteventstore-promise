@@ -304,4 +304,16 @@ describe('gRPC Client - Read Events start position validation', () => {
       await client.close();
     }
   });
+
+  it('Should ignore the extra embed argument the HTTP client accepts', async () => {
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
+    const testStream = `TestStream-${generateEventId()}`;
+    try {
+      await client.writeEvent(testStream, 'TestEventType', { something: 1 });
+      const events = await client.getEvents(testStream, 0, 10, 'forward', true, 'body');
+      assert.equal(events.length, 1);
+    } finally {
+      await client.close();
+    }
+  });
 });
