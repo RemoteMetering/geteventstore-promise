@@ -94,6 +94,44 @@ describe('gRPC Client - Write Events', () => {
   });
 });
 
+describe('gRPC Client - Write Events atomically in a single append', () => {
+  // A small batchAppendSizeInBytes forces the client to send many wire chunks,
+  // proving the server still commits them as one unit (the gRPC equivalent of a TCP transaction)
+  const eventCount = 5000;
+  const batchAppendSizeInBytes = 16 * 1024;
+  const newEvents = () =>
+    Array.from({ length: eventCount }, (_, i) => eventFactory.newEvent('TestEventType', { index: i }));
+
+  it('Writes thousands of events across many chunks in one append', async () => {
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
+    const testStream = `TestStream-${generateEventId()}`;
+
+    const result = await client.writeEvents(testStream, newEvents(), { batchAppendSizeInBytes });
+    assert.equal(result.nextExpectedRevision, BigInt(eventCount - 1));
+
+    const evs = await client.getAllStreamEvents(testStream);
+    assert.equal(evs.length, eventCount);
+    assert.equal(evs[0].data.index, 0);
+    assert.equal(evs[eventCount - 1].data.index, eventCount - 1);
+
+    await client.close();
+  });
+
+  it('Writes none of the events when the append is rejected', async () => {
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
+    const testStream = `TestStream-${generateEventId()}`;
+    await client.writeEvents(testStream, [eventFactory.newEvent('TestEventType', { index: -1 })]);
+
+    // The stream sits at revision 0, so expecting revision 5 fails the whole append
+    await assert.rejects(client.writeEvents(testStream, newEvents(), { expectedVersion: 5, batchAppendSizeInBytes }));
+
+    const evs = await client.getAllStreamEvents(testStream);
+    assert.equal(evs.length, 1);
+
+    await client.close();
+  });
+});
+
 describe('gRPC Client - Write Events to pre-populated stream', () => {
   let client;
   let testStream;
