@@ -141,6 +141,23 @@ describe('TCP Client - Test Connection', () => {
     }
   });
 
+  it('Should leave the operations pool open when closing an unknown connection name', async function () {
+    this.timeout(60 * 1000);
+    const client = new KurrentDB.TCPClient(getTcpConfig());
+    const testStream = `TestStream-${generateEventId()}`;
+
+    try {
+      await client.writeEvent(testStream, 'TestEventType', { something: '123' });
+      const operationsPool = await client.getPool();
+      await client.close('NO_SUCH_SUBSCRIPTION_CONNECTION');
+
+      assert.strictEqual(await client.getPool(), operationsPool, 'the operations pool must survive');
+      await client.writeEvent(testStream, 'TestEventType', { something: '456' });
+    } finally {
+      await client.close();
+    }
+  });
+
   it('Should close all pools', async function () {
     this.timeout(60 * 1000);
     const config = getTcpConfig();
