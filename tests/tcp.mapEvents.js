@@ -52,4 +52,13 @@ describe('TCP Client - mapEvents', () => {
   it('Should always keep live events even when includeDeleted is false', () => {
     assert.equal(mapEvents([liveResolvedEvent], false).length, 1);
   });
+
+  it('Should map positionCreated on a linked event to an ISO string, like created', () => {
+    const linkCreated = new Date('2021-01-02T03:04:05.000Z');
+    const [mapped] = mapEvents([
+      { ...liveResolvedEvent, link: { ...deletedResolvedEvent.link, created: linkCreated } }
+    ]);
+    assert.equal(mapped.positionCreated, '2021-01-02T03:04:05.000Z');
+    assert.equal(typeof mapped.created, 'string');
+  });
 });
