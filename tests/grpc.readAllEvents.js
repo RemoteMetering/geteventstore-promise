@@ -92,4 +92,16 @@ describe('gRPC Client - $All Stream Events', () => {
 
     await client.close();
   });
+
+  it('Should carry commitPosition on ordinary $all events, not only on links', async () => {
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
+
+    const result = await client.readAllEventsBackward(undefined, 10, false);
+    const ordinary = result.events.find((ev) => ev.positionStreamId === undefined);
+    assert(ordinary, 'expected an event that did not arrive through a link');
+    assert.equal(typeof ordinary.commitPosition, 'bigint');
+    assert.equal(ordinary.commitPosition, ordinary.position.commit, 'the commit position matches the event position');
+
+    await client.close();
+  });
 });
