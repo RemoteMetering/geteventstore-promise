@@ -180,4 +180,47 @@ describe('TCP Client - Subscribe To Stream', () => {
       await client.closeAllPools();
     }
   });
+
+  it('Should close a client that only holds live subscriptions without hanging', async function () {
+    this.timeout(15 * 1000);
+    const client = new KurrentDB.TCPClient(getTcpConfig());
+    const testStream = `TestStream-${generateEventId()}`;
+    const drops = [];
+
+    try {
+      await client.subscribeToStream(
+        testStream,
+        () => {},
+        (_sub, reason) => drops.push(reason)
+      );
+      // No operations pool exists, so close() works on the subscription pool the live subscription holds.
+      await client.close();
+      await waitUntil(() => drops.length === 1);
+    } finally {
+      await client.closeAllPools();
+    }
+  });
+
+  it('Should close each subscription pool on its own when two share a connection name', async function () {
+    this.timeout(15 * 1000);
+    const config = { ...getTcpConfig(), connectionNameGenerator: () => 'SHARED_SUBSCRIPTION_NAME' };
+    const client = new KurrentDB.TCPClient(config);
+    const testStream = `TestStream-${generateEventId()}`;
+    let receivedByFirst = 0;
+
+    try {
+      await client.subscribeToStream(testStream, () => {
+        receivedByFirst += 1;
+      });
+      const second = await client.subscribeToStream(testStream, () => {});
+      // Closing the second must not drain the first pool, which would hang on its live connection.
+      await second.close();
+
+      await sleep(500);
+      await client.writeEvent(testStream, 'TestEventType', { id: 1 });
+      await waitUntil(() => receivedByFirst === 1);
+    } finally {
+      await client.closeAllPools();
+    }
+  });
 });
