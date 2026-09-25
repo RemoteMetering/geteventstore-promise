@@ -156,4 +156,28 @@ describe('TCP Client - Subscribe To Stream', () => {
       await client.closeAllPools();
     }
   });
+
+  it('Should close only the subscription pool and keep the operations pool', async function () {
+    this.timeout(15 * 1000);
+    const client = new KurrentDB.TCPClient(getTcpConfig());
+    const testStream = `TestStream-${generateEventId()}`;
+
+    try {
+      await client.writeEvent(testStream, 'TestEventType', { id: 1 });
+      const operationsPool = await client.getPool();
+      const subscription = await client.subscribeToStream(
+        testStream,
+        () => {},
+        () => {}
+      );
+      await subscription.close();
+
+      assert.strictEqual(await client.getPool(), operationsPool, 'the operations pool must survive');
+      await client.writeEvent(testStream, 'TestEventType', { id: 2 });
+      const events = await client.getEvents(testStream);
+      assert.equal(events.length, 2);
+    } finally {
+      await client.closeAllPools();
+    }
+  });
 });
