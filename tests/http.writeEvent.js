@@ -88,6 +88,18 @@ describe('Http Client - Write Event to pre-populated stream', () => {
     assert.fail('Write should not have succeeded');
   });
 
+  it("Should enforce expectedVersion 'no_stream' instead of writing with Any", async () => {
+    await assert.rejects(
+      client.writeEvent(testStream, 'TestEventType', { something: 'abc' }, null, { expectedVersion: 'no_stream' })
+    );
+  });
+
+  it('Should accept a bigint expectedVersion from a gRPC result', async () => {
+    const events = await client.getEvents(testStream);
+    const expectedVersion = BigInt(events[events.length - 1].eventNumber);
+    await client.writeEvent(testStream, 'TestEventType', { something: 'abc' }, null, { expectedVersion });
+  });
+
   it('Should write event if expectedVersion=null', async () => {
     try {
       await client.writeEvent(

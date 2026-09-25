@@ -94,6 +94,19 @@ describe('TCP Client - Write Event to pre-populated stream', () => {
     assert.fail('Write should not have succeeded');
   });
 
+  it("Should enforce expectedVersion 'no_stream' instead of writing with Any", async () => {
+    await assert.rejects(
+      client.writeEvent(testStream, 'TestEventType', { something: 'abc' }, null, { expectedVersion: 'no_stream' })
+    );
+  });
+
+  it('Should reject an invalid expectedVersion instead of writing with Any', async () => {
+    await assert.rejects(
+      client.writeEvent(testStream, 'TestEventType', { something: 'abc' }, null, { expectedVersion: 'WRONG' }),
+      /Invalid expectedVersion/
+    );
+  });
+
   it('Should write event if expectedVersion=null', async () => {
     try {
       await client.writeEvent(
