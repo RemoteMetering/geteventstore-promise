@@ -105,6 +105,49 @@ describe('gRPC Client - Persistent Subscription', () => {
     await client.closeAllConnections();
   });
 
+  it('Should ack resolved link events so they are not redelivered', async function () {
+    this.timeout(30 * 1000);
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
+    const category = `AckLink${generateEventId().replace(/-/g, '')}`;
+    const categoryStream = `$ce-${category}`;
+    const groupName = `AckLinkGroup-${generateEventId()}`;
+    const events = [];
+    for (let k = 0; k < 3; k++) events.push(eventFactory.newEvent('TestEventType', { id: k }));
+
+    try {
+      await client.writeEvents(`${category}-1`, events);
+      // The $by_category projection writes the links asynchronously.
+      await waitUntil(async () => (await client.readEventsForward(categoryStream, 0, 10)).events.length === 3);
+      // A short timeout means an unacknowledged link would be redelivered well inside the test window.
+      await client.createPersistentSubscriptionToStream(categoryStream, groupName, {
+        resolveLinkTos: true,
+        messageTimeout: 1000
+      });
+
+      const delivered = [];
+      const subscription = await client.subscribeToPersistentSubscriptionToStream(
+        categoryStream,
+        groupName,
+        async (sub, ev) => {
+          delivered.push(ev);
+          await sub.ack(ev);
+        },
+        () => {}
+      );
+      await waitUntil(() => delivered.length === 3);
+      await sleep(3000);
+
+      assert.equal(delivered.length, 3, 'acked links must not be redelivered');
+      assert.ok(
+        delivered.every((ev) => ev.positionStreamId === categoryStream),
+        'events should arrive as links'
+      );
+      await subscription.close();
+    } finally {
+      await client.closeAllConnections();
+    }
+  });
+
   it('Subscription should fail when subscription does not exist yet', async function () {
     this.timeout(15 * 1000);
     const client = new KurrentDB.GRPCClient(getGRPCConfig());
