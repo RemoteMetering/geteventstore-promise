@@ -427,4 +427,41 @@ describe('Projections', () => {
       assert.fail('Should have received 404 for non-existent projection');
     });
   });
+
+  describe('Enabled flag', () => {
+    const projectionName = generateEventId();
+    const projectionContent = fs.readFileSync(`${dirname}/support/testProjection.js`, { encoding: 'utf8' });
+    const statusOf = async (client) => (await client.projections.getInfo(projectionName)).status;
+
+    after(async function () {
+      this.timeout(10 * 1000);
+      const client = new KurrentDB.HTTPClient(getHttpConfig());
+      await client.projections.stop(projectionName).catch(() => {});
+      await client.projections.remove(projectionName).catch(() => {});
+    });
+
+    it('Should create a disabled projection when enabled is false', async function () {
+      this.timeout(10 * 1000);
+      const client = new KurrentDB.HTTPClient(getHttpConfig());
+
+      await client.projections.assert(projectionName, projectionContent, 'continuous', false);
+      assert.equal(await statusOf(client), 'Stopped');
+    });
+
+    it('Should leave an existing projection stopped when enabled is not passed', async function () {
+      this.timeout(10 * 1000);
+      const client = new KurrentDB.HTTPClient(getHttpConfig());
+
+      await client.projections.assert(projectionName, projectionContent);
+      assert.equal(await statusOf(client), 'Stopped');
+    });
+
+    it('Should start an existing projection when enabled is true', async function () {
+      this.timeout(10 * 1000);
+      const client = new KurrentDB.HTTPClient(getHttpConfig());
+
+      await client.projections.assert(projectionName, projectionContent, 'continuous', true);
+      await waitUntil(async () => (await statusOf(client)).toLowerCase().includes('running'));
+    });
+  });
 });
