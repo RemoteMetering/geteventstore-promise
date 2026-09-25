@@ -149,6 +149,23 @@ describe('gRPC Client - mapEvent', () => {
     assert.equal(Object.keys(mapped).includes('toJSON'), false);
     assert.equal(JSON.stringify(Object.keys(mapped)).includes('toJSON'), false);
   });
+
+  it('Should keep metadata that the SDK decoded to a plain JSON string literal', () => {
+    const mapped = mapEvent({ event: { ...liveResolvedEvent.event, metadata: 'hello' } });
+    assert.equal(mapped.metadata, 'hello');
+  });
+
+  it('Should still decode JSON text stored inside a metadata string', () => {
+    const mapped = mapEvent(liveResolvedEvent);
+    assert.deepEqual(mapped.metadata, { trace: 'abc' });
+  });
+
+  it('Should share one toJSON function across mapped events', () => {
+    const first = mapEvent(liveResolvedEvent);
+    const second = mapEvent(liveResolvedEvent);
+    assert.strictEqual(first.toJSON, second.toJSON);
+    assert.equal(JSON.parse(JSON.stringify(second)).position.commit, '42');
+  });
 });
 
 describe('gRPC Client - keepEvent', () => {
