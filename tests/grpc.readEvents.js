@@ -299,6 +299,7 @@ describe('gRPC Client - Read Events start position validation', () => {
       const result = await client.readEventsForward(testStream, '9007199254740993', 10);
       assert.equal(result.events.length, 0);
       assert.equal(result.fromEventNumber, 9007199254740993n);
+      assert.equal(JSON.parse(JSON.stringify(result)).fromEventNumber, '9007199254740993');
     } finally {
       await client.close();
     }

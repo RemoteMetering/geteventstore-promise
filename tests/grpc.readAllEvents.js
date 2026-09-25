@@ -104,4 +104,14 @@ describe('gRPC Client - $All Stream Events', () => {
 
     await client.close();
   });
+
+  it('Should not resolve links on $all by default, so each event appears once', async () => {
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
+
+    const result = await client.readAllEventsBackward(undefined, 500);
+    const resolved = result.events.filter((ev) => ev.positionStreamId !== undefined);
+    assert.equal(resolved.length, 0, 'no event should arrive through a resolved link');
+
+    await client.close();
+  });
 });
