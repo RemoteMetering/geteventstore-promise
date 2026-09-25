@@ -86,3 +86,28 @@ describe('TCP Client - Iterate Events', () => {
     await client.close();
   });
 });
+
+describe('TCP Client - Iterate Events with a single pooled connection', () => {
+  it('Should release the connection before yielding so the loop body can write', async function () {
+    this.timeout(10 * 1000);
+    const config = getTcpConfig();
+    config.poolOptions = { ...config.poolOptions, max: 1 };
+    const client = new KurrentDB.TCPClient(config);
+    const sourceStream = `TestStream-${generateEventId()}`;
+    const targetStream = `TestStream-${generateEventId()}`;
+
+    try {
+      await client.writeEvents(sourceStream, [
+        eventFactory.newEvent('TestEventType', { something: 1 }),
+        eventFactory.newEvent('TestEventType', { something: 2 })
+      ]);
+      for await (const ev of client.iterateEvents(sourceStream)) {
+        await client.writeEvent(targetStream, 'CopiedType', ev.data);
+      }
+      const copied = await client.getEvents(targetStream);
+      assert.equal(copied.length, 2);
+    } finally {
+      await client.close();
+    }
+  });
+});

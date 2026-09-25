@@ -77,4 +77,28 @@ describe('TCP Client - Iterate All Stream Events', () => {
 
     await client.close();
   }).timeout(5000);
+
+  it('Should not hold a pooled connection while the loop body runs', async function () {
+    this.timeout(10 * 1000);
+    const config = getTcpConfig();
+    config.poolOptions = { ...config.poolOptions, max: 1 };
+    const client = new KurrentDB.TCPClient(config);
+    const sourceStream = `TestStream-${generateEventId()}`;
+    const targetStream = `TestStream-${generateEventId()}`;
+
+    try {
+      await client.writeEvents(sourceStream, buildEvents(5));
+      // A chunk size of 2 forces several reads, each of which must get the single connection back.
+      for await (const ev of client.iterateAllStreamEvents(sourceStream, 2)) {
+        await client.writeEvent(targetStream, 'CopiedType', ev.data);
+      }
+      const copied = await client.getEvents(targetStream);
+      assert.deepEqual(
+        copied.map((ev) => ev.data.id),
+        [0, 1, 2, 3, 4]
+      );
+    } finally {
+      await client.close();
+    }
+  });
 });
