@@ -58,6 +58,7 @@ export interface Event {
   positionCausedBy?: string;
   positionCorrelationId?: string;
   // gRPC client only. Both stay BigInt, and toJSON narrows them to decimal strings.
+  // commitPosition is non-enumerable, so a spread copy of the event does not carry it.
   position?: Position;
   commitPosition?: bigint;
   toJSON?(): Record<string, unknown>;
@@ -360,6 +361,12 @@ export interface MappedEventAppearedCallback<TSubscription> {
   (subscription: TSubscription, event: Event): void | Promise<void>;
 }
 
+// The gRPC catch-up subscriptions pass their own subscription object. Unlike node-eventstore-client's
+// LiveProcessingStartedCallback argument it has no stop(), so close() or unsubscribe() ends it.
+export interface GRPCLiveProcessingStartedCallback<TSubscription> {
+  (subscription: TSubscription): void;
+}
+
 export interface GRPCSubscriptionDroppedCallback<TSubscription> {
   (subscription: TSubscription, error?: Error): void | Promise<void>;
 }
@@ -402,7 +409,7 @@ export class HTTPClient {
   ): Promise<Event[]>;
   getEventsByType(
     streamName: string,
-    eventTypes: string[],
+    eventTypes: string | string[],
     startPosition?: number,
     count?: number,
     direction?: ReadDirection,
@@ -453,7 +460,7 @@ export class HTTPClient {
   ): AsyncIterableIterator<Event>;
   iterateEventsByType(
     streamName: string,
-    eventTypes: string[],
+    eventTypes: string | string[],
     startPosition?: number,
     count?: number,
     direction?: ReadDirection,
@@ -539,7 +546,7 @@ export class TCPClient {
   ): Promise<Event[]>;
   getEventsByType(
     streamName: string,
-    eventTypes: string[],
+    eventTypes: string | string[],
     startPosition?: number,
     count?: number,
     direction?: ReadDirection,
@@ -584,7 +591,7 @@ export class TCPClient {
   ): AsyncIterableIterator<Event>;
   iterateEventsByType(
     streamName: string,
-    eventTypes: string[],
+    eventTypes: string | string[],
     startPosition?: number,
     count?: number,
     direction?: ReadDirection,
@@ -661,7 +668,7 @@ export class GRPCClient {
   ): Promise<Event[]>;
   getEventsByType(
     streamName: string,
-    eventTypes: string[],
+    eventTypes: string | string[],
     startPosition?: number,
     count?: number,
     direction?: ReadDirection,
@@ -725,7 +732,7 @@ export class GRPCClient {
   ): AsyncIterableIterator<Event>;
   iterateEventsByType(
     streamName: string,
-    eventTypes: string[],
+    eventTypes: string | string[],
     startPosition?: number,
     count?: number,
     direction?: ReadDirection,
@@ -761,14 +768,14 @@ export class GRPCClient {
     streamName: string,
     fromEventNumber?: number,
     onEventAppeared?: MappedEventAppearedCallback<StreamSubscription>,
-    onLiveProcessingStarted?: LiveProcessingStartedCallback,
+    onLiveProcessingStarted?: GRPCLiveProcessingStartedCallback<StreamSubscription>,
     onDropped?: GRPCSubscriptionDroppedCallback<StreamSubscription>,
     settings?: SubscribeToStreamFromSettings
   ): Promise<StreamSubscription>;
   subscribeToAll(
     fromPosition?: ReadPosition,
     onEventAppeared?: MappedEventAppearedCallback<AllStreamSubscription>,
-    onLiveProcessingStarted?: LiveProcessingStartedCallback,
+    onLiveProcessingStarted?: GRPCLiveProcessingStartedCallback<AllStreamSubscription>,
     onDropped?: GRPCSubscriptionDroppedCallback<AllStreamSubscription>,
     settings?: SubscribeToAllSettings
   ): Promise<AllStreamSubscription>;
