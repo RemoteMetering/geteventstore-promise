@@ -241,7 +241,7 @@ const secureClient = new KurrentDB.HTTPClient({
 });
 ```
 
-`timeout` applies to the stream calls only, namely the read and write methods, `setStreamMetadata`, `checkStreamExists`, `deleteStream` and `ping`. The `projections`, `persistentSubscriptions` and `admin` calls do not pass it and have no timeout.
+`timeout` applies to every HTTP call, including the `projections`, `persistentSubscriptions` and `admin` calls. Leave it unset for no timeout.
 
 ## Admin methods (only issues commands)
 
