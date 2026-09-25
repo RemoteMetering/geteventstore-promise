@@ -163,7 +163,7 @@ export interface GRPCMultiStreamWriteRecord {
 export interface GRPCConsistencyCheck {
   streamName: string;
   // A revision number, or one of "any", "no_stream", "stream_exists".
-  // null, undefined and -2 are all treated as "any".
+  // null, undefined and -2 are all treated as "any", -1 as "no_stream" and -4 as "stream_exists".
   expectedVersion?: number | 'any' | 'no_stream' | 'stream_exists';
 }
 
@@ -626,7 +626,7 @@ export class GRPCClient {
   setStreamMetadata(
     streamName: string,
     metadata: StreamMetadata,
-    options?: SetStreamMetadataOptions
+    options?: StreamMetadataOptions & SetStreamMetadataOptions
   ): Promise<JsonSafe<GRPCAppendResult>>;
   checkStreamExists(streamName: string): Promise<boolean>;
   writeEvent(

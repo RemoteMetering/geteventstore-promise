@@ -24,6 +24,25 @@ describe('gRPC Client - Set stream metadata', () => {
     await client.close();
   });
 
+  it('Should honour expectedVersion on the metastream', async function () {
+    this.timeout(5000);
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
+    const testStream = `TestStream-${generateEventId()}`;
+
+    try {
+      await client.setStreamMetadata(testStream, { maxCount: 10 }, { expectedVersion: -1 });
+      await assert.rejects(client.setStreamMetadata(testStream, { maxCount: 20 }, { expectedVersion: 3 }), {
+        type: 'wrong-expected-version'
+      });
+      await client.setStreamMetadata(testStream, { maxCount: 30 }, { expectedVersion: 0 });
+
+      const result = await client.getStreamMetadata(testStream);
+      assert.equal(result.metadata.maxCount, 30);
+    } finally {
+      await client.close();
+    }
+  });
+
   it('Should fail promise if no metadata provided', async function () {
     this.timeout(5000);
     const client = new KurrentDB.GRPCClient(getGRPCConfig());
