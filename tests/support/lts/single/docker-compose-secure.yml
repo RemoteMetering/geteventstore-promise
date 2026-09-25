@@ -30,6 +30,8 @@ services:
     container_name: metronomic_kurrentdb_client_test_single
     environment:
       - KURRENTDB_MEM_DB=true
+      # Increase for stress tests
+      - KURRENTDB_WRITE_TIMEOUT_MS=30000
       - KURRENTDB_CLUSTER_SIZE=1
       - KURRENTDB_RUN_PROJECTIONS=All
       - KURRENTDB_START_STANDARD_PROJECTIONS=true

@@ -5,6 +5,8 @@ services:
     environment:
       - EVENTSTORE_INSECURE=true
       - EVENTSTORE_MEM_DB=true
+      # Increase for stress tests
+      - EVENTSTORE_WRITE_TIMEOUT_MS=30000
       - EVENTSTORE_CLUSTER_SIZE=1
       - EVENTSTORE_RUN_PROJECTIONS=All
       - EVENTSTORE_START_STANDARD_PROJECTIONS=true
