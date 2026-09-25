@@ -182,6 +182,36 @@ describe('gRPC Client - Persistent Subscription', () => {
     }
   });
 
+  it('Should report a drop once when the handler closes the subscription after an error', async function () {
+    this.timeout(15 * 1000);
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
+    const groupName = `DropOnceGroup-${generateEventId()}`;
+    const testStream = `TestStream-${generateEventId()}`;
+    const drops = [];
+
+    try {
+      await client.writeEvents(testStream, [eventFactory.newEvent('TestEventType', { id: 1 })]);
+      await client.createPersistentSubscriptionToStream(testStream, groupName);
+      const subscription = await client.subscribeToPersistentSubscriptionToStream(
+        testStream,
+        groupName,
+        (sub, ev) => sub.ack(ev),
+        (sub, err) => {
+          drops.push(err);
+          return sub.close();
+        }
+      );
+      // Mirror the SDK's own server-drop path, which emits 'error' without destroying the stream.
+      subscription.emit('error', new Error('server dropped'));
+      await sleep(500);
+
+      assert.equal(drops.length, 1, 'onDropped must fire once');
+      assert.equal(drops[0].message, 'server dropped');
+    } finally {
+      await client.closeAllConnections();
+    }
+  });
+
   it('Subscription should fail when subscription does not exist yet', async function () {
     this.timeout(15 * 1000);
     const client = new KurrentDB.GRPCClient(getGRPCConfig());

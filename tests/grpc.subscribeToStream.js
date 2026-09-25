@@ -123,4 +123,86 @@ describe('gRPC Client - Subscribe To Stream', () => {
       await client.closeAllConnections();
     }
   });
+
+  it('Should await async handlers in order', async function () {
+    this.timeout(15 * 1000);
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
+    const testStream = `TestStream-${generateEventId()}`;
+    const seen = [];
+    let inFlight = 0;
+    let maxInFlight = 0;
+
+    try {
+      const subscription = await client.subscribeToStream(testStream, async (_sub, ev) => {
+        inFlight += 1;
+        maxInFlight = Math.max(maxInFlight, inFlight);
+        // Later events finish sooner, so an unawaited handler would record them out of order.
+        await sleep(50 - ev.data.id * 10);
+        seen.push(ev.data.id);
+        inFlight -= 1;
+      });
+      await sleep(100);
+      const events = [];
+      for (let k = 0; k < 5; k++) events.push(eventFactory.newEvent('TestEventType', { id: k }));
+      await client.writeEvents(testStream, events);
+      await waitUntil(() => seen.length === 5);
+
+      assert.deepEqual(seen, [0, 1, 2, 3, 4]);
+      assert.equal(maxInFlight, 1, 'handlers must not overlap');
+      await subscription.close();
+    } finally {
+      await client.closeAllConnections();
+    }
+  });
+
+  it('Should drop the subscription when an async handler rejects', async function () {
+    this.timeout(15 * 1000);
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
+    const testStream = `TestStream-${generateEventId()}`;
+    const handlerError = new Error('handler failed');
+    const drops = [];
+    const unhandled = [];
+    const onUnhandled = (reason) => unhandled.push(reason);
+    process.on('unhandledRejection', onUnhandled);
+
+    try {
+      await client.subscribeToStream(
+        testStream,
+        async () => {
+          throw handlerError;
+        },
+        (_sub, err) => drops.push(err)
+      );
+      await sleep(100);
+      await client.writeEvent(testStream, 'TestEventType', { id: 1 });
+      await waitUntil(() => drops.length === 1);
+      await sleep(200);
+
+      assert.equal(drops.length, 1, 'onDropped must fire once');
+      assert.equal(drops[0], handlerError);
+      assert.equal(unhandled.length, 0, 'the rejection must not go unhandled');
+    } finally {
+      process.off('unhandledRejection', onUnhandled);
+      await client.closeAllConnections();
+    }
+  });
+
+  it('Should not throw when onEventAppeared is omitted', async function () {
+    this.timeout(15 * 1000);
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
+    const testStream = `TestStream-${generateEventId()}`;
+    const drops = [];
+
+    try {
+      const subscription = await client.subscribeToStream(testStream, undefined, (_sub, err) => drops.push(err));
+      await sleep(100);
+      await client.writeEvent(testStream, 'TestEventType', { id: 1 });
+      await sleep(300);
+
+      assert.equal(drops.length, 0);
+      await subscription.close();
+    } finally {
+      await client.closeAllConnections();
+    }
+  });
 });
