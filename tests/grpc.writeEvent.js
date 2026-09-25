@@ -31,6 +31,39 @@ describe('gRPC Client - Write Event', () => {
     await client.close();
     assert.fail('write should not have succeeded');
   });
+
+  it('Should treat expectedVersion -1 as no stream', async () => {
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
+    const testStream = `TestStream-${generateEventId()}`;
+
+    try {
+      await client.writeEvent(testStream, 'TestEventType', { something: '123' }, null, { expectedVersion: -1 });
+      await assert.rejects(
+        client.writeEvent(testStream, 'TestEventType', { something: '456' }, null, { expectedVersion: -1 }),
+        { type: 'wrong-expected-version' }
+      );
+    } finally {
+      await client.close();
+    }
+  });
+
+  it('Should treat expectedVersion -4 as stream exists', async () => {
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
+    const testStream = `TestStream-${generateEventId()}`;
+
+    try {
+      await assert.rejects(
+        client.writeEvent(testStream, 'TestEventType', { something: '123' }, null, { expectedVersion: -4 }),
+        { type: 'wrong-expected-version' }
+      );
+      await client.writeEvent(testStream, 'TestEventType', { something: '123' });
+      await client.writeEvent(testStream, 'TestEventType', { something: '456' }, null, { expectedVersion: -4 });
+      const events = await client.getEvents(testStream);
+      assert.equal(events.length, 2);
+    } finally {
+      await client.close();
+    }
+  });
 });
 
 describe('gRPC Client - Write Event to pre-populated stream', () => {
