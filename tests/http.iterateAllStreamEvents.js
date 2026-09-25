@@ -44,6 +44,25 @@ describe('Http Client - Iterate All Stream Events', () => {
     assert.equal(allEvents[499].data.id, 999);
   }).timeout(5000);
 
+  it('Should page from a start position passed as a string', async () => {
+    const client = new KurrentDB.HTTPClient(getHttpConfig());
+
+    const testStream = `TestStream-${generateEventId()}`;
+    await client.writeEvents(testStream, buildEvents(25));
+
+    // A chunk size of 10 forces paging, which used to concatenate '10' + 10 into '1010'.
+    const evs = await collect(client.iterateAllStreamEvents(testStream, 10, '10'));
+    assert.deepEqual(
+      evs.map((ev) => ev.data.id),
+      [...Array(15).keys()].map((k) => k + 10)
+    );
+  });
+
+  it('Should reject a start position that is not a revision', async () => {
+    const client = new KurrentDB.HTTPClient(getHttpConfig());
+    await assert.rejects(collect(client.iterateAllStreamEvents('AnyStream', 10, 'WRONG')), /Start position not valid/);
+  });
+
   it('Should page across multiple chunks and preserve order', async () => {
     const client = new KurrentDB.HTTPClient(getHttpConfig());
 
