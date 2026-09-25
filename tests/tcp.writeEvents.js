@@ -128,4 +128,12 @@ describe('TCP Client - Write Events to pre-populated stream', () => {
       assert.fail('Write should not have failed');
     }
   });
+
+  it('Should surface the wrong expected version error rather than a rollback error', async () => {
+    await assert.rejects(client.writeEvents(testStream, events2, { expectedVersion: 0 }), (err) => {
+      assert.notEqual(err.message, 'Transaction is already committed');
+      assert.equal(err.name, 'WrongExpectedVersionError');
+      return true;
+    });
+  });
 });
