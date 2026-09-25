@@ -1,8 +1,10 @@
 import assert from 'assert';
+import https from 'https';
 import getTcpConfigCustomConnectionName from './support/getTcpConfigCustomConnectionName.js';
 import generateEventId from '../lib/utilities/generateEventId.js';
 import getTcpConfig from './support/getTcpConfig.js';
 import KurrentDB from '../lib/index.js';
+import waitUntil from './utilities/waitUntil.js';
 
 const eventFactory = new KurrentDB.EventFactory();
 
@@ -170,6 +172,49 @@ describe('TCP Client - Test Connection', () => {
       throw new Error('Connection Pool should not exist');
     } catch (err) {
       assert.equal(err.message, 'Connection Pool not found');
+    }
+  });
+
+  it('Should close subscription pools as well as the operations pool', async function () {
+    this.timeout(30 * 1000);
+    const client = new KurrentDB.TCPClient(getTcpConfig());
+    const testStream = `TestStream-${generateEventId()}`;
+    const drops = [];
+
+    try {
+      await client.writeEvent(testStream, 'TestEventType', { something: '123' });
+      await client.subscribeToStream(
+        testStream,
+        () => {},
+        (_sub, reason) => drops.push(reason)
+      );
+      await client.subscribeToStream(
+        testStream,
+        () => {},
+        (_sub, reason) => drops.push(reason)
+      );
+
+      await client.close();
+      await waitUntil(() => drops.length === 2);
+      await assert.rejects(client.getPool(), /Connection Pool not found/);
+    } finally {
+      await client.closeAllPools();
+    }
+  });
+
+  it('Should leave the process wide HTTPS agent untouched while connections open in parallel', async function () {
+    this.timeout(30 * 1000);
+    const before = https.globalAgent.options.rejectUnauthorized;
+    const client = new KurrentDB.TCPClient(getTcpConfig());
+    const testStream = `TestStream-${generateEventId()}`;
+
+    try {
+      await Promise.all(
+        [1, 2, 3, 4, 5].map((k) => client.writeEvent(testStream, 'TestEventType', { something: String(k) }))
+      );
+      assert.strictEqual(https.globalAgent.options.rejectUnauthorized, before);
+    } finally {
+      await client.close();
     }
   });
 });
