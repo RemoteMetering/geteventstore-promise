@@ -63,4 +63,41 @@ describe('gRPC Client - Deleted Events', () => {
 
     await client.close();
   }).timeout(10000);
+
+  it('Should ack deleted events a persistent subscription filters out, so none are parked', async function () {
+    this.timeout(20000);
+    const client = new KurrentDB.GRPCClient({ ...getGRPCConfig(), includeDeleted: false });
+    const groupName = `FilteredAckGroup-${generateEventId()}`;
+    const parkedStream = `$persistentsubscription-${byTypeStream}::${groupName}-parked`;
+    let delivered = 0;
+
+    try {
+      // No retries and a short timeout, so an unacked marker would be parked within the test.
+      await client.createPersistentSubscriptionToStream(byTypeStream, groupName, {
+        resolveLinkTos: true,
+        messageTimeout: 1000,
+        maxRetryCount: 0
+      });
+      const subscription = await client.subscribeToPersistentSubscriptionToStream(
+        byTypeStream,
+        groupName,
+        (sub, ev) => {
+          delivered += 1;
+          return sub.ack(ev);
+        },
+        () => {}
+      );
+      await new Promise((resolve) => setTimeout(resolve, 4000));
+
+      assert.equal(delivered, 0, 'only deleted markers exist, and they are filtered out');
+      // The parked stream links to the deleted events, so read it with a client that keeps them.
+      const reader = new KurrentDB.GRPCClient(getGRPCConfig());
+      const parked = await reader.getAllStreamEvents(parkedStream);
+      assert.equal(parked.length, 0, 'filtered markers must be acked, not parked');
+      await subscription.close();
+    } finally {
+      await client.persistentSubscriptions.remove(groupName, byTypeStream).catch(() => {});
+      await client.closeAllConnections();
+    }
+  });
 });
