@@ -1,0 +1,146 @@
+services:
+  volumes-provisioner:
+    image: hasnat/volumes-provisioner
+    environment:
+      PROVISION_DIRECTORIES: '1000:1000:0755:/tmp/certs'
+    volumes:
+      - certs:/tmp/certs
+    network_mode: none
+
+  metronomic_kurrentdb_client_test_setup:
+    image: eventstore/es-gencert-cli:1.0.2
+    entrypoint: bash
+    user: '0:0'
+    command: >
+      -c "mkdir -p ./certs && cd /certs
+      && es-gencert-cli create-ca
+      && es-gencert-cli create-node -out ./node1 -ip-addresses 127.0.0.1,172.30.240.11 -dns-names localhost
+      && es-gencert-cli create-node -out ./node2 -ip-addresses 127.0.0.1,172.30.240.12 -dns-names localhost
+      && es-gencert-cli create-node -out ./node3 -ip-addresses 127.0.0.1,172.30.240.13 -dns-names localhost
+      && find . -type f -print0 | xargs -0 chmod 666"
+    container_name: metronomic_kurrentdb_client_test_setup
+    volumes:
+      - certs:/certs
+    depends_on:
+      - volumes-provisioner
+
+  metronomic_kurrentdb_client_test_setup_certs_cluster:
+    image: eventstore/es-gencert-cli:1.0.2
+    entrypoint: bash
+    # Runs as root so gencert can write into the ./certs bind mount, which the
+    # Docker daemon recreates as root owned after cleanCerts removes it. The
+    # chmod 666 below keeps the generated files readable by the DB and tests.
+    user: '0:0'
+    command: >
+      -c "mkdir -p ./certs && cd /certs
+      && es-gencert-cli create-ca
+      && es-gencert-cli create-node -out ./node1 -ip-addresses 127.0.0.1,172.30.240.11 -dns-names localhost
+      && es-gencert-cli create-node -out ./node2 -ip-addresses 127.0.0.1,172.30.240.12 -dns-names localhost
+      && es-gencert-cli create-node -out ./node3 -ip-addresses 127.0.0.1,172.30.240.13 -dns-names localhost
+      && find . -type f -print0 | xargs -0 chmod 666"
+    container_name: metronomic_kurrentdb_client_test_setup_certs_cluster
+    volumes:
+      - ./certs:/certs
+    networks:
+      clusternetwork:
+        ipv4_address: 172.30.240.10
+
+  metronomic_kurrentdb_client_test_cluster_node1: &template
+    image: kurrentplatform/kurrentdb:26.1
+    container_name: metronomic_kurrentdb_client_test_cluster_node1
+    command: --node-priority=1
+    env_file:
+      - vars.env
+    environment:
+      - KURRENTDB_REPLICATION_IP=172.30.240.11
+      - KURRENTDB_ADVERTISE_NODE_PORT_TO_CLIENT_AS=22137
+      - KURRENTDB_GOSSIP_SEED=172.30.240.12:2113,172.30.240.13:2113
+      - KURRENTDB_TRUSTED_ROOT_CERTIFICATES_PATH=/certs/ca
+      - KURRENTDB_CERTIFICATE_FILE=/certs/node1/node.crt
+      - KURRENTDB_CERTIFICATE_PRIVATE_KEY_FILE=/certs/node1/node.key
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'curl --fail --insecure http://metronomic_kurrentdb_client_test_cluster_node1:2113/health/live || exit 1'
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+    ports:
+      - '11136:1113'
+      - '22137:2113'
+    volumes:
+      - ./certs:/certs
+    depends_on:
+      - volumes-provisioner
+    restart: always
+    networks:
+      clusternetwork:
+        ipv4_address: 172.30.240.11
+
+  metronomic_kurrentdb_client_test_cluster_node2:
+    <<: *template
+    container_name: metronomic_kurrentdb_client_test_cluster_node2
+    command: --node-priority=2
+    environment:
+      - KURRENTDB_REPLICATION_IP=172.30.240.12
+      - KURRENTDB_ADVERTISE_NODE_PORT_TO_CLIENT_AS=22157
+      - KURRENTDB_GOSSIP_SEED=172.30.240.11:2113,172.30.240.13:2113
+      - KURRENTDB_TRUSTED_ROOT_CERTIFICATES_PATH=/certs/ca
+      - KURRENTDB_CERTIFICATE_FILE=/certs/node2/node.crt
+      - KURRENTDB_CERTIFICATE_PRIVATE_KEY_FILE=/certs/node2/node.key
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'curl --fail --insecure http://metronomic_kurrentdb_client_test_cluster_node2:2113/health/live || exit 1'
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+    ports:
+      - '11156:1113'
+      - '22157:2113'
+    networks:
+      clusternetwork:
+        ipv4_address: 172.30.240.12
+
+  metronomic_kurrentdb_client_test_cluster_node3:
+    <<: *template
+    container_name: metronomic_kurrentdb_client_test_cluster_node3
+    command: --node-priority=3
+    environment:
+      - KURRENTDB_REPLICATION_IP=172.30.240.13
+      - KURRENTDB_ADVERTISE_NODE_PORT_TO_CLIENT_AS=22177
+      - KURRENTDB_GOSSIP_SEED=172.30.240.11:2113,172.30.240.12:2113
+      - KURRENTDB_TRUSTED_ROOT_CERTIFICATES_PATH=/certs/ca
+      - KURRENTDB_CERTIFICATE_FILE=/certs/node3/node.crt
+      - KURRENTDB_CERTIFICATE_PRIVATE_KEY_FILE=/certs/node3/node.key
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'curl --fail --insecure http://metronomic_kurrentdb_client_test_cluster_node3:2113/health/live || exit 1'
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+    ports:
+      - '11176:1113'
+      - '22177:2113'
+    networks:
+      clusternetwork:
+        ipv4_address: 172.30.240.13
+
+networks:
+  clusternetwork:
+    name: metronomic_kurrentdb_client_test_cluster_kurrentdb.local
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.30.240.0/24
+
+volumes:
+  certs:
