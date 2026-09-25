@@ -158,6 +158,24 @@ describe('Http Client - Read Events', () => {
     assert.equal(result.events[0].data, undefined);
   });
 
+  it('Should not report the end of the stream on a backward read from the head', async () => {
+    const client = new KurrentDB.HTTPClient(getHttpConfig());
+
+    const result = await client.readEventsBackward(testStream, undefined, 4);
+    assert.equal(result.events.length, 4);
+    assert.equal(result.isEndOfStream, false, 'six older events remain');
+    assert.equal(result.nextEventNumber, 5);
+  });
+
+  it('Should report the end of the stream once a backward read reaches event 0', async () => {
+    const client = new KurrentDB.HTTPClient(getHttpConfig());
+
+    const result = await client.readEventsBackward(testStream, 3, 4);
+    assert.equal(result.events.length, 4);
+    assert.equal(result.isEndOfStream, true);
+    assert.equal(result.nextEventNumber, 0);
+  });
+
   it('Should read events and set additional meta properties', async () => {
     const client = new KurrentDB.HTTPClient(getHttpConfig());
 
