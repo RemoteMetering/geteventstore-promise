@@ -105,6 +105,37 @@ describe('Http Client - Read Events', () => {
     assert.equal('$ce-TestStream', result.events[0].positionStreamId);
   });
 
+  it('Should take nextEventNumber from the link position on a linked to stream', async function () {
+    this.timeout(15 * 1000);
+    const client = new KurrentDB.HTTPClient(getHttpConfig());
+    const category = `HttpPaging${generateEventId().replace(/-/g, '')}`;
+    const categoryStream = `$ce-${category}`;
+
+    // One event per source stream, so every resolved eventNumber is 0 while the links run 0, 1, 2.
+    for (let k = 1; k <= 3; k++) {
+      await client.writeEvent(`${category}-${k}`, 'TestEventType', { something: k });
+    }
+    await waitUntil(async () => {
+      try {
+        return (await client.readEventsForward(categoryStream, 0, 10)).events.length === 3;
+      } catch (err) {
+        if (err.response?.status === 404) return false;
+        throw err;
+      }
+    });
+
+    const result = await client.readEventsForward(categoryStream, 0, 2);
+    assert.equal(result.events.length, 2);
+    assert.equal(result.events[1].eventNumber, 0, 'the resolved event is the first in its own stream');
+    assert.equal(result.nextEventNumber, 2, 'the cursor sits one past the last link read');
+
+    const next = await client.readEventsForward(categoryStream, result.nextEventNumber, 2);
+    assert.deepEqual(
+      next.events.map((ev) => ev.data.something),
+      [3]
+    );
+  });
+
   it('Should read system and deleted events without resolveLinkTos', async () => {
     const client = new KurrentDB.HTTPClient(getHttpConfig());
 

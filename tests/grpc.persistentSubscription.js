@@ -144,6 +144,8 @@ describe('gRPC Client - Persistent Subscription', () => {
       );
       await subscription.close();
     } finally {
+      // Remove the group so tests that count every subscription on the server stay order independent.
+      await client.persistentSubscriptions.remove(groupName, categoryStream).catch(() => {});
       await client.closeAllConnections();
     }
   });
@@ -178,6 +180,8 @@ describe('gRPC Client - Persistent Subscription', () => {
       assert.equal(processedEventCount, 1, 'only the event written after creation should arrive');
       await subscription.close();
     } finally {
+      // Remove the group so tests that count every subscription on the server stay order independent.
+      await client.persistentSubscriptions.remove(groupName, testStream).catch(() => {});
       await client.closeAllConnections();
     }
   });
@@ -208,6 +212,8 @@ describe('gRPC Client - Persistent Subscription', () => {
       assert.equal(drops.length, 1, 'onDropped must fire once');
       assert.equal(drops[0].message, 'server dropped');
     } finally {
+      // Remove the group so tests that count every subscription on the server stay order independent.
+      await client.persistentSubscriptions.remove(groupName, testStream).catch(() => {});
       await client.closeAllConnections();
     }
   });
