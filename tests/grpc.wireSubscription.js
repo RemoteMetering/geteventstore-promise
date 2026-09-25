@@ -67,4 +67,29 @@ describe('gRPC Client - wireHandlers', () => {
     subscription.emit('data', deletedMarker);
     assert.deepEqual(filtered, []);
   });
+
+  it('Should deliver no further events after a handler throws', () => {
+    const subscription = fakeSubscription();
+    let pauses = 0;
+    subscription.pause = () => {
+      pauses += 1;
+    };
+    const seen = [];
+    const drops = [];
+    wireHandlers(
+      subscription,
+      (_sub, ev) => {
+        seen.push(ev.eventId);
+        throw new Error('handler failed');
+      },
+      (_sub, err) => drops.push(err)
+    );
+
+    // Events already buffered keep arriving until unsubscribe takes effect.
+    for (let k = 0; k < 3; k++) subscription.emit('data', liveEvent);
+    assert.deepEqual(seen, ['id-1'], 'only the failing event reaches the handler');
+    assert.equal(drops.length, 1);
+    assert.equal(pauses, 1, 'the stream is paused on failure');
+    assert.equal(subscription.unsubscribeCalls, 1);
+  });
 });

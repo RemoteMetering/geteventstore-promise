@@ -1,4 +1,5 @@
 import assert from 'assert';
+import { KurrentDBClient } from '@kurrent/kurrentdb-client';
 import generateEventId from '../lib/utilities/generateEventId.js';
 import getGRPCConfig from './support/getGRPCConfig.js';
 import sleep from './utilities/sleep.js';
@@ -267,6 +268,38 @@ describe('gRPC Client - Subscribe To Stream From', () => {
         /fromEventNumber' not valid/
       );
     } finally {
+      await client.closeAllConnections();
+    }
+  });
+
+  it("Should skip the head read when starting at 'end'", async function () {
+    this.timeout(15 * 1000);
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
+    const testStream = `TestStream-${generateEventId()}`;
+    const originalReadStream = KurrentDBClient.prototype.readStream;
+    let reads = 0;
+    let live = false;
+
+    try {
+      await client.writeEvent(testStream, 'TestEventType', { id: 1 });
+      KurrentDBClient.prototype.readStream = function countedReadStream(streamName, ...rest) {
+        if (streamName === testStream) reads += 1;
+        return originalReadStream.call(this, streamName, ...rest);
+      };
+
+      const sub = await client.subscribeToStreamFrom(
+        testStream,
+        'end',
+        () => {},
+        () => {
+          live = true;
+        }
+      );
+      await waitUntil(() => live);
+      assert.equal(reads, 0, 'nothing to catch up on, so no head read');
+      await sub.close();
+    } finally {
+      KurrentDBClient.prototype.readStream = originalReadStream;
       await client.closeAllConnections();
     }
   });

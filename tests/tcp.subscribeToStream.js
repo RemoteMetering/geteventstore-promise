@@ -223,4 +223,35 @@ describe('TCP Client - Subscribe To Stream', () => {
       await client.closeAllPools();
     }
   });
+
+  it('Should deliver no queued events after a handler fails', async function () {
+    this.timeout(15 * 1000);
+    const client = new KurrentDB.TCPClient(getTcpConfig());
+    const testStream = `TestStream-${generateEventId()}`;
+    const drops = [];
+    let calls = 0;
+
+    try {
+      await client.subscribeToStream(
+        testStream,
+        async () => {
+          calls += 1;
+          await sleep(50);
+          throw new Error('handler failed');
+        },
+        (_sub, reason) => drops.push(reason)
+      );
+      await sleep(1000);
+      // Written together, so the rest are already queued when the first handler fails.
+      const events = [];
+      for (let k = 0; k < 5; k++) events.push(eventFactory.newEvent('TestEventType', { id: k }));
+      await client.writeEvents(testStream, events);
+      await waitUntil(() => drops.length === 1);
+      await sleep(500);
+
+      assert.equal(calls, 1, 'only the first event reaches the handler');
+    } finally {
+      await client.closeAllPools();
+    }
+  });
 });
