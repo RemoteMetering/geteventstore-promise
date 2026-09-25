@@ -171,6 +171,70 @@ describe('gRPC Client - Get Events', () => {
     await client.close();
   });
 
+  it('Should treat a null start position as the start of the stream', async () => {
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
+
+    const result = await client.readEventsForward(testStream, null, 100);
+    assert.equal(result.events.length, 10);
+    assert.equal(result.events[0].data.something, 1);
+
+    await client.close();
+  });
+
+  it('Should treat -1 as the end of the stream on a backward read', async () => {
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
+
+    const result = await client.readEventsBackward(testStream, -1, 2);
+    assert.deepEqual(
+      result.events.map((ev) => ev.data.something),
+      [10, 9]
+    );
+
+    await client.close();
+  });
+
+  it("Should keep 'end' as the end of the stream on a backward read", async () => {
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
+
+    const result = await client.readEventsBackward(testStream, 'end', 10);
+    assert.equal(result.events.length, 10);
+    assert.equal(result.events[0].data.something, 10);
+
+    await client.close();
+  });
+
+  it('Should end a full backward batch that reaches the first event', async () => {
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
+
+    const result = await client.readEventsBackward(testStream, 9, 10);
+    assert.equal(result.events.length, 10);
+    assert.equal(result.isEndOfStream, true);
+    assert.equal(result.nextEventNumber, 0);
+
+    await client.close();
+  });
+
+  it('Should map positionCausedBy and positionCorrelationId from the link metadata', async function () {
+    this.timeout(15 * 1000);
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
+    const category = `CausedBy${generateEventId().replace(/-/g, '')}`;
+    const categoryStream = `$ce-${category}`;
+    const source = eventFactory.newEvent('TestEventType', { something: 1 }, { $correlationId: 'corr-1' });
+
+    try {
+      await client.writeEvents(`${category}-1`, [source]);
+      // The $by_category projection writes the link asynchronously.
+      await waitUntil(async () => (await client.readEventsForward(categoryStream, 0, 1)).events.length === 1);
+
+      const [linked] = (await client.readEventsForward(categoryStream, 0, 1)).events;
+      assert.equal(linked.positionStreamId, categoryStream);
+      assert.equal(linked.positionCausedBy, source.eventId);
+      assert.equal(linked.positionCorrelationId, 'corr-1');
+    } finally {
+      await client.close();
+    }
+  });
+
   // The TCP client reports a never written stream as an empty read, and callers depend on that to
   // bring a brand new aggregate up to date, so gRPC must not surface StreamNotFoundError here.
   it('Should read a stream that does not exist as empty rather than throwing', async () => {
