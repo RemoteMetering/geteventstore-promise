@@ -148,6 +148,40 @@ describe('gRPC Client - Persistent Subscription', () => {
     }
   });
 
+  it('Should honour startFrom end without mutating the caller settings', async function () {
+    this.timeout(15 * 1000);
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
+    const groupName = `StartFromEndGroup-${generateEventId()}`;
+    const testStream = `TestStream-${generateEventId()}`;
+    const settings = { startFrom: 'end' };
+    let processedEventCount = 0;
+
+    try {
+      await client.writeEvents(testStream, [eventFactory.newEvent('TestEventType', { id: 'history' })]);
+      await client.createPersistentSubscriptionToStream(testStream, groupName, settings);
+      assert.deepStrictEqual(settings, { startFrom: 'end' }, 'caller settings must not be mutated');
+
+      const subscription = await client.subscribeToPersistentSubscriptionToStream(
+        testStream,
+        groupName,
+        (sub, ev) => {
+          processedEventCount += 1;
+          return sub.ack(ev);
+        },
+        () => {}
+      );
+      await sleep(100);
+      await client.writeEvents(testStream, [eventFactory.newEvent('TestEventType', { id: 'live' })]);
+      await waitUntil(() => processedEventCount >= 1);
+      await sleep(500);
+
+      assert.equal(processedEventCount, 1, 'only the event written after creation should arrive');
+      await subscription.close();
+    } finally {
+      await client.closeAllConnections();
+    }
+  });
+
   it('Subscription should fail when subscription does not exist yet', async function () {
     this.timeout(15 * 1000);
     const client = new KurrentDB.GRPCClient(getGRPCConfig());
