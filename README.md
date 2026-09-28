@@ -38,13 +38,37 @@ Available on all three clients.
 - iterateAllStreamEvents(streamName, chunkSize, startPosition, resolveLinkTos)
 - iterateEventsByType(streamName, eventTypes, startPosition, count, direction, resolveLinkTos)
 
+# Positions and expected versions
+
+The clients accept the same values, so a value means the same thing on every transport.
+
+- **Start positions:** leaving the position out reads from the start, or from the end on a backward read. `-1` means the end, as on TCP. A revision may be a Number, a BigInt or a decimal string, such as a gRPC result serialises to. An invalid position throws rather than reading from the start.
+- **`$all` positions:** gRPC only. These are `'start'`, `'end'` or a `{ commit, prepare }` pair of Numbers, BigInts or decimal strings.
+- **`expectedVersion`:** a revision as above, `-2` or `'any'` to skip the check, `-1` or `'no_stream'` for a missing stream, and `-4` or `'stream_exists'` for an existing one. Leaving it out means Any. An invalid value throws `Invalid expectedVersion`, because falling back to Any would silently drop the concurrency check.
+- **`eventTypes`:** `getEventsByType` and `iterateEventsByType` take one event type as a string, or several as an array.
+
+# Stream metadata
+
+`setStreamMetadata` takes the friendly shape: `maxAge`, `maxCount`, `truncateBefore`, `cacheControl`, `acl` and any custom properties. Every client validates it the same way. The four system values must be integers. `acl` must be a string such as `'$userStreamAcl'`, or an object of `readRoles`, `writeRoles`, `deleteRoles`, `metaReadRoles` and `metaWriteRoles`. Unknown ACL keys are dropped with a warning.
+
+# Subscriptions
+
+Subscriptions behave the same way on the gRPC and TCP clients.
+
+- **Handlers:** `onEventAppeared` runs for one event at a time, in order. If it returns a promise, the next event waits for it.
+- **Failures:** a handler that throws or rejects drops the subscription. `onDropped` is called once, and no further events reach the handler.
+- **Live processing:** `onLiveProcessingStarted` fires once the handler has worked through the catch-up events.
+- **Cleanup:** a dropped TCP subscription releases its own connection, and its `close()` is safe to call more than once. gRPC subscriptions share the client's connection, so there is nothing to release.
+
+On gRPC, a subscription resolves once the server confirms it, so an event written straight after the `await` is delivered. A subscription the server refuses rejects rather than resolving, and `onDropped` only reports drops of subscriptions that started.
+
 # Deleted events
 
 When you read a stream or `$all` with `resolveLinkTos` enabled, some records are resolved-link events whose target has been deleted, tombstoned or scavenged. These are deleted events.
 
 By default all clients now return deleted events instead of dropping them. A deleted event carries `isResolved: false`, with `data` and `metadata` set to `null`, and its stream and position fields taken from the link record. Returning them keeps batch reads at their true size, so paging stays correct. Previously the TCP client silently dropped them, which made a full batch of deleted events look like the end of the stream.
 
-Set `includeDeleted: false` in the client config to skip deleted events and return only live ones. This applies to the gRPC and TCP clients. The HTTP client always returns them.
+Set `includeDeleted: false` in the client config to skip deleted events and return only live ones. This applies to the gRPC and TCP clients. The HTTP client always returns them. On a gRPC persistent subscription, the skipped deleted events are acked automatically, so they are never retried or parked.
 
 ```javascript
 const event = events.find((e) => e.isResolved === false);
@@ -95,7 +119,7 @@ Available on the gRPC and HTTP clients. `config` is HTTP only, and `getInfo`'s `
 - disableAll()
 - getAllProjectionsInfo()
 
-Two `assert` arguments are accepted but ignored, and they differ by client. `enabled` is honoured on gRPC only, so an HTTP `assert` always leaves the projection running. `checkpointsEnabled` is ignored on both, because HTTP forces it on for continuous projections and gRPC supports continuous projections only.
+`assert` treats `enabled` the same way on both clients. A new projection is created running unless `enabled` is `false`. An existing projection only starts or stops when you pass `enabled`, so an `assert` without it leaves a stopped projection stopped. `checkpointsEnabled` is accepted but ignored on both, because HTTP forces it on for continuous projections and gRPC supports continuous projections only.
 
 `enableAll` and `disableAll` also differ. The HTTP client lists all non-transient projections, so one-time projections are included. The gRPC client lists continuous projections only, so one-time projections are skipped.
 
@@ -161,6 +185,12 @@ Methods available on the gRPC client beyond the common set above. The `readAll*`
 
 The client multiplexes all calls and subscriptions over a single shared connection per config, so there is no connection pool. `close` disposes the client's connection and `closeAllConnections` disposes every connection the process has opened.
 
+`readAll*` and `iterateAll*` default `resolveLinkTos` to `false`. `$all` already holds every event, so resolving links would return each event again, once per `$ce-`, `$et-` or `$streams` link. Pass `true` only when you want the link records resolved.
+
+Revisions and positions stay BigInt on gRPC results, which still serialise with `JSON.stringify` as decimal strings. An event's `commitPosition` is non-enumerable, so a spread copy of the event leaves it out. Read it from the event itself, or use `position.commit`.
+
+Persistent subscription `ack` and `nack` take the events `onEventAppeared` receives, and accept several at once.
+
 - getStreamMetadata(streamName)
 - multiStreamWrite(writes)
 - multiStreamWriteCrossStreamConsistency(writes, checks)
@@ -210,6 +240,8 @@ await client.readAllEventsForward('start', 1000, false, excludeSystemEvents());
 ```
 
 `subscribeToAll` is a catch-up subscription over `$all`. `fromPosition` is `'start'`, `'end'`, or a `{ commit, prepare }` position. `onLiveProcessingStarted` fires when the subscription catches up and switches to live events.
+
+Servers older than 22, the 21.10 image among them, never send the caught-up notification. On those servers the client reads the `$all` head when you subscribe and reports live processing once it reaches it. A filtered subscription may never deliver that head event, so it relies on the server's checkpoints instead. Those usually arrive near the head, but a short catch-up can finish before the server sends one.
 
 ---
 
@@ -352,6 +384,8 @@ const discoverClient = new KurrentDB.TCPClient({
 - close()
 - getPool()
 - closeAllPools()
+
+Each subscription holds its own pooled connection. `close()` closes the client's operations pool and all of its subscription pools, so open subscriptions drop and the process can exit.
 
 ## License
 
