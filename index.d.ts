@@ -20,8 +20,8 @@ import {
   GetStreamMetadataResult,
   StreamMetadata,
   SetStreamMetadataOptions,
-  ReadPosition,
   Position,
+  PersistentAction,
   KurrentDBClient
 } from '@kurrent/kurrentdb-client';
 
@@ -40,6 +40,21 @@ export interface NewEvent {
  * back into any method taking a revision or position, which call BigInt() on their input.
  */
 export type JsonSafe<T> = T & { toJSON?(): Record<string, unknown> };
+
+// A revision as the clients accept it: a Number, a BigInt or the decimal string a JsonSafe result
+// serialises it to.
+export type Revision = number | bigint | string;
+
+// A stream start position for the gRPC reads. -1 means the end, as on TCP.
+export type StreamPosition = Revision | 'start' | 'end';
+
+// A $all position. commit and prepare may be Numbers, BigInts or decimal strings.
+export type AllPositionInput = 'start' | 'end' | { commit: Revision; prepare: Revision };
+
+// The expected version check every client accepts. -2 or 'any' skips the check, -1 or 'no_stream'
+// requires a missing stream and -4 or 'stream_exists' an existing one. Anything else is a revision,
+// and an invalid value throws rather than falling back to 'any'.
+export type ExpectedVersion = Revision | 'any' | 'no_stream' | 'stream_exists';
 
 export interface Event {
   streamId: string;
@@ -127,22 +142,22 @@ export interface GRPCConfig {
 }
 
 export interface HTTPWriteEventOptions {
-  expectedVersion?: number;
+  expectedVersion?: ExpectedVersion;
 }
 
 export interface TCPWriteEventOptions {
-  expectedVersion?: number;
+  expectedVersion?: ExpectedVersion;
 }
 
 export interface StreamMetadataOptions {
-  expectedVersion?: number;
+  expectedVersion?: ExpectedVersion;
 }
 
 // writeEvents commits the whole array atomically, even when the client splits it into
 // batchAppendSizeInBytes chunks on the wire. Very large appends can exceed the server's write
 // timeout, which surfaces as a deadline-exceeded error.
 export interface GRPCWriteEventOptions {
-  expectedVersion?: number;
+  expectedVersion?: ExpectedVersion;
   batchAppendSizeInBytes?: number;
 }
 
@@ -151,7 +166,7 @@ export interface GRPCMultiStreamWrite {
   // Event metadata must be a plain object of string keys to string values.
   // Non string values cause the underlying multiStreamAppend to reject the transaction.
   events: NewEvent[];
-  expectedVersion?: number | 'any' | 'no_stream' | 'stream_exists';
+  expectedVersion?: ExpectedVersion;
 }
 
 export interface GRPCMultiStreamWriteRecord {
@@ -165,7 +180,7 @@ export interface GRPCConsistencyCheck {
   streamName: string;
   // A revision number, or one of "any", "no_stream", "stream_exists".
   // null, undefined and -2 are all treated as "any", -1 as "no_stream" and -4 as "stream_exists".
-  expectedVersion?: number | 'any' | 'no_stream' | 'stream_exists';
+  expectedVersion?: ExpectedVersion;
 }
 
 export interface TCPWriteEventsOptions extends TCPWriteEventOptions {
@@ -201,7 +216,8 @@ export interface GRPCStreamReadResult {
   events: Event[];
   isEndOfStream: boolean;
   readDirection: ReadDirection;
-  fromEventNumber: number | string;
+  // The normalised start: 'start', 'end', a Number, or a BigInt above 2^53.
+  fromEventNumber: number | bigint | 'start' | 'end';
   nextEventNumber: number;
 }
 
@@ -252,8 +268,8 @@ export interface HTTPPersistentSubscriptionOptions {
 
 export interface GRPCPersistentSubscriptionOptions {
   resolveLinkTos?: boolean;
-  startFrom?: number | bigint | 'start' | 'end';
-  startPosition?: number | bigint | 'start' | 'end';
+  startFrom?: StreamPosition;
+  startPosition?: StreamPosition;
   extraStatistics?: boolean;
   messageTimeout?: number;
   maxRetryCount?: number;
@@ -278,8 +294,8 @@ export type AllPosition = 'start' | 'end' | { commit: bigint; prepare: bigint };
 // gRPC only, and already uses the SDK's setting names.
 export interface PersistentSubscriptionToAllOptions {
   resolveLinkTos?: boolean;
-  startFrom?: AllPosition;
-  startPosition?: AllPosition;
+  startFrom?: AllPositionInput;
+  startPosition?: AllPositionInput;
   extraStatistics?: boolean;
   messageTimeout?: number;
   maxRetryCount?: number;
@@ -370,6 +386,18 @@ export interface GRPCLiveProcessingStartedCallback<TSubscription> {
 export interface GRPCSubscriptionDroppedCallback<TSubscription> {
   (subscription: TSubscription, error?: Error): void | Promise<void>;
 }
+
+// Every gRPC subscription also exposes close() as an alias for unsubscribe().
+export type GRPCSubscription<TSubscription> = TSubscription & { close(): Promise<void> };
+
+// The gRPC persistent subscriptions as this client returns them. ack and nack take the mapped events
+// onEventAppeared receives, not the SDK's ResolvedEvent, and accept several at once.
+export type GRPCPersistentSubscription<TSubscription> = GRPCSubscription<
+  Omit<TSubscription, 'ack' | 'nack'> & {
+    ack(...events: Event[]): Promise<void>;
+    nack(action: PersistentAction, reason: string, ...events: Event[]): Promise<void>;
+  }
+>;
 
 export interface EventEnumeratorResult {
   isEndOfStream: boolean;
@@ -656,12 +684,12 @@ export class GRPCClient {
   getAllStreamEvents(
     streamName: string,
     chunkSize?: number,
-    startPosition?: number,
+    startPosition?: StreamPosition,
     resolveLinkTos?: boolean
   ): Promise<Event[]>;
   getEvents(
     streamName: string,
-    startPosition?: number,
+    startPosition?: StreamPosition,
     count?: number,
     direction?: ReadDirection,
     resolveLinkTos?: boolean
@@ -669,38 +697,39 @@ export class GRPCClient {
   getEventsByType(
     streamName: string,
     eventTypes: string | string[],
-    startPosition?: number,
+    startPosition?: StreamPosition,
     count?: number,
     direction?: ReadDirection,
     resolveLinkTos?: boolean
   ): Promise<Event[]>;
   readEventsForward(
     streamName: string,
-    startPosition?: number,
+    startPosition?: StreamPosition,
     count?: number,
     resolveLinkTos?: boolean
   ): Promise<GRPCStreamReadResult>;
   readEventsBackward(
     streamName: string,
-    startPosition?: number,
+    startPosition?: StreamPosition,
     count?: number,
     resolveLinkTos?: boolean
   ): Promise<GRPCStreamReadResult>;
+  // resolveLinkTos defaults to false for $all, so each event appears once rather than again per link.
   readAllEvents(
-    startPosition?: ReadPosition,
+    startPosition?: AllPositionInput,
     count?: number,
     direction?: ReadDirection,
     resolveLinkTos?: boolean,
     filter?: Filter
   ): Promise<Event[]>;
   readAllEventsForward(
-    startPosition?: ReadPosition,
+    startPosition?: AllPositionInput,
     count?: number,
     resolveLinkTos?: boolean,
     filter?: Filter
   ): Promise<GRPCReadResult>;
   readAllEventsBackward(
-    startPosition?: ReadPosition,
+    startPosition?: AllPositionInput,
     count?: number,
     resolveLinkTos?: boolean,
     filter?: Filter
@@ -708,51 +737,51 @@ export class GRPCClient {
   iterateAllStreamEvents(
     streamName: string,
     chunkSize?: number,
-    startPosition?: number,
+    startPosition?: StreamPosition,
     resolveLinkTos?: boolean
   ): AsyncIterableIterator<Event>;
   iterateEvents(
     streamName: string,
-    startPosition?: number,
+    startPosition?: StreamPosition,
     count?: number,
     direction?: ReadDirection,
     resolveLinkTos?: boolean
   ): AsyncIterableIterator<Event>;
   iterateEventsForward(
     streamName: string,
-    startPosition?: number,
+    startPosition?: StreamPosition,
     count?: number,
     resolveLinkTos?: boolean
   ): AsyncIterableIterator<Event>;
   iterateEventsBackward(
     streamName: string,
-    startPosition?: number,
+    startPosition?: StreamPosition,
     count?: number,
     resolveLinkTos?: boolean
   ): AsyncIterableIterator<Event>;
   iterateEventsByType(
     streamName: string,
     eventTypes: string | string[],
-    startPosition?: number,
+    startPosition?: StreamPosition,
     count?: number,
     direction?: ReadDirection,
     resolveLinkTos?: boolean
   ): AsyncIterableIterator<Event>;
   iterateAllEvents(
-    startPosition?: ReadPosition,
+    startPosition?: AllPositionInput,
     count?: number,
     direction?: ReadDirection,
     resolveLinkTos?: boolean,
     filter?: Filter
   ): AsyncIterableIterator<Event>;
   iterateAllEventsForward(
-    startPosition?: ReadPosition,
+    startPosition?: AllPositionInput,
     count?: number,
     resolveLinkTos?: boolean,
     filter?: Filter
   ): AsyncIterableIterator<Event>;
   iterateAllEventsBackward(
-    startPosition?: ReadPosition,
+    startPosition?: AllPositionInput,
     count?: number,
     resolveLinkTos?: boolean,
     filter?: Filter
@@ -760,25 +789,25 @@ export class GRPCClient {
   deleteStream(streamName: string, hardDelete?: boolean): Promise<JsonSafe<GRPCDeleteResult>>;
   subscribeToStream(
     streamName: string,
-    onEventAppeared?: MappedEventAppearedCallback<StreamSubscription>,
-    onDropped?: GRPCSubscriptionDroppedCallback<StreamSubscription>,
+    onEventAppeared?: MappedEventAppearedCallback<GRPCSubscription<StreamSubscription>>,
+    onDropped?: GRPCSubscriptionDroppedCallback<GRPCSubscription<StreamSubscription>>,
     resolveLinkTos?: boolean
-  ): Promise<StreamSubscription>;
+  ): Promise<GRPCSubscription<StreamSubscription>>;
   subscribeToStreamFrom(
     streamName: string,
-    fromEventNumber?: number,
-    onEventAppeared?: MappedEventAppearedCallback<StreamSubscription>,
-    onLiveProcessingStarted?: GRPCLiveProcessingStartedCallback<StreamSubscription>,
-    onDropped?: GRPCSubscriptionDroppedCallback<StreamSubscription>,
+    fromEventNumber?: StreamPosition,
+    onEventAppeared?: MappedEventAppearedCallback<GRPCSubscription<StreamSubscription>>,
+    onLiveProcessingStarted?: GRPCLiveProcessingStartedCallback<GRPCSubscription<StreamSubscription>>,
+    onDropped?: GRPCSubscriptionDroppedCallback<GRPCSubscription<StreamSubscription>>,
     settings?: SubscribeToStreamFromSettings
-  ): Promise<StreamSubscription>;
+  ): Promise<GRPCSubscription<StreamSubscription>>;
   subscribeToAll(
-    fromPosition?: ReadPosition,
-    onEventAppeared?: MappedEventAppearedCallback<AllStreamSubscription>,
-    onLiveProcessingStarted?: GRPCLiveProcessingStartedCallback<AllStreamSubscription>,
-    onDropped?: GRPCSubscriptionDroppedCallback<AllStreamSubscription>,
+    fromPosition?: AllPositionInput,
+    onEventAppeared?: MappedEventAppearedCallback<GRPCSubscription<AllStreamSubscription>>,
+    onLiveProcessingStarted?: GRPCLiveProcessingStartedCallback<GRPCSubscription<AllStreamSubscription>>,
+    onDropped?: GRPCSubscriptionDroppedCallback<GRPCSubscription<AllStreamSubscription>>,
     settings?: SubscribeToAllSettings
-  ): Promise<AllStreamSubscription>;
+  ): Promise<GRPCSubscription<AllStreamSubscription>>;
   createPersistentSubscriptionToStream(
     streamName: string,
     groupName: string,
@@ -788,18 +817,18 @@ export class GRPCClient {
   subscribeToPersistentSubscriptionToStream(
     streamName: string,
     groupName: string,
-    onEventAppeared?: MappedEventAppearedCallback<PersistentSubscriptionToStream>,
-    onDropped?: GRPCSubscriptionDroppedCallback<PersistentSubscriptionToStream>,
+    onEventAppeared?: MappedEventAppearedCallback<GRPCPersistentSubscription<PersistentSubscriptionToStream>>,
+    onDropped?: GRPCSubscriptionDroppedCallback<GRPCPersistentSubscription<PersistentSubscriptionToStream>>,
     settings?: { bufferSize?: number },
     duplexOptions?: object
-  ): Promise<PersistentSubscriptionToStream>;
+  ): Promise<GRPCPersistentSubscription<PersistentSubscriptionToStream>>;
   subscribeToPersistentSubscriptionToAll(
     groupName: string,
-    onEventAppeared?: MappedEventAppearedCallback<PersistentSubscriptionToAll>,
-    onDropped?: GRPCSubscriptionDroppedCallback<PersistentSubscriptionToAll>,
+    onEventAppeared?: MappedEventAppearedCallback<GRPCPersistentSubscription<PersistentSubscriptionToAll>>,
+    onDropped?: GRPCSubscriptionDroppedCallback<GRPCPersistentSubscription<PersistentSubscriptionToAll>>,
     settings?: { bufferSize?: number },
     duplexOptions?: object
-  ): Promise<PersistentSubscriptionToAll>;
+  ): Promise<GRPCPersistentSubscription<PersistentSubscriptionToAll>>;
   projections: {
     start(name: string): Promise<void>;
     stop(name: string): Promise<void>;
