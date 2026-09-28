@@ -509,4 +509,65 @@ describe('gRPC Client - Projections', () => {
       await client.close();
     });
   });
+
+  describe('Enabled flag', () => {
+    const projectionName = generateEventId();
+    const projectionContent = fs.readFileSync(`${dirname}/support/testProjection.js`, { encoding: 'utf8' });
+    const statusOf = async (client) => (await client.projections.getInfo(projectionName)).status;
+
+    after(async function () {
+      this.timeout(15 * 1000);
+      const client = new KurrentDB.GRPCClient(getGRPCConfig());
+      try {
+        await client.projections.stop(projectionName).catch(() => {});
+        await client.projections.remove(projectionName).catch(() => {});
+      } finally {
+        await client.close();
+      }
+    });
+
+    it('Should create a disabled projection when enabled is false', async function () {
+      this.timeout(15 * 1000);
+      const client = new KurrentDB.GRPCClient(getGRPCConfig());
+      try {
+        await client.projections.assert(projectionName, projectionContent, 'continuous', false);
+        await waitUntil(async () => (await statusOf(client)) === 'Stopped');
+      } finally {
+        await client.close();
+      }
+    });
+
+    it('Should leave an existing projection stopped when enabled is not passed', async function () {
+      this.timeout(15 * 1000);
+      const client = new KurrentDB.GRPCClient(getGRPCConfig());
+      try {
+        await client.projections.assert(projectionName, projectionContent);
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        assert.equal(await statusOf(client), 'Stopped');
+      } finally {
+        await client.close();
+      }
+    });
+
+    it('Should start an existing projection when enabled is true', async function () {
+      this.timeout(15 * 1000);
+      const client = new KurrentDB.GRPCClient(getGRPCConfig());
+      try {
+        await client.projections.assert(projectionName, projectionContent, 'continuous', true);
+        await waitUntil(async () => (await statusOf(client)).toLowerCase().includes('running'));
+      } finally {
+        await client.close();
+      }
+    });
+
+    it('Should resolve getInfo to undefined for a projection that does not exist', async function () {
+      this.timeout(15 * 1000);
+      const client = new KurrentDB.GRPCClient(getGRPCConfig());
+      try {
+        assert.equal(await client.projections.getInfo(`missing-${generateEventId()}`), undefined);
+      } finally {
+        await client.close();
+      }
+    });
+  });
 });
