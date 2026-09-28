@@ -1,3 +1,68 @@
+# 5.0.8 (2026-09-28)
+
+#### Features
+
+- Added a gRPC client backed by `@kurrent/kurrentdb-client`
+- Added `iterate*` async iterator read methods across all clients: `iterateEvents`, `iterateEventsForward`, `iterateEventsBackward`, `iterateAllStreamEvents`, and `iterateEventsByType`. The gRPC client also adds `iterateAllEvents`, `iterateAllEventsForward`, and `iterateAllEventsBackward`
+- These `iterate*` methods stream events one at a time, reducing memory footprint. They are now the preferred way to read over the buffering `getEvents`, `getAllStreamEvents`, `readEventsForward`, and `readEventsBackward` methods
+- Added `setStreamMetadata` across all clients to write stream metadata such as `maxAge`, `maxCount`, `truncateBefore`, `cacheControl`, and ACLs, plus custom properties. The HTTP and TCP clients translate the friendly metadata shape to the raw system metadata document. All three clients validate it the same way. The system values must be integers, the ACL must be a string or an object of roles, and unknown ACL keys are dropped with a warning
+- Added `projections.restartSubsystem` and `persistentSubscriptions.restartSubsystem` on the gRPC and HTTP clients to restart the server's projection and persistent subscription subsystems
+- Added `persistentSubscriptions.replayParkedMessagesToStream` and `persistentSubscriptions.replayParkedMessagesToAll` on the gRPC client to replay a subscription's parked messages, with an optional `stopAt` limit
+- `expectedVersion` accepts the same values on every client: a revision as a Number, BigInt or decimal string, `-2` or `'any'`, `-1` or `'no_stream'`, and `-4` or `'stream_exists'`
+- `getEventsByType` and `iterateEventsByType` accept a single event type as a string as well as an array
+
+#### Breaking changes
+
+- Renamed package to `@metronomic/kurrentdb-client`
+- Package is now pure ESM
+- Node 20 or later is now required
+- Deleted events are now returned instead of being silently dropped. Reads, iterators and subscriptions on the TCP client previously skipped resolved-link events whose target had been deleted, tombstoned or scavenged. This hid the true batch size and made a full batch of deleted events look like the end of a stream. Deleted events are now returned with `isResolved: false` and `data`/`metadata` set to `null`. Set `includeDeleted: false` in the client config to restore the old skipping behaviour. The HTTP client already returned these records and is unchanged, as will the new gRPC client
+- An invalid `expectedVersion` now throws `Invalid expectedVersion` on HTTP and TCP. It used to fall back to Any, which silently dropped the concurrency check. This covers values such as `'WRONG'`, fractions and unused negatives
+- An invalid start position now throws instead of reading from the start. This covers HTTP `iterateAllStreamEvents` and every gRPC read and subscription
+- TCP `positionCreated` is now an ISO string like `created`, matching the gRPC client and the types. It used to be a `Date`
+- HTTP `projections.assert` now honours `enabled`. A new projection is created stopped when `enabled` is `false`. An existing projection only starts or stops when `enabled` is passed, so an `assert` without it no longer restarts a projection that was stopped on purpose. The gRPC client follows the same rules
+- TCP `close()` now closes the client's subscription pools as well as its operations pool, so open subscriptions drop and the process can exit
+- A TCP subscription whose handler throws or rejects is now dropped with `eventHandlerException`. A volatile `subscribeToStream` used to log the failure and keep running. A catch-up subscription drops with `catchUpError` when the failure happens while reading history
+- A dropped TCP subscription now releases its connection and pool itself, so it cannot be used again after `onDropped` fires
+
+#### Changes
+
+- Changed the default connection pool size to 5 for TCP
+
+## gRPC
+
+#### Features
+
+- Stream operations, `$all` reads, and stream metadata
+- A single multiplexed connection per config. `close` disposes the client's connection, `getConnection` returns it, and `closeAllConnections` disposes every connection the process has opened. A client whose creation fails is retried on the next call rather than cached
+- `subscribeToStreamFrom` supports the `onLiveProcessingStarted` callback, fired when the subscription catches up and switches to live events
+- `subscribeToAll`, a catch-up subscription over `$all`, with `onLiveProcessingStarted` support
+- Server-side filtering over `$all` by event type or stream prefix. The `readAll*`, `iterateAll*`, and `subscribeToAll` methods accept an optional `filter`, so the server sends only matching events instead of the client reading and discarding. Build filters with the exported `eventTypeFilter`, `streamNameFilter`, and `excludeSystemEvents` helpers
+- `multiStreamWrite` to append events to multiple streams in a single atomic transaction, with a per stream `expectedVersion`
+- `multiStreamWriteCrossStreamConsistency` to append event records to one or more streams in a single atomic transaction, with optional cross-stream consistency checks
+- Persistent subscriptions
+- Persistent subscriptions to `$all`, with optional server-side filtering by event type or stream prefix. Adds `createPersistentSubscriptionToAll` and `subscribeToPersistentSubscriptionToAll`, plus `assertToAll`, `removeToAll`, `getToAllSubscriptionInfo`, and `getToAllSubscriptionsInfo` on `persistentSubscriptions`. Needs KurrentDB 21.10 or later
+- Projections
+
+#### Behaviour
+
+The gRPC client matches the HTTP and TCP clients rather than passing the underlying client's shapes
+straight through.
+
+- `readEventsForward` and `readEventsBackward` return `isEndOfStream`, `readDirection`, `fromEventNumber` and `nextEventNumber` alongside `events`, as the HTTP and TCP clients do. gRPC reports no head-of-stream flag, so `isEndOfStream` is derived from a batch coming back shorter than the requested count, or from a backward read reaching event 0. The count is taken before `includeDeleted` filtering so the metadata still describes what the server returned. `readAllEventsForward` and `readAllEventsBackward` still return `events` only, because a revision based `nextEventNumber` has no meaning against `$all`, where positions are commit and prepare pairs
+- Start positions read the way TCP reads them. A missing position means the start, or the end on a backward read, and `-1` means the end. A revision may be a Number, BigInt or decimal string, and stays exact above 2^53. `subscribeToStreamFrom` treats `0` and `-1` as the start
+- Results serialise with `JSON.stringify`. BigInt revisions and positions keep their type but serialise as decimal strings. `commitPosition` is present on every event the server supplies it for, including ordinary `$all` events, and is non-enumerable so a spread copy of an event does not carry a BigInt
+- `readAll*` and `iterateAll*` default `resolveLinkTos` to `false`, like `subscribeToAll`. `$all` already holds every event, so resolving links would return each event again once per `$ce-`, `$et-` or `$streams` link
+- `subscribeToStream` is live only. It starts at the end of the stream, as TCP does, and does not replay history
+- Subscriptions resolve once the server confirms them, so an event written straight after the `await` is delivered. A subscription the server refuses rejects, and `onDropped` only reports drops of confirmed subscriptions
+- Subscription handlers run one at a time and in order, and an async handler is awaited before the next event. A handler that throws or rejects, or an event that cannot be mapped, drops the subscription once through `onDropped`
+- `onLiveProcessingStarted` fires only after the handler has worked through the catch-up events. It also fires on servers older than 22, such as 21.10, which never send the caught-up notification. There it falls back to the stream or `$all` head read at subscribe time
+- Persistent subscription `ack` and `nack` take the mapped events, several at once, and acknowledge a resolved link by its link id. Deleted-event markers filtered out by `includeDeleted: false` are acked automatically so they are never parked
+- `positionCausedBy` and `positionCorrelationId` come from the link metadata
+- `projections.getInfo` fetches one projection by name. `projections.assert` follows the HTTP `enabled` rules
+- Omitting `useSslConnection` means an unencrypted connection, rather than an invalid connection string
+- A single `hostname` uses discovery by default, which connects to the address the node advertises. Behind a load balancer, a port-forward or a Docker-mapped port, pass `protocol: 'kurrentdb'` to connect directly
+
 # 4.0.1 (2021-09-28)
 
 ## TCP
@@ -164,21 +229,23 @@
 - Typescript definitions added
 - Package exports now exposed as classes
 
-	##### Previous Usage (Deprecated)
-	```javascript
-	const eventstore = require('geteventstore-promise');
-	const httpClient = eventstore.http(...config);
-	const tcpClient = eventstore.tcp(...config);
-	const newEvent = eventstore.eventFactory.NewEvent(...args);
-	```
+  ##### Previous Usage (Deprecated)
 
-	##### New Usage
-	```javascript
-	const EventStore = require('geteventstore-promise');
-	const httpClient = new EventStore.HTTPClient(...config);
-	const tcpClient = new EventStore.TCPClient(...config);
-	const newEvent = new EventStore.EventFactory().newEvent(...args);
-	```
+  ```javascript
+  const eventstore = require('geteventstore-promise');
+  const httpClient = eventstore.http(...config);
+  const tcpClient = eventstore.tcp(...config);
+  const newEvent = eventstore.eventFactory.NewEvent(...args);
+  ```
+
+  ##### New Usage
+
+  ```javascript
+  const EventStore = require('geteventstore-promise');
+  const httpClient = new EventStore.HTTPClient(...config);
+  const tcpClient = new EventStore.TCPClient(...config);
+  const newEvent = new EventStore.EventFactory().newEvent(...args);
+  ```
 
 #### Dependencies
 
@@ -216,7 +283,7 @@
 
 #### TCP Client
 
-- Feature - Implemented connection pooling(defaulting to 1 connection) using [https://github.com/coopernurse/node-pool](https://github.com/coopernurse/node-pool), please see config in library and pass config as "poolOptions" when initing TCP client.<br/> Example: ` {  ...,  poolOptions: { min: 1, max: 10 } } `
+- Feature - Implemented connection pooling(defaulting to 1 connection) using [https://github.com/coopernurse/node-pool](https://github.com/coopernurse/node-pool), please see config in library and pass config as "poolOptions" when initing TCP client.<br/> Example: `{  ...,  poolOptions: { min: 1, max: 10 } }`
 
 - Change - subscriptions now use [https://github.com/nicdex/node-eventstore-client](https://github.com/nicdex/node-eventstore-client) for subscriptions - Causes breaking changes
 
@@ -398,7 +465,6 @@
 
 - added missing debug logs
 
-
 # 1.1.22 (2017-03-09)
 
 #### HTTP Client
@@ -522,7 +588,7 @@
 
 - Feature: added start event number on getAllStreamEvents
 - Fix: any get events function will default to 4096 count if greater is requested (warning also displayed)
-- Change: default chunkSize of reads from 250 to 1000 
+- Change: default chunkSize of reads from 250 to 1000
 
 #### Tests
 
@@ -571,8 +637,8 @@
 
 #### HTTP client
 
-- 'getProjectionState' moved to 'projections.getState' 
-- 'getAllProjectionsInfo' moved to 'projections.getAllProjectionsInfo' 
+- 'getProjectionState' moved to 'projections.getState'
+- 'getAllProjectionsInfo' moved to 'projections.getAllProjectionsInfo'
 
 # 1.1.0 (2016-03-14)
 
@@ -584,34 +650,34 @@
 - Removed protocol property, assigned internally
 
 ##### Previous Usage
+
 ```javascript
 var eventstore = require('geteventstore-promise');
 
 var client = eventstore.http({
-				http:{
-	                hostname: 'localhost',
-	                protocol: 'http',
-	                port: 2113,
-	                credentials: {
-	                	username: 'admin',
-	                	password: 'changeit'
-	                }
-	            }
-            });
-
+  http: {
+    hostname: 'localhost',
+    protocol: 'http',
+    port: 2113,
+    credentials: {
+      username: 'admin',
+      password: 'changeit'
+    }
+  }
+});
 ```
 
 ##### New Usage
+
 ```javascript
 var eventstore = require('geteventstore-promise');
 
 var client = eventstore.http({
-                hostname: 'localhost',
-                port: 2113,
-                credentials: {
-					username: 'admin',
-					password: 'changeit'
-				}
-            });
-
+  hostname: 'localhost',
+  port: 2113,
+  credentials: {
+    username: 'admin',
+    password: 'changeit'
+  }
+});
 ```

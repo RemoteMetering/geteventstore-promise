@@ -1,166 +1,223 @@
-import './_globalHooks';
-
-import generateEventId from '../lib/utilities/generateEventId';
-import getHttpConfig from './support/getHttpConfig';
-import sleep from './utilities/sleep';
-import EventStore from '../lib';
 import assert from 'assert';
+import generateEventId from '../lib/utilities/generateEventId.js';
+import getHttpConfig from './support/getHttpConfig.js';
+import waitUntil from './utilities/waitUntil.js';
+import KurrentDB from '../lib/index.js';
 
-const eventFactory = new EventStore.EventFactory();
+const eventFactory = new KurrentDB.EventFactory();
 
 describe('Http Client - Read Events', () => {
-	const testStream = `TestStream-${generateEventId()}`;
-	const numberOfEvents = 10;
+  const testStream = `TestStream-${generateEventId()}`;
+  const numberOfEvents = 10;
 
-	before(() => {
-		const client = new EventStore.HTTPClient(getHttpConfig());
+  before(() => {
+    const client = new KurrentDB.HTTPClient(getHttpConfig());
 
-		const events = [];
-		for (let i = 1; i <= numberOfEvents; i++) {
-			events.push(eventFactory.newEvent('TestEventType', {
-				something: i
-			}));
-		}
-		return client.writeEvents(testStream, events);
-	});
+    const events = [];
+    for (let i = 1; i <= numberOfEvents; i++) {
+      events.push(
+        eventFactory.newEvent('TestEventType', {
+          something: i
+        })
+      );
+    }
+    return client.writeEvents(testStream, events);
+  });
 
-	it('Should read events reading forward', async () => {
-		const client = new EventStore.HTTPClient(getHttpConfig());
+  it('Should read events reading forward', async () => {
+    const client = new KurrentDB.HTTPClient(getHttpConfig());
 
-		const result = await client.readEventsForward(testStream);
-		assert.equal(result.events.length, 10);
-		assert(result.events[0].created, 'Created should be defined');
-		assert.equal(result.events[0].data.something, 1);
-	});
+    const result = await client.readEventsForward(testStream);
+    assert.equal(result.events.length, 10);
+    assert(result.events[0].created, 'Created should be defined');
+    assert.equal(result.events[0].data.something, 1);
+  });
 
-	it('Should read events reading backward', async () => {
-		const client = new EventStore.HTTPClient(getHttpConfig());
+  it('Should read events reading backward', async () => {
+    const client = new KurrentDB.HTTPClient(getHttpConfig());
 
-		const result = await client.readEventsBackward(testStream);
-		assert.equal(result.events.length, 10);
-		assert.equal(result.events[0].data.something, 10);
-	});
+    const result = await client.readEventsBackward(testStream);
+    assert.equal(result.events.length, 10);
+    assert.equal(result.events[0].data.something, 10);
+  });
 
-	it('Should read last event reading backward with larger size than events', async () => {
-		const client = new EventStore.HTTPClient(getHttpConfig());
+  it('Should read last event reading backward with larger size than events', async () => {
+    const client = new KurrentDB.HTTPClient(getHttpConfig());
 
-		const result = await client.readEventsBackward(testStream, 0, 250);
-		assert.equal(result.events.length, 1);
-		assert.equal(result.events[0].data.something, 1);
-	});
+    const result = await client.readEventsBackward(testStream, 0, 250);
+    assert.equal(result.events.length, 1);
+    assert.equal(result.events[0].data.something, 1);
+  });
 
-	it('Should not get any events when start event is greater than the stream length', async () => {
-		const client = new EventStore.HTTPClient(getHttpConfig());
+  it('Should not get any events when start event is greater than the stream length', async () => {
+    const client = new KurrentDB.HTTPClient(getHttpConfig());
 
-		const result = await client.readEventsForward(testStream, 11);
-		assert.equal(result.events.length, 0);
-	});
+    const result = await client.readEventsForward(testStream, 11);
+    assert.equal(result.events.length, 0);
+  });
 
-	it('Should read events reading backward from a start position', async () => {
-		const client = new EventStore.HTTPClient(getHttpConfig());
+  it('Should read events reading backward from a start position', async () => {
+    const client = new KurrentDB.HTTPClient(getHttpConfig());
 
-		const result = await client.readEventsBackward(testStream, 2);
-		assert.equal(result.events.length, 3);
-		assert.equal(result.events[0].data.something, 3);
-	});
+    const result = await client.readEventsBackward(testStream, 2);
+    assert.equal(result.events.length, 3);
+    assert.equal(result.events[0].data.something, 3);
+  });
 
-	it('Should read events reading backward with a count greater than the stream length', async () => {
-		const client = new EventStore.HTTPClient(getHttpConfig());
+  it('Should read events reading backward with a count greater than the stream length', async () => {
+    const client = new KurrentDB.HTTPClient(getHttpConfig());
 
-		const result = await client.readEventsBackward(testStream, undefined, 10000);
-		assert.equal(result.events.length, 10);
-		assert.equal(result.events[0].data.something, 10);
-	});
+    const result = await client.readEventsBackward(testStream, undefined, 10000);
+    assert.equal(result.events.length, 10);
+    assert.equal(result.events[0].data.something, 10);
+  });
 
-	it('Should read events reading forward with a count greater than the stream length return a maximum of 4096', async function () {
-		this.timeout(10000);
-		const client = new EventStore.HTTPClient(getHttpConfig());
+  it('Should read events reading forward with a count greater than the stream length return a maximum of 4096', async function () {
+    this.timeout(10000);
+    const client = new KurrentDB.HTTPClient(getHttpConfig());
 
-		const testStream = `TestStream-${generateEventId()}`;
-		const numberOfEvents = 5000;
-		const events = [];
+    const largeStream = `TestStream-${generateEventId()}`;
+    const largeStreamEventCount = 5000;
+    const events = [];
 
-		for (let i = 1; i <= numberOfEvents; i++) {
-			events.push(eventFactory.newEvent('TestEventType', {
-				something: i
-			}));
-		}
+    for (let i = 1; i <= largeStreamEventCount; i++) {
+      events.push(
+        eventFactory.newEvent('TestEventType', {
+          something: i
+        })
+      );
+    }
 
-		await client.writeEvents(testStream, events);
-		const result = await client.readEventsForward(testStream, undefined, 5000);
-		assert.equal(result.events.length, 4096);
-		assert.equal(result.events[0].data.something, 1);
-		assert.equal(result.events[4095].data.something, 4096);
-	});
+    await client.writeEvents(largeStream, events);
+    const result = await client.readEventsForward(largeStream, undefined, 5000);
+    assert.equal(result.events.length, 4096);
+    assert.equal(result.events[0].data.something, 1);
+    assert.equal(result.events[4095].data.something, 4096);
+  });
 
-	it('Should read linked to events and map correctly', async () => {
-		const client = new EventStore.HTTPClient(getHttpConfig());
+  it('Should read linked to events and map correctly', async () => {
+    const client = new KurrentDB.HTTPClient(getHttpConfig());
 
-		const result = await client.readEventsForward('$ce-TestStream', 0, 1);
-		assert.equal(result.events.length, 1);
-		assert(result.events[0].data.something);
-		assert.equal(0, result.events[0].positionEventNumber);
-		assert.equal('$ce-TestStream', result.events[0].positionStreamId);
-	});
+    const result = await client.readEventsForward('$ce-TestStream', 0, 1);
+    assert.equal(result.events.length, 1);
+    assert(result.events[0].data.something);
+    assert.equal(0, result.events[0].positionEventNumber);
+    assert.equal('$ce-TestStream', result.events[0].positionStreamId);
+  });
 
-	it('Should read system and deleted events without resolveLinkTos', async () => {
-		const client = new EventStore.HTTPClient(getHttpConfig());
+  it('Should take nextEventNumber from the link position on a linked to stream', async function () {
+    this.timeout(15 * 1000);
+    const client = new KurrentDB.HTTPClient(getHttpConfig());
+    const category = `HttpPaging${generateEventId().replace(/-/g, '')}`;
+    const categoryStream = `$ce-${category}`;
 
-		const deletedStream = 'TestStreamDeleted';
-		await client.writeEvent(deletedStream, 'TestEventType', { something: 1 });
+    // One event per source stream, so every resolved eventNumber is 0 while the links run 0, 1, 2.
+    for (let k = 1; k <= 3; k++) {
+      await client.writeEvent(`${category}-${k}`, 'TestEventType', { something: k });
+    }
+    await waitUntil(async () => {
+      try {
+        return (await client.readEventsForward(categoryStream, 0, 10)).events.length === 3;
+      } catch (err) {
+        if (err.response?.status === 404) return false;
+        throw err;
+      }
+    });
 
-		await sleep(500);
+    const result = await client.readEventsForward(categoryStream, 0, 2);
+    assert.equal(result.events.length, 2);
+    assert.equal(result.events[1].eventNumber, 0, 'the resolved event is the first in its own stream');
+    assert.equal(result.nextEventNumber, 2, 'the cursor sits one past the last link read');
 
-		const result = await client.readEventsForward('$streams', 0, 4096, false);
-		assert(result.events.length > 0, 'More than 0 events expected');
-	});
+    const next = await client.readEventsForward(categoryStream, result.nextEventNumber, 2);
+    assert.deepEqual(
+      next.events.map((ev) => ev.data.something),
+      [3]
+    );
+  });
 
-	it('Should read events reading backward with embed type rich', async () => {
-		const client = new EventStore.HTTPClient(getHttpConfig());
+  it('Should read system and deleted events without resolveLinkTos', async () => {
+    const client = new KurrentDB.HTTPClient(getHttpConfig());
 
-		const result = await client.readEventsBackward(testStream, 2, undefined, true, 'rich');
-		assert.equal(result.events.length, 3);
-		assert.equal(result.events[0].data, undefined);
-	});
+    const deletedStream = 'TestStreamDeleted';
+    await client.writeEvent(deletedStream, 'TestEventType', { something: 1 });
 
-	it('Should read events and set additional meta properties', async () => {
-		const client = new EventStore.HTTPClient(getHttpConfig());
+    let result;
+    await waitUntil(async () => {
+      result = await client.readEventsForward('$streams', 0, 4096, false);
+      return result.events.length > 0;
+    });
+    assert(result.events.length > 0, 'More than 0 events expected');
+  });
 
-		let result = await client.readEventsForward(testStream, 2, 2);
-		assert.equal(result.readDirection, 'forward');
-		assert.equal(result.fromEventNumber, 2);
-		assert.equal(result.nextEventNumber, 4);
+  it('Should read events reading backward with embed type rich', async () => {
+    const client = new KurrentDB.HTTPClient(getHttpConfig());
 
-		result = await client.readEventsBackward(testStream, 3, 2);
-		assert.equal(result.readDirection, 'backward');
-		assert.equal(result.fromEventNumber, 3);
-		assert.equal(result.nextEventNumber, 1);
-	});
+    const result = await client.readEventsBackward(testStream, 2, undefined, true, 'rich');
+    assert.equal(result.events.length, 3);
+    assert.equal(result.events[0].data, undefined);
+  });
 
-	describe('Http Client - Get Events Failure', () => {
-		const testStream = `TestStream-${generateEventId()}`;
+  it('Should not report the end of the stream on a backward read from the head', async () => {
+    const client = new KurrentDB.HTTPClient(getHttpConfig());
 
-		it('Should return 404 when stream does not exist', () => {
-			const client = new EventStore.HTTPClient(getHttpConfig());
+    const result = await client.readEventsBackward(testStream, undefined, 4);
+    assert.equal(result.events.length, 4);
+    assert.equal(result.isEndOfStream, false, 'six older events remain');
+    assert.equal(result.nextEventNumber, 5);
+  });
 
-			return client.readEventsForward(testStream).then(() => {
-				throw new Error('Should not have received events');
-			}).catch(err => {
-				assert.equal(404, err.response.status, 'Should have received 404');
-			});
-		});
+  it('Should report the end of the stream once a backward read reaches event 0', async () => {
+    const client = new KurrentDB.HTTPClient(getHttpConfig());
 
-		it('Should not return 404 when stream does not exist if ignore 404 is set on config', () => {
-			const httpConfigWithIgnore = getHttpConfig();
-			httpConfigWithIgnore.ignore = [404];
+    const result = await client.readEventsBackward(testStream, 3, 4);
+    assert.equal(result.events.length, 4);
+    assert.equal(result.isEndOfStream, true);
+    assert.equal(result.nextEventNumber, 0);
+  });
 
-			const client = new EventStore.HTTPClient(httpConfigWithIgnore);
+  it('Should read events and set additional meta properties', async () => {
+    const client = new KurrentDB.HTTPClient(getHttpConfig());
 
-			return client.readEventsForward(testStream).then(() => {
-				throw new Error('Should not have received events');
-			}).catch(err => {
-				assert.equal(404, err.response.status, 'Should have received 404');
-			});
-		});
-	});
+    let result = await client.readEventsForward(testStream, 2, 2);
+    assert.equal(result.readDirection, 'forward');
+    assert.equal(result.fromEventNumber, 2);
+    assert.equal(result.nextEventNumber, 4);
+
+    result = await client.readEventsBackward(testStream, 3, 2);
+    assert.equal(result.readDirection, 'backward');
+    assert.equal(result.fromEventNumber, 3);
+    assert.equal(result.nextEventNumber, 1);
+  });
+
+  describe('Http Client - Get Events Failure', () => {
+    const missingStream = `TestStream-${generateEventId()}`;
+
+    it('Should return 404 when stream does not exist', async () => {
+      const client = new KurrentDB.HTTPClient(getHttpConfig());
+
+      try {
+        await client.readEventsForward(missingStream);
+      } catch (err) {
+        assert.equal(404, err.response.status, 'Should have received 404');
+        return;
+      }
+      throw new Error('Should not have received events');
+    });
+
+    it('Should not return 404 when stream does not exist if ignore 404 is set on config', async () => {
+      const httpConfigWithIgnore = getHttpConfig();
+      httpConfigWithIgnore.ignore = [404];
+
+      const client = new KurrentDB.HTTPClient(httpConfigWithIgnore);
+
+      try {
+        await client.readEventsForward(missingStream);
+      } catch (err) {
+        assert.equal(404, err.response.status, 'Should have received 404');
+        return;
+      }
+      throw new Error('Should not have received events');
+    });
+  });
 });
