@@ -206,6 +206,10 @@ describe('HTTP Client - Persistent Subscription', () => {
     await client.writeEvents(testStream, events);
     await client.persistentSubscriptions.assert(testSubscriptionName, testStream);
     const results = await client.persistentSubscriptions.getAllSubscriptionsInfo();
-    assert.equal(9, results.length);
+    const created = results.find(
+      (info) => info.groupName === testSubscriptionName && info.eventStreamId === testStream
+    );
+    assert(created, 'expected the new subscription in the list of all subscriptions');
+    await client.persistentSubscriptions.remove(testSubscriptionName, testStream);
   });
 });
