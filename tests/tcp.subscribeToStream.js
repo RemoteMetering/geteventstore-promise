@@ -254,4 +254,50 @@ describe('TCP Client - Subscribe To Stream', () => {
       await client.closeAllPools();
     }
   });
+
+  it('Should let the caller close again after a handler failure closed the subscription', async function () {
+    this.timeout(15 * 1000);
+    const client = new KurrentDB.TCPClient(getTcpConfig());
+    const testStream = `TestStream-${generateEventId()}`;
+    const drops = [];
+
+    // A separate client holds the write pool, so the subscriber's only pool is the subscription's.
+    const subscriber = new KurrentDB.TCPClient(getTcpConfig());
+
+    try {
+      const subscription = await subscriber.subscribeToStream(
+        testStream,
+        () => {
+          throw new Error('handler failed');
+        },
+        (_sub, reason) => drops.push(reason)
+      );
+      await sleep(1000);
+      await client.writeEvent(testStream, 'TestEventType', { id: 1 });
+      await waitUntil(() => drops.length === 1);
+
+      await subscription.close();
+      await subscription.close();
+      await assert.rejects(subscriber.getPool(), /Connection Pool not found/, 'the dedicated pool is released');
+    } finally {
+      await client.closeAllPools();
+    }
+  });
+
+  // Only a secure server checks credentials, so a wrong password only makes the subscribe fail there.
+  (global.runningTestsInSecureMode ? it : it.skip)(
+    'Should release the dedicated pool when subscribing fails',
+    async function () {
+      this.timeout(15 * 1000);
+      const config = { ...getTcpConfig(), credentials: { username: 'admin', password: 'wrong-password' } };
+      const client = new KurrentDB.TCPClient(config);
+
+      try {
+        await assert.rejects(client.subscribeToStream(`TestStream-${generateEventId()}`, () => {}));
+        await assert.rejects(client.getPool(), /Connection Pool not found/, 'no pool is left behind');
+      } finally {
+        await client.closeAllPools();
+      }
+    }
+  );
 });

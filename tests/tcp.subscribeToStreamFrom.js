@@ -162,4 +162,40 @@ describe('TCP Client - Subscribe To Stream From', () => {
       await client.closeAllPools();
     }
   });
+
+  it('Should release the dedicated pool when a handler failure drops the subscription', async function () {
+    this.timeout(15 * 1000);
+    const client = new KurrentDB.TCPClient(getTcpConfig());
+    const testStream = `TestStream-${generateEventId()}`;
+    const drops = [];
+
+    try {
+      await client.writeEvent(testStream, 'TestEventType', { id: 1 });
+      // A separate client holds the write pool, so this client's only pool is the subscription's.
+      const subscriber = new KurrentDB.TCPClient(getTcpConfig());
+      const subscription = await subscriber.subscribeToStreamFrom(
+        testStream,
+        0,
+        async () => {
+          throw new Error('handler failed');
+        },
+        undefined,
+        (_sub, reason) => drops.push(reason)
+      );
+      await waitUntil(() => drops.length === 1);
+      await waitUntil(async () => {
+        try {
+          await subscriber.getPool();
+          return false;
+        } catch (err) {
+          return err.message === 'Connection Pool not found';
+        }
+      });
+
+      // A later close from the caller must still resolve.
+      await subscription.close();
+    } finally {
+      await client.closeAllPools();
+    }
+  });
 });
