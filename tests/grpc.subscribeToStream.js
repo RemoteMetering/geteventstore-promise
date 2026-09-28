@@ -205,4 +205,50 @@ describe('gRPC Client - Subscribe To Stream', () => {
       await client.closeAllConnections();
     }
   });
+
+  it('Should deliver an event written straight after the subscribe resolves', async function () {
+    this.timeout(20 * 1000);
+    const client = new KurrentDB.GRPCClient(getGRPCConfig());
+
+    try {
+      // No sleep between subscribing and writing, repeated to give a race room to show.
+      for (let k = 0; k < 5; k++) {
+        const testStream = `TestStream-${generateEventId()}`;
+        let received = 0;
+        const subscription = await client.subscribeToStream(testStream, () => {
+          received += 1;
+        });
+        await client.writeEvent(testStream, 'TestEventType', { id: k });
+        await waitUntil(() => received === 1, { timeout: 3000 });
+        await subscription.close();
+      }
+    } finally {
+      await client.closeAllConnections();
+    }
+  });
+
+  // Only a secure server checks credentials, so a bad password only fails the subscribe there.
+  (global.runningTestsInSecureMode ? it : it.skip)(
+    'Should reject a subscription the server refuses, without calling onDropped',
+    async function () {
+      this.timeout(20 * 1000);
+      const config = { ...getGRPCConfig(), credentials: { username: 'admin', password: 'wrong-password' } };
+      const client = new KurrentDB.GRPCClient(config);
+      const drops = [];
+
+      try {
+        await assert.rejects(
+          client.subscribeToStream(
+            `TestStream-${generateEventId()}`,
+            () => {},
+            (_sub, err) => drops.push(err)
+          )
+        );
+        await sleep(200);
+        assert.equal(drops.length, 0, 'a subscription that never started is not reported as dropped');
+      } finally {
+        await client.closeAllConnections();
+      }
+    }
+  );
 });
