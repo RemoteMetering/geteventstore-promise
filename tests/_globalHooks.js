@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import sleep from './utilities/sleep.js';
 import { runningV21, version } from './support/v21.js';
+import { isClusterSettled } from './support/clusterState.js';
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -82,34 +83,6 @@ const isContainerReady = async (containerName, readyOutputMatch) =>
     proc.stdout.on('data', (line) => line.toString().includes(readyOutputMatch) && resolve(true));
     proc.on('close', () => resolve(false));
   });
-
-// Returns the node's most recent state transition, or undefined if it has not reported one yet.
-const lastNodeState = async (containerName) =>
-  new Promise((resolve) => {
-    let output = '';
-    const proc = spawn('docker', ['logs', containerName], { cwd: undefined });
-    proc.stdout.on('data', (chunk) => (output += chunk.toString()));
-    proc.on('close', () => {
-      const transitions = output.match(/IS (LEADER|FOLLOWER)\.\.\./g);
-      resolve(transitions ? transitions[transitions.length - 1] : undefined);
-    });
-  });
-
-// docker logs replays the whole log, so a leadership line from an earlier term stays visible long
-// after leadership has moved elsewhere. Matching on any occurrence therefore says only that a node
-// was leader at some point, which let the cluster tests start writing mid election and fail with
-// NotLeaderError. Wait for the latest transition on every node instead, so one leader and two
-// followers is the actual current state.
-const isClusterSettled = async () => {
-  const states = await Promise.all(
-    [1, 2, 3].map((node) => lastNodeState(`metronomic_kurrentdb_client_test_cluster_node${node}`))
-  );
-
-  return (
-    states.filter((state) => state === 'IS LEADER...').length === 1 &&
-    states.filter((state) => state === 'IS FOLLOWER...').length === 2
-  );
-};
 
 before(async function () {
   this.timeout(60 * 1000);
