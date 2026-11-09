@@ -1,949 +1,392 @@
-# geteventstore-promise
-A Node.js Event Store client API wrapper using promises
+# @metronomic/kurrentdb-client
 
-[![NPM](https://nodei.co/npm/geteventstore-promise.png?stars&downloads&downloadRank)](https://nodei.co/npm/geteventstore-promise/)
+A Node.js KurrentDB(previously EventStoreDB) client API wrapper.
+
+The package ships three clients over three transports:
+
+- **gRPC** (`GRPCClient`) talks to modern KurrentDB. This is the recommended transport for new work. Uses the official [@kurrent/kurrentdb-client](https://www.npmjs.com/package/@kurrent/kurrentdb-client) package.
+- **HTTP** (`HTTPClient`) talks to the KurrentDB HTTP API.
+- **TCP** (`TCPClient`) talks to the KurrentDB Legacy TCP API. This API is supported on KurrentDB >= 24.6 on a licensed server through a plugin. Uses the [node-eventstore-client](https://www.npmjs.com/package/node-eventstore-client) package.
+
+All three expose the same core methods, so you can switch transport through configuration alone.
 
 # Installation
-> yarn add geteventstore-promise
 
-In your Node.js application:
-> const EventStore = require('geteventstore-promise');
+> pnpm add @metronomic/kurrentdb-client
 
-# HTTP Client
+In your application:
 
-# Config example
+> import KurrentDB from '@metronomic/kurrentdb-client';
 
-```javascript
-const EventStore = require('geteventstore-promise');
+# Common methods
 
-const client = new EventStore.HTTPClient({
-	hostname: 'localhost',
-	port: 2113,
-	credentials: {
-		username: 'admin',
-		password: 'changeit'
-	}
-});
-```
+Available on all three clients.
 
-# Config example - Secure
+- getEvents(streamName, startPosition, count, direction, resolveLinkTos)
+- getAllStreamEvents(streamName, chunkSize, startPosition, resolveLinkTos)
+- getEventsByType(streamName, eventTypes, startPosition, count, direction, resolveLinkTos)
+- readEventsForward(streamName, startPosition, count, resolveLinkTos)
+- readEventsBackward(streamName, startPosition, count, resolveLinkTos)
+- writeEvent(streamName, eventType, data, metaData, options)
+- writeEvents(streamName, events, options)
+- deleteStream(streamName, hardDelete)
+- checkStreamExists(streamName)
+- setStreamMetadata(streamName, metadata, options)
+- iterateEvents(streamName, startPosition, count, direction, resolveLinkTos)
+- iterateEventsForward(streamName, startPosition, count, resolveLinkTos)
+- iterateEventsBackward(streamName, startPosition, count, resolveLinkTos)
+- iterateAllStreamEvents(streamName, chunkSize, startPosition, resolveLinkTos)
+- iterateEventsByType(streamName, eventTypes, startPosition, count, direction, resolveLinkTos)
 
-```javascript
-const EventStore = require('geteventstore-promise');
+# Positions and expected versions
 
-const client = new EventStore.HTTPClient({
-	protocol: 'https',
-	hostname: 'localhost',
-	port: 2113,
-	validateServer: true, //defaults to `true` when `protocol` is `https`, set to `false` when using self-signed certs
-	credentials: {
-		username: 'admin',
-		password: 'changeit'
-	}
-});
-```
+The clients accept the same values, so a value means the same thing on every transport.
 
-# Supported Methods
+- **Start positions:** leaving the position out reads from the start, or from the end on a backward read. `-1` means the end, as on TCP. A revision may be a Number, a BigInt or a decimal string, such as a gRPC result serialises to. An invalid position throws rather than reading from the start.
+- **`$all` positions:** gRPC only. These are `'start'`, `'end'` or a `{ commit, prepare }` pair of Numbers, BigInts or decimal strings.
+- **`expectedVersion`:** a revision as above, `-2` or `'any'` to skip the check, `-1` or `'no_stream'` for a missing stream, and `-4` or `'stream_exists'` for an existing one. Leaving it out means Any. An invalid value throws `Invalid expectedVersion`, because falling back to Any would silently drop the concurrency check.
+- **`eventTypes`:** `getEventsByType` and `iterateEventsByType` take one event type as a string, or several as an array.
 
-## getEvents(streamName, startPosition, count, direction, resolveLinkTos, embed)
+# Stream metadata
 
-Returns events from a given stream.
+`setStreamMetadata` takes the friendly shape: `maxAge`, `maxCount`, `truncateBefore`, `cacheControl`, `acl` and any custom properties. Every client validates it the same way. The four system values must be integers. `acl` must be a string such as `'$userStreamAcl'`, or an object of `readRoles`, `writeRoles`, `deleteRoles`, `metaReadRoles` and `metaWriteRoles`. Unknown ACL keys are dropped with a warning.
 
-##### streamName
-The name of the stream to read from.
+# Subscriptions
 
-##### startPosition (optional)
-If specified, the stream will be read starting at event number startPosition, otherwise *0*
-'head' will start reading from the back of the stream, if direction is specified as 'backward'
+Subscriptions behave the same way on the gRPC and TCP clients.
 
-##### count (optional)
-The number of events to be read, defaults to *1000*, max of *4096*
+- **Handlers:** `onEventAppeared` runs for one event at a time, in order. If it returns a promise, the next event waits for it.
+- **Failures:** a handler that throws or rejects drops the subscription. `onDropped` is called once, and no further events reach the handler.
+- **Live processing:** `onLiveProcessingStarted` fires once the handler has worked through the catch-up events.
+- **Cleanup:** a dropped TCP subscription releases its own connection, and its `close()` is safe to call more than once. gRPC subscriptions share the client's connection, so there is nothing to release.
 
-##### direction (optional)
-The direction to the read the stream. Can be either 'forward' or 'backward'. Defaults to *'forward'*.
+On gRPC, a subscription resolves once the server confirms it, so an event written straight after the `await` is delivered. A subscription the server refuses rejects rather than resolving, and `onDropped` only reports drops of subscriptions that started.
 
-##### resolveLinkTos (optional)
-Resolve linked events. Defaults to *true*
+# Deleted events
 
-##### embed (optional)
-Resolve linked events. Options: 'body' and 'rich'. Defaults to *body*
+When you read a stream or `$all` with `resolveLinkTos` enabled, some records are resolved-link events whose target has been deleted, tombstoned or scavenged. These are deleted events.
 
-#### Example
+By default all clients now return deleted events instead of dropping them. A deleted event carries `isResolved: false`, with `data` and `metadata` set to `null`, and its stream and position fields taken from the link record. Returning them keeps batch reads at their true size, so paging stays correct. Previously the TCP client silently dropped them, which made a full batch of deleted events look like the end of the stream.
+
+Set `includeDeleted: false` in the client config to skip deleted events and return only live ones. This applies to the gRPC and TCP clients. The HTTP client always returns them. On a gRPC persistent subscription, the skipped deleted events are acked automatically, so they are never retried or parked.
 
 ```javascript
-const EventStore = require('geteventstore-promise');
-
-const client = new EventStore.HTTPClient({
-	hostname: 'localhost',
-	port: 2113,
-	credentials: {
-		username: 'admin',
-		password: 'changeit'
-	}
-});
-
-// defaults for getEvents if not specified
-const events = await client.getEvents('TestStream', 0, 1000, 'forward')
+const event = events.find((e) => e.isResolved === false);
+// event.data === null, event.metadata === null
 ```
 
----
+# Persistent subscriptions
 
-## getAllStreamEvents(streamName, chunkSize, startPosition, resolveLinkTos, embed)
+Available on the gRPC and HTTP clients. `getEvents` is HTTP only.
 
-Returns all events from a given stream.
+- assert(subscriptionName, streamName, options)
+- getEvents(subscriptionName, streamName, count, embed)
+- getSubscriptionInfo(subscriptionName, streamName)
+- getStreamSubscriptionsInfo(streamName)
+- getAllSubscriptionsInfo()
+- remove(subscriptionName, streamName)
 
-##### streamName
-The name of the stream to read from.
+The `$all` variants are gRPC only and need KurrentDB 21.10 or later. `assertToAll` accepts an optional `filter` in its options to restrict the subscription to matching event types or stream prefixes.
 
-##### chunkSize (optional)
-The amount of events to read in each call to Event Store, defaults to *1000*,
+- assertToAll(subscriptionName, options)
+- getToAllSubscriptionInfo(subscriptionName)
+- getToAllSubscriptionsInfo()
+- removeToAll(subscriptionName)
 
-##### startPosition (optional)
-If specified, the stream will be read starting at event number startPosition, otherwise *0*
+`replayParkedMessages*` is gRPC only. It replays a subscription's parked messages, optionally stopping at a given position with `options.stopAt`.
 
-##### resolveLinkTos (optional)
-Resolve linked events. Defaults to *true*
+- replayParkedMessagesToStream(subscriptionName, streamName, options)
+- replayParkedMessagesToAll(subscriptionName, options)
 
-##### embed (optional)
-Resolve linked events. Options: 'body' and 'rich'. Defaults to *body*
+`restartSubsystem` is available on the gRPC and HTTP clients. It restarts the server's persistent subscription subsystem.
 
-#### Example
-
-```javascript
-const EventStore = require('geteventstore-promise');
-
-const client = new EventStore.HTTPClient({
-	hostname: 'localhost',
-	port: 2113,
-	credentials: {
-		username: 'admin',
-		password: 'changeit'
-	}
-});
-
-const allStreamEvents = await client.getAllStreamEvents('TestStream');
-```
-
-## readEventsForward(streamName, startPosition, count, resolveLinkTos, embed)
-
-Returns read metadata and events from a given stream.
-
-##### streamName
-The name of the stream to read from.
-
-##### startPosition (optional)
-If specified, the stream will be read starting at event number startPosition, otherwise *0*
-'head' will start reading from the back of the stream, if direction is specified as 'backward'
-
-##### count (optional)
-The number of events to be read, defaults to *1000*, max of *4096*
-
-##### resolveLinkTos (optional)
-Resolve linked events. Defaults to *true*
-
-##### embed (optional)
-Resolve linked events. Options: 'body' and 'rich'. Defaults to *body*
-
-#### Example
-
-```javascript
-const EventStore = require('geteventstore-promise');
-
-const client = new EventStore.HTTPClient({
-	hostname: 'localhost',
-	port: 2113,
-	credentials: {
-		username: 'admin',
-		password: 'changeit'
-	}
-});
-
-// defaults for readEventsForward if not specified
-const readResult = await client.readEventsForward('TestStream', 0, 1000)
-```
-
-## readEventsBackward(streamName, startPosition, count, resolveLinkTos, embed)
-
-Returns read metadata and events from a given stream.
-
-##### streamName
-The name of the stream to read from.
-
-##### startPosition (optional)
-If specified, the stream will be read starting at event number startPosition, otherwise *0*
-'head' will start reading from the back of the stream, if direction is specified as 'backward'
-
-##### count (optional)
-The number of events to be read, defaults to *1000*, max of *4096*
-
-##### resolveLinkTos (optional)
-Resolve linked events. Defaults to *true*
-
-##### embed (optional)
-Resolve linked events. Options: 'body' and 'rich'. Defaults to *body*
-
-#### Example
-
-```javascript
-const EventStore = require('geteventstore-promise');
-
-const client = new EventStore.HTTPClient({
-	hostname: 'localhost',
-	port: 2113,
-	credentials: {
-		username: 'admin',
-		password: 'changeit'
-	}
-});
-
-// defaults for readEventsBackward if not specified
-const readResult = await client.readEventsBackward('TestStream', 0, 1000)
-```
-
----
-
-## writeEvent(streamName, eventType, data, metaData, options)
-
-Writes a single event of a specific type to a stream.
-
-##### streamName
-The name of the stream to read from.
-
-##### eventType
-The type of event to save. Any string value is accepted.
-
-##### data
-The data to be contained in the event as a JSON object.
-
-##### metaData (optional)
-Any MetaData to be saved in the event as a JSON object.
-
-##### options (optional)
-Any options to be specified (as documented in GetEvent Store documentation). Default is simply *ExpectedVersion = -2*.
-
-#### Example
-
-```javascript
-const EventStore = require('geteventstore-promise');
-const { v4: generateEventId } = require('uuid');
-
-const client = new EventStore.HTTPClient({
-	hostname: 'localhost',
-	port: 2113,
-	credentials: {
-		username: 'admin',
-		password: 'changeit'
-	}
-});
-
-await client.writeEvent('TestStream-' + generateEventId(), 'TestEventType', { something: '123' });
-const events = await client.getEvents(testStream);
-```
-
----
-
-## writeEvents(streamName, events, options)
-
-Writes an array of Event Store ready events to a stream.
-
-##### streamName
-The name of the stream to read from.
-
-##### events
-The array of Event Store ready events to save.
-You can call ```new EventStore.EventFactory().newEvent('TestType', {something: 123});``` to get an Event Store ready event.
-
-##### options (optional)
-Any options to be specified (as documented in GetEvent Store documentation). Default is simply *ExpectedVersion = -2*.
-
-#### Example
-
-```javascript
-const EventStore = require('geteventstore-promise');
-const { v4: generateEventId } = require('uuid');
-
-const client = new EventStore.HTTPClient({
-	hostname: 'localhost',
-	port: 2113,
-	credentials: {
-		username: 'admin',
-		password: 'changeit'
-	}
-});
-
-const events = [new EventStore.EventFactory().newEvent('TestEventType', { something: '456'})];
-
-await client.writeEvents('TestStream-' + generateEventId(), events);
-const events = await client.getEvents(testStream);
-```
-
----
-
-## checkStreamExists(streamName)
-
-Check if a stream exists, returns true or false.
-
-##### streamName
-The name of the stream to check.
-
-#### Example
-
-```javascript
-const EventStore = require('geteventstore-promise');
-
-const client = new EventStore.HTTPClient({
-	hostname: 'localhost',
-	port: 2113,
-	credentials: {
-		username: 'admin',
-		password: 'changeit'
-	}
-});
-
-const exists = await client.checkStreamExists('ExistingProjectionStreamName');
-```
-
----
-
-## deleteStream(streamName, hardDelete)
-
-Deletes a stream, fails the promise if stream does not exist.
-
-##### streamName
-The name of the stream to delete.
-
-##### hardDelete
-Hard delete the stream, defaults to false
-
-#### Example
-
-```javascript
-const EventStore = require('geteventstore-promise');
-
-const client = new EventStore.HTTPClient({
-	hostname: 'localhost',
-	port: 2113,
-	credentials: {
-		username: 'admin',
-		password: 'changeit'
-	}
-});
-
-try {
-	await client.delete('ExistingStreamName');
-} catch(err) {
-	// should only happen if something went wrong or the stream does not exist
-    console.log(err);
-}
-```
----
-
-## ping()
-
-Performs Ping command, rejects promise if unsuccessful
-
-#### Example
-
-```javascript
-const EventStore = require('geteventstore-promise');
-
-const client = new EventStore.HTTPClient({
-	hostname: 'localhost',
-	port: 2113,
-	credentials: {
-		username: 'admin',
-		password: 'changeit'
-	}
-});
-
-await client.ping();
-```
----
-
-# Persistent Subscriptions
-
-# Supported Methods
-
-* assert(subscriptionName, streamName, options)
-* getEvents(subscriptionName, streamName, count, embed)
-* getSubscriptionInfo(subscriptionName, streamName)
-* getStreamSubscriptionsInfo(streamName)
-* getAllSubscriptionsInfo()
-* remove(subscriptionName, streamName)
-
-## persistentSubscriptions.assert(subscriptionName, streamName, options)
-Upsert the persistent subscription
-
-#### subscriptionName
-The name of the subscription group
-
-#### streamName
-The stream name
-
-#### options(optional)
-The mode of the projection to create, defaults to 'continuous'
-
-##### resolveLinkTos
-Tells the subscription to resolve link events.
-
-##### startFrom
-Start the subscription from the position-th event in the stream.
-
-##### extraStatistics
-Tells the backend to measure timings on the clients so statistics will contain histograms of them.
-
-##### checkPointAfterMilliseconds
-The amount of time the system should try to checkpoint after.
-
-##### liveBufferSize
-The size of the live buffer (in memory) before resorting to paging.
-
-##### readBatchSize  
-The size of the read batch when in paging mode.
-
-##### bufferSize
-The number of messages that should be buffered when in paging mode.
-
-##### maxCheckPointCount
-The maximum number of messages not checkpointed before forcing a checkpoint.
-
-##### maxRetryCount
-Sets the number of times a message should be retried before being considered a bad message.
-
-##### maxSubscriberCount
-Sets the maximum number of allowed subscribers
-
-##### messageTimeoutMilliseconds
-Sets the timeout for a client before the message will be retried.
-
-##### minCheckPointCount
-The minimum number of messages to write a checkpoint for.
-
-##### namedConsumerStrategy
-RoundRobin/DispatchToSingle/Pinned
-
-## persistentSubscriptions.getEvents(subscriptionName, streamName, count, embed)
-Get events
-
-#### subscriptionName
-The name of the subscription group
-
-#### streamName
-The stream name
-
-#### count (optional)
-Number of events to return(defaults to 1)
-
-#### embed (optional)
-None, Content, Rich, Body, PrettyBody, TryHarder(defaults to 'Body')
-
-## persistentSubscriptions.getSubscriptionInfo(subscriptionName, streamName)
-Get specific subscriptions info
-
-#### subscriptionName
-The name of the subscription group
-
-#### streamName
-The stream name
-
-## persistentSubscriptions.getStreamSubscriptionsInfo(streamName)
-Get all subscriptions info for a stream
-
-#### streamName
-The stream name
-
-## persistentSubscriptions.getAllSubscriptionsInfo()
-Get all subscriptions info
-
----
+- restartSubsystem()
 
 # Projections
 
-# Supported Methods
+Available on the gRPC and HTTP clients. `config` is HTTP only, and `getInfo`'s `includeConfig` argument applies to HTTP only.
 
-* start(projectionName)
-    #### projectionName
-    The name of the projection
-* stop(projectionName)
-    #### projectionName
-    The name of the projection
-* reset(projectionName)
-    #### projectionName
-    The name of the projection
-* remove(projectionName)
-    #### projectionName
-    The name of the projection
-* config(projectionName)
-    #### projectionName
-    The name of the projection
-* getState(projectionName, options)
-    #### projectionName
-    The name of the projection
+- start(projectionName)
+- stop(projectionName)
+- reset(projectionName)
+- remove(projectionName, deleteCheckpointStream, deleteStateStream)
+- config(projectionName)
+- getState(projectionName, options)
+- getResult(projectionName, options)
+- getInfo(projectionName, includeConfig)
+- assert(projectionName, projectionContent, mode, enabled, checkpointsEnabled, emitEnabled, trackEmittedStreams)
+- enableAll()
+- disableAll()
+- getAllProjectionsInfo()
 
-    #### options
-    Object, `partition` used to specify the partition to query the state with. e.g. `{ partition: 1 }`
-* getInfo(projectionName, includeConfig)
-    #### projectionName
-    The name of the projection
+`assert` treats `enabled` the same way on both clients. A new projection is created running unless `enabled` is `false`. An existing projection only starts or stops when you pass `enabled`, so an `assert` without it leaves a stopped projection stopped. `checkpointsEnabled` is accepted but ignored on both, because HTTP forces it on for continuous projections and gRPC supports continuous projections only.
 
-    #### includeConfig
-    Specify if we want to include the projection config in the projection info result set
+`enableAll` and `disableAll` also differ. The HTTP client lists all non-transient projections, so one-time projections are included. The gRPC client lists continuous projections only, so one-time projections are skipped.
 
-* enableAll()
-* disableAll()
-* getAllProjectionsInfo()
-* assert(projectionName, projectionContent, mode, enabled, checkpointsEnabled, emitEnabled, trackEmittedStreams)
-    #### projectionName
-    The name of the projection
+`restartSubsystem` is available on the gRPC and HTTP clients. It restarts the server's projection subsystem.
 
-    #### projectionContent
-    The content of the projection
+- restartSubsystem()
 
-    #### mode(optional)
-    The mode of the projection to create, defaults to 'continuous'
+# Preferred methods: iterate over read
 
-    #### enabled(optional)
-    Projection enabled by default, defaults to true
+Each client exposes buffering read methods (`getEvents`, `getAllStreamEvents`, `readEventsForward`, `readEventsBackward`) and async iterator methods (`iterateEvents`, `iterateAllStreamEvents`, `iterateEventsByType`, and on gRPC also `iterateAllEvents`).
 
-    #### checkpointsEnabled(optional)
-    Should enable checkpoints, defaults to true for continuous projections and false for onetime projections
-
-    #### emitEnabled(optional)
-    Should enable emitting, defaults to false
-
-    #### trackEmittedStreams(optional)
-    Should track the emitted streams (tracking emitted streams enables you to delete a projection and all the streams that it has created), defaults to false
-
-## Example for using any projection method
-
-## projections.getState()
-
-Returns the state of the Projection as a JSON object.
-
-##### projectionName
-The name of the projection to get state of.
-
-##### options(optional)
-
-##### partition
-The name of the partition to retrieve.
-
-#### Example
-
-```javascript
-const EventStore = require('geteventstore-promise');
-
-const client = new EventStore.HTTPClient({
-	hostname: 'localhost',
-	port: 2113,
-	credentials: {
-		username: 'admin',
-		password: 'changeit'
-	}
-});
-
-const projectionState = await client.projections.getState('TestProjection');
-```
+Prefer the `iterate*` methods. They stream events one at a time from the server, reducing the memory footprint. e.g `iterateAllEventsForward`
 
 ---
 
-# Admin
+# gRPC Client
 
-## admin.scavenge()
+The gRPC client is the recommended transport for new work.
 
-Sends scavenge command to Event Store.
+## Config
 
-If the promise is fulfilled then the scavenge command has been sent, it does not guarantee that the scavenge will be successful.
-
-#### Example
+The protocol defaults to `kurrentdb+discover`, which lets the client discover cluster nodes. Set `useSslConnection` for a secure connection and `tlsCAFile` to point at a CA certificate when the server uses one. Set `includeDeleted: false` to skip deleted events (see [Deleted events](#deleted-events)).
 
 ```javascript
-const EventStore = require('geteventstore-promise');
-
-const client = new EventStore.HTTPClient({
-	hostname: 'localhost',
-	port: 2113,
-	credentials: {
-		username: 'admin',
-		password: 'changeit'
-	}
+const client = new KurrentDB.GRPCClient({
+  hostname: 'localhost',
+  port: 2113,
+  credentials: {
+    username: 'admin',
+    password: 'changeit'
+  }
 });
 
-await client.admin.scavenge();
-console.log('Scavenge command sent!');
+// Secure
+const secureClient = new KurrentDB.GRPCClient({
+  hostname: 'localhost',
+  port: 2113,
+  useSslConnection: true,
+  tlsCAFile: '/path/to/ca.crt',
+  credentials: {
+    username: 'admin',
+    password: 'changeit'
+  }
+});
+
+// Clustering - Gossip Seeds
+const clusterClient = new KurrentDB.GRPCClient({
+  gossipSeeds: [
+    { hostname: '192.168.0.10', port: 2113 },
+    { hostname: '192.168.0.11', port: 2113 },
+    { hostname: '192.168.0.12', port: 2113 }
+  ],
+  credentials: {
+    username: 'admin',
+    password: 'changeit'
+  }
+});
 ```
+
+## Additional gRPC methods
+
+Methods available on the gRPC client beyond the common set above. The `readAll*` and `iterateAll*` methods read across all streams using the server-wide `$all` stream.
+
+The client multiplexes all calls and subscriptions over a single shared connection per config, so there is no connection pool. `close` disposes the client's connection and `closeAllConnections` disposes every connection the process has opened.
+
+`readAll*` and `iterateAll*` default `resolveLinkTos` to `false`. `$all` already holds every event, so resolving links would return each event again, once per `$ce-`, `$et-` or `$streams` link. Pass `true` only when you want the link records resolved.
+
+Revisions and positions stay BigInt on gRPC results, which still serialise with `JSON.stringify` as decimal strings. An event's `commitPosition` is non-enumerable, so a spread copy of the event leaves it out. Read it from the event itself, or use `position.commit`.
+
+Persistent subscription `ack` and `nack` take the events `onEventAppeared` receives, and accept several at once.
+
+- getStreamMetadata(streamName)
+- multiStreamWrite(writes)
+- multiStreamWriteCrossStreamConsistency(writes, checks)
+- readAllEvents(startPosition, count, direction, resolveLinkTos, filter)
+- readAllEventsForward(startPosition, count, resolveLinkTos, filter)
+- readAllEventsBackward(startPosition, count, resolveLinkTos, filter)
+- iterateAllEvents(startPosition, count, direction, resolveLinkTos, filter)
+- iterateAllEventsForward(startPosition, count, resolveLinkTos, filter)
+- iterateAllEventsBackward(startPosition, count, resolveLinkTos, filter)
+- subscribeToStream(streamName, onEventAppeared, onDropped, resolveLinkTos)
+- subscribeToStreamFrom(streamName, fromEventNumber, onEventAppeared, onLiveProcessingStarted, onDropped, settings)
+- subscribeToAll(fromPosition, onEventAppeared, onLiveProcessingStarted, onDropped, settings)
+- createPersistentSubscriptionToStream(streamName, groupName, settings)
+- subscribeToPersistentSubscriptionToStream(streamName, groupName, onEventAppeared, onDropped, settings, duplexOptions)
+- createPersistentSubscriptionToAll(groupName, settings)
+- subscribeToPersistentSubscriptionToAll(groupName, onEventAppeared, onDropped, settings, duplexOptions)
+- close()
+- getConnection()
+- closeAllConnections()
+
+## Server-side filtering over $all
+
+The `readAll*`, `iterateAll*`, and `subscribeToAll` methods accept an optional server-side `filter`. The server then only sends matching events, instead of the client reading every event and discarding non-matches. This is far cheaper over `$all` than filtering in your own code.
+
+Build a filter with the helpers exported from the package. Filters match on either event type or stream name, by prefix or by regular expression.
+
+```javascript
+import KurrentDB, { eventTypeFilter, streamNameFilter, excludeSystemEvents } from '@metronomic/kurrentdb-client';
+
+const client = new KurrentDB.GRPCClient(config);
+
+// All OrderPlaced events across every stream, newest first
+const { events } = await client.readAllEventsBackward(
+  'end',
+  100,
+  false,
+  eventTypeFilter({ prefixes: ['OrderPlaced'] })
+);
+
+// Live subscription to every event on streams starting with "order-", skipping catch-up history
+await client.subscribeToAll('end', onEventAppeared, onLiveProcessingStarted, onDropped, {
+  filter: streamNameFilter({ prefixes: ['order-'] })
+});
+
+// Exclude system events (those on $ streams)
+await client.readAllEventsForward('start', 1000, false, excludeSystemEvents());
+```
+
+`subscribeToAll` is a catch-up subscription over `$all`. `fromPosition` is `'start'`, `'end'`, or a `{ commit, prepare }` position. `onLiveProcessingStarted` fires when the subscription catches up and switches to live events.
+
+Servers older than 22, the 21.10 image among them, never send the caught-up notification. On those servers the client reads the `$all` head when you subscribe and reports live processing once it reaches it. A filtered subscription may never deliver that head event, so it relies on the server's checkpoints instead. Those usually arrive near the head, but a short catch-up can finish before the server sends one.
 
 ---
 
-## admin.shutdown()
+# HTTP Client
 
-Sends shutdown command to Event Store.
-
-If the promise is fulfilled then the shutdown command has been sent, it does not guarantee that the shutdown will be successful.
-
-#### Example
+## Config
 
 ```javascript
-const EventStore = require('geteventstore-promise');
-
-const client = new EventStore.HTTPClient({
-	hostname: 'localhost',
-	port: 2113,
-	credentials: {
-		username: 'admin',
-		password: 'changeit'
-	}
+const client = new KurrentDB.HTTPClient({
+  hostname: 'localhost',
+  port: 2113,
+  timeout: 5000, // optional, milliseconds
+  credentials: {
+    username: 'admin',
+    password: 'changeit'
+  }
 });
 
-await client.admin.shutdown();
-console.log('Shutdown command sent!');
+// Secure
+const secureClient = new KurrentDB.HTTPClient({
+  protocol: 'https',
+  hostname: 'localhost',
+  port: 2113,
+  validateServer: true, //defaults to `true` when `protocol` is `https`, set to `false` when using self-signed certs
+  credentials: {
+    username: 'admin',
+    password: 'changeit'
+  }
+});
 ```
+
+`timeout` applies to every HTTP call, including the `projections`, `persistentSubscriptions` and `admin` calls. Leave it unset for no timeout.
+
+## Admin methods (only issues commands)
+
+Available on the HTTP client only.
+
+- admin.scavenge()
+- admin.shutdown()
+
+## Additional HTTP methods
+
+- ping()
 
 ---
 
 # TCP Client
 
-# Acknowledgements
+The TCP transport is supported on KurrentDB >= 24.6 on a licensed server through a plugin.
 
-Uses the `node-eventstore-client` as authored by nicdex
+## Config
 
-Github: [https://github.com/nicdex/node-eventstore-client](https://github.com/nicdex/node-eventstore-client)
-
-# Config example
+Set `includeDeleted: false` to skip deleted events (see [Deleted events](#deleted-events)).
 
 ```javascript
-const client = new EventStore.TCPClient({
-	hostname: 'localhost',
-	port: 1113,
-	credentials: {
-		username: 'admin',
-		password: 'changeit'
-	},
-	poolOptions: {
-		min: 0,
-		max: 10
-	}
+import { v4 as generateId } from 'uuid';
+
+const client = new KurrentDB.TCPClient({
+  hostname: 'localhost',
+  port: 1113,
+  credentials: {
+    username: 'admin',
+    password: 'changeit'
+  },
+  poolOptions: {
+    min: 0,
+    max: 10
+  }
+});
+
+// Secure
+const secureClient = new KurrentDB.TCPClient({
+  hostname: 'localhost',
+  port: 1113,
+  useSslConnection: true,
+  validateServer: true, //defaults to `true` when `useSslConnection` is `true`, set to `false` when using self-signed certs
+  credentials: {
+    username: 'admin',
+    password: 'changeit'
+  },
+  poolOptions: {
+    min: 0,
+    max: 10
+  }
+});
+
+// Override connection name
+const namedClient = new KurrentDB.TCPClient({
+  hostname: 'localhost',
+  port: 1113,
+  credentials: {
+    username: 'admin',
+    password: 'changeit'
+  },
+  poolOptions: {
+    min: 0,
+    max: 10
+  },
+  connectionNameGenerator: () => `APP_NAME_${generateId()}`
+});
+
+// Clustering - Gossip Seeds
+const clusterClient = new KurrentDB.TCPClient({
+  gossipSeeds: [
+    { hostname: '192.168.0.10', port: 2113 },
+    { hostname: '192.168.0.11', port: 2113 },
+    { hostname: '192.168.0.12', port: 2113 }
+  ],
+  credentials: {
+    username: 'admin',
+    password: 'changeit'
+  },
+  poolOptions: {
+    min: 0,
+    max: 10
+  }
+});
+
+// Clustering - DNS Discovery
+const discoverClient = new KurrentDB.TCPClient({
+  protocol: 'discover',
+  hostname: 'my.host',
+  port: 2113,
+  credentials: {
+    username: 'admin',
+    password: 'changeit'
+  },
+  poolOptions: {
+    min: 0,
+    max: 10
+  }
 });
 ```
 
-# Config example - Secure
+## Additional TCP methods
 
-```javascript
-const client = new EventStore.TCPClient({
-	hostname: 'localhost',
-	port: 1113,
-	useSslConnection: true,
-	validateServer: true, //defaults to `true` when `useSslConnection` is `true`, set to `false` when using self-signed certs
-	credentials: {
-		username: 'admin',
-		password: 'changeit'
-	},
-	poolOptions: {
-		min: 0,
-		max: 10
-	}
-});
-```
+- subscribeToStream(streamName, onEventAppeared, onDropped, resolveLinkTos)
+- subscribeToStreamFrom(streamName, fromEventNumber, onEventAppeared, onLiveProcessingStarted, onDropped, settings)
+- eventEnumerator(streamName, direction, resolveLinkTos)
+- close()
+- getPool()
+- closeAllPools()
 
-# Config example - Override connection name
+Each subscription holds its own pooled connection. `close()` closes the client's operations pool and all of its subscription pools, so open subscriptions drop and the process can exit.
 
-```javascript
-const { v4: generateId } = require('uuid');
+## License
 
-const client = new EventStore.TCPClient({
-	hostname: 'localhost',
-	port: 1113,
-	credentials: {
-		username: 'admin',
-		password: 'changeit'
-	},
-	poolOptions: {
-		min: 0,
-		max: 10
-	},
-	connectionNameGenerator: () => `APP_NAME_${generateId()}`
-});
-```
-
-# Config example - Clustering - Gossip Seeds
-
-```javascript
-const client = new EventStore.TCPClient({
-	gossipSeeds: [
-		{ hostname: '192.168.0.10', port: 2113 },
-		{ hostname: '192.168.0.11', port: 2113 },
-		{ hostname: '192.168.0.12', port: 2113 }
-	],
-	credentials: {
-		username: 'admin',
-		password: 'changeit'
-	},
-	poolOptions: {
-		min: 0,
-		max: 10
-	}
-});
-```
-
-# Config example - Clustering - DNS Discovery
-
-```javascript
-const client = new EventStore.TCPClient({
-	protocol: 'discover',
-	hostname: 'my.host',
-	port: 2113,
-	credentials: {
-		username: 'admin',
-		password: 'changeit'
-	},
-	poolOptions: {
-		min: 0,
-		max: 10
-	}
-});
-```
-
-# Common methods(same as HTTP, just use TCP configuration)
-
-* getEvents(streamName, startPosition, count, direction, resolveLinkTos)
-* readEventsForward(streamName, startPosition, count, resolveLinkTos)
-* readEventsBackward(streamName, startPosition, count, resolveLinkTos)
-* writeEvent(streamName, eventType, data, metaData, options)
-* writeEvents(streamName, events, options)
-* deleteStream(streamName, hardDelete)
-
-# Supported Methods
-
-## close()
-Close all active connections.
-
-## getEventsByType(streamName, eventTypes, startPosition, count, direction, resolveLinkTos)
-
-Returns all events from a given stream by Event Types.
-
-##### streamName
-The name of the stream to read from.
-
-##### eventTypes
-An array of event types to filter by.
-
-##### startPosition (optional)
-If specified, the stream will be read starting at event number startPosition, otherwise *0*
-
-##### count (optional)
-The number of events to be read, defaults to *1000*, max of *4096*
-
-##### direction (optional)
-The direction to the read the stream. Can be either 'forward' or 'backward'. Defaults to *'forward'*.
-
-##### resolveLinkTos (optional)
-Resolve linked events. Defaults to *true*
-
-#### Example
-
-```javascript
-const EventStore = require('geteventstore-promise');
-
-const client = new EventStore.TCPClient({
-	hostname: 'localhost',
-	port: 1113,
-	credentials: {
-		username: 'admin',
-		password: 'changeit'
-	}
-});
-
-const eventsByType = await client.getEventsByType('TestStream', ['TestType']);
-```
-
----
-
-## getAllStreamEvents(streamName, chunkSize, startPosition, resolveLinkTos)
-
-Returns all events from a given stream.
-
-##### streamName
-The name of the stream to read from.
-
-##### chunkSize (optional)
-The amount of events to read in each call to Event Store, defaults to *1000*,
-
-##### startPosition (optional)
-If specified, the stream will be read starting at event number startPosition, otherwise *0*
-
-##### resolveLinkTos (optional)
-Resolve linked events. Defaults to *true*
-
-#### Example
-
-```javascript
-const EventStore = require('geteventstore-promise');
-
-const client = new EventStore.TCPClient({
-	hostname: 'localhost',
-	port: 1113,
-	credentials: {
-		username: 'admin',
-		password: 'changeit'
-	}
-});
-
-const allStreamEvents = await client.getAllStreamEvents('TestStream');
-```
-
----
-
-## subscribeToStream(streamName, onEventAppeared, onDropped, resolveLinkTos)
-
-Subscribes to a Stream (live subscription)
-
-##### streamName
-The name of the stream to read from.
-
-##### onEventAppeared (optional)
-function
-
-##### onDropped
-function
-
-##### resolveLinkTos
-Resolve linked events
-
-#### Example
-
-```javascript
-const EventStore = require('geteventstore-promise');
-
-const client = new EventStore.TCPClient({
-	hostname: 'localhost',
-	port: 1113,
-	credentials: {
-		username: 'admin',
-		password: 'changeit'
-	}
-});
-
-function onEventAppeared(subscription, ev) {
-	processedEventCount++;
-	return;
-};
-
-function onDropped(subscription, reason, error) {
-
-};
-
-await client.subscribeToStream('TestStream', onEventAppeared, onDropped, false);
-```
-
----
-
-## subscribeToStreamFrom(streamName, fromEventNumber, onEventAppeared, onLiveProcessingStarted, onDropped, settings)
-
-Subscribes to a Stream from a given event number (Catch up Subscription)
-
-##### streamName
-The name of the stream to read from.
-
-##### fromEventNumber
-The event number to subscribe from
-
-##### onEventAppeared (optional)
-function
-
-##### onLiveProcessingStarted
-function
-
-##### onDropped
-function
-
-##### settings
-resolveLinkTos - Whether or not to resolve link events
-
-maxLiveQueueSize - The max amount to buffer when processing from live subscription
-
-readBatchSize - The number of events to read per batch when reading history
-
-debug - in debug mode(true/false)
-
-#### Example
-
-```javascript
-const EventStore = require('geteventstore-promise');
-
-const client = new EventStore.TCPClient({
-	hostname: 'localhost',
-	port: 1113,
-	credentials: {
-		username: 'admin',
-		password: 'changeit'
-	}
-});
-
-let processedEventCount = 0;
-
-function onEventAppeared(subscription, ev) {
-    processedEventCount++;
-    return;
-};
-
-function onLiveProcessingStarted() {
-    return;
-}
-
-function onDropped(subscription, reason, error) {
-
-};
-
-await client.subscribeToStreamFrom('TestStream', 0, onEventAppeared, onLiveProcessingStarted,onDropped);
-```
-
----
-
-## eventEnumerator(streamName, direction, resolveLinkTos)
-
-Returns an events enumerator on which events can be iterated.
-
-##### streamName
-The name of the stream to read from.
-
-##### direction (optional)
-The direction to the read the stream. Can be either 'forward' or 'backward'. Defaults to *'forward'*.
-
-##### resolveLinkTos (optional)
-Resolve linked events. Defaults to *true*
-
-## Supported Functions
-
-* next(batchSize)
-* previous(batchSize)
-* first(batchSize)
-* last(batchSize)
-
-##### batchSize
-The number of events to read per enumeration.
-
-#### Example
-
-```javascript
-const EventStore = require('geteventstore-promise');
-
-const client = new EventStore.TCPClient({
-	hostname: 'localhost',
-	port: 1113,
-	credentials: {
-		username: 'admin',
-		password: 'changeit'
-	}
-});
-
-const streamName = 'TestStream';
-const enumerator = client.eventEnumerator(streamName);
-const result = await enumerator.next(20);
-//result
-// {
-//     isEndOfStream: true/false,
-//     events: [ ..., ..., ... ]
-// }
-```
-
----
+MIT

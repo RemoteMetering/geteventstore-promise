@@ -1,11 +1,11 @@
-import './_globalHooks';
+import getHttpConfig from './support/getHttpConfig.js';
+import KurrentDB from '../lib/index.js';
+import { describeOnlyV21 } from './support/v21.js';
 
-import getHttpConfig from './support/getHttpConfig';
-import EventStore from '../lib';
-
-describe('Http Client - Send Scavenge Command', () => {
-	it('Should send scavenge command', () => {
-		const client = new EventStore.HTTPClient(getHttpConfig());
-		return client.admin.scavenge();
-	});
+// Set KURRENTDB_MEM_DB=false to test on LTS
+describeOnlyV21('Http Client - Send Scavenge Command', () => {
+  it('Should send scavenge command', () => {
+    const client = new KurrentDB.HTTPClient(getHttpConfig());
+    return client.admin.scavenge();
+  });
 });
